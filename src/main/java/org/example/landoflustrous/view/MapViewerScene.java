@@ -127,6 +127,8 @@ public class MapViewerScene {
 
         stage.setScene(new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
         stage.show();
+        // Line to save map background dynamically generated
+        //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
 
     }
 
@@ -181,11 +183,11 @@ public class MapViewerScene {
     private Color getTileColor(Tile tile) {
         // Replace with your actual tile property checks and color assignments
         if (tile.isRail) {
-            return Color.GRAY;
-        } else if (tile.isRoad) {
             return Color.YELLOW;
+        } else if (tile.isRoad) {
+            return Color.GRAY;
         } else if (tile.isForbidden) {
-            return Color.RED;
+            return Color.LIGHTBLUE;
         } else {
             return Color.GREEN;
         }
@@ -220,9 +222,41 @@ public class MapViewerScene {
             playerSprite.setY(y * TILE_SIZE);
         }
     }
+    // dynamically generate texture for map's tiles and paint it
+    private ImagePattern getTilePattern(Tile tile) {
+        Image image = null;
+        if (tile.isRail) {
+            image = new Image("/images/rail.png"); // Update the path to your rail image
+        } else if (tile.isRoad) {
+            image = new Image("/images/road.jpg"); // Update the path to your road image
+        } else if (tile.isForbidden) {
+            image = new Image("/images/water.png"); // Update the path to your forbidden image
+        } else {
+            // Default tile image, for example, grass
+            image = new Image("/images/grass.jpg"); // Update the path to your grass image
+        }
+        return new ImagePattern(image);
+    }
+    //Saves textured map
+    private void savePaneAsImage(Pane pane, String filename) {
+        // Take a snapshot of the pane
+        WritableImage writableImage = pane.snapshot(new SnapshotParameters(), null);
+
+        // Convert to BufferedImage
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
+
+        // Write the image to a file
+        File outFile = new File(filename);
+        try {
+            ImageIO.write(bufferedImage, "png", outFile);
+            System.out.println("Map saved to " + filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to save map.");
+        }
+    }
+}
 
 //    public Scene getScene() {
 //        return new Scene(root, 600, 400); // Example dimensions
 //    }
-
-}
