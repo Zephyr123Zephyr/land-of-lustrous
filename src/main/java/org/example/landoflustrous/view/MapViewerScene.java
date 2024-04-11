@@ -106,6 +106,7 @@ public class MapViewerScene {
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
 
+//optionboard code
         Pane optionBoard =  new OptionBoard().createOptionBoard(new Route(null));//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
         optionBoard.setLayoutX(200);
         optionBoard.setLayoutY(200);
