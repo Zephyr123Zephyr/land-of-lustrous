@@ -33,10 +33,13 @@ import org.example.landoflustrous.model.*;
 
 
 public class MapViewerScene {
-
+    private static final int MAX_GEMS_PER_LEVEL = 5; //TODO: HARD CODED. Subject to change for each level (controller's job)
+    private Pane root;
     private GameMap gameMap;
     private static final int TILE_SIZE = 20;
     private ImageView playerSprite;
+    private java.util.Queue<Gem> gemQueue;
+    private ImageView currentGemSprite;
 
     // A mapping from level identifiers to file paths
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
@@ -91,7 +94,7 @@ public class MapViewerScene {
 //        return new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE);
 //    }
     public void createMapScene(Stage stage) {
-        Pane root = new Pane();
+        root = new Pane();
 
         drawMap(root);
         // TODO: this is for testing purpose. Move player instantiation to controller later
@@ -100,18 +103,18 @@ public class MapViewerScene {
 
         // Add the player character to the scene
         addPlayerCharacter(root, testPlayer);
+        initializeGemSequence();
 
 
         playerSprite.toFront();
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
 
-//optionboard code
-        Pane optionBoard =  new OptionBoard().createOptionBoard(new Route(null));//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
+        Pane optionBoard = new OptionBoard().createOptionBoard(new Route(null));//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
         optionBoard.setLayoutX(200);
         optionBoard.setLayoutY(200);
         //暂定是三个 可以可以改代码通过循环绑定所有代码
-        ((Button)optionBoard.lookup("#routeAButton")).setOnAction(event -> {
+        ((Button) optionBoard.lookup("#routeAButton")).setOnAction(event -> {
             optionBoard.setVisible(false);
             List<Tile> tileList = new LinkedList<Tile>();
             tileList.add(new Tile(100, 100, false, false, false));
@@ -125,7 +128,7 @@ public class MapViewerScene {
             //然后绑定表单控件的id来选择
             createMapScene_AfterChooseOption(stage, path);
         });
-        ((Button)optionBoard.lookup("#routeBButton")).setOnAction(event -> {
+        ((Button) optionBoard.lookup("#routeBButton")).setOnAction(event -> {
             optionBoard.setVisible(false);
             List<Tile> tileList = new LinkedList<Tile>();
             tileList.add(new Tile(100, 100, false, false, false));
@@ -139,7 +142,7 @@ public class MapViewerScene {
             //然后绑定表单控件的id来选择
             createMapScene_AfterChooseOption(stage, path);
         });
-        ((Button)optionBoard.lookup("#routeCButton")).setOnAction(event -> {
+        ((Button) optionBoard.lookup("#routeCButton")).setOnAction(event -> {
             optionBoard.setVisible(false);
             List<Tile> tileList = new LinkedList<Tile>();
             tileList.add(new Tile(100, 100, false, false, false));
@@ -254,6 +257,7 @@ public class MapViewerScene {
             playerSprite.setY(y * TILE_SIZE);
         }
     }
+
     // dynamically generate texture for map's tiles and paint it
     private ImagePattern getTilePattern(Tile tile) {
         Image image = null;
@@ -269,6 +273,7 @@ public class MapViewerScene {
         }
         return new ImagePattern(image);
     }
+
     //Saves textured map
     private void savePaneAsImage(Pane pane, String filename) {
         // Take a snapshot of the pane
@@ -287,8 +292,63 @@ public class MapViewerScene {
             System.out.println("Failed to save map.");
         }
     }
-}
+    private List<Gem> generateGems(int count) {
+        List<Gem> gems = new java.util.ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            Gem newGem = null;
+            do {
+                newGem = new Gem(); // Gem constructor assigns type, x, and y randomly
+            } while (gameMap.getTile(newGem.getX(), newGem.getY()).isForbidden);
+            gems.add(newGem);
+        }
+        System.out.println("Generated Gems:");
+        for (Gem gem : gems) {
+            System.out.println("Gem ID: " + gem.getGemID() +
+                    ", Type: " + gem.getType() +
+                    ", X: " + gem.getX() +
+                    ", Y: " + gem.getY() +
+                    ", Live Time: " + gem.getLiveTime());
+        }
+        return gems;
+    }
+    public void initializeGemSequence() {
+        List<Gem> gems = generateGems(5); // Generate 5 gems
+        gemQueue = new LinkedList<>(gems);
+        displayNextGem();
+    }
 
-//    public Scene getScene() {
-//        return new Scene(root, 600, 400); // Example dimensions
-//    }
+    private void displayNextGem() {
+        if (currentGemSprite != null) {
+            root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
+        }
+
+        Gem gem = gemQueue.poll(); // Retrieve and remove the next gem
+        if (gem != null) {
+            Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
+            currentGemSprite = new ImageView(image);
+            currentGemSprite.setX(gem.getX() * TILE_SIZE);
+            currentGemSprite.setY(gem.getY() * TILE_SIZE);
+            currentGemSprite.resize(10,10);
+            root.getChildren().add(currentGemSprite);
+
+            // Start the timer for the gem's display
+            startGemTimer(gem);
+        }
+    }
+
+    private void startGemTimer(Gem gem) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(gem.getLiveTime() * 1000); // Convert seconds to milliseconds
+                Platform.runLater(() -> {
+                    if (!gem.isCollected()) { // Check if not collected
+                        displayNextGem(); // Display next gem
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    }

@@ -32,7 +32,7 @@ public class Gem extends Coordinated {
         this.collected = false;
         this.x = random.nextInt(30); // Assuming a 100x100 grid
         this.y = random.nextInt(30);
-        this.liveTime = random.nextInt(301) + 300; // 300 to 600 seconds of life
+        this.liveTime = random.nextInt(5) + 10; // 300 to 600 seconds of life
         this.elapsedTime = 0;
     }
 
