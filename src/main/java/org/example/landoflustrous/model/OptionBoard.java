@@ -48,7 +48,7 @@ public class OptionBoard {
         Timeline countdownTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(1), e -> updateCountdown(countdownLabel))
         );
-        countdownTimeline.setCycleCount(5); // 设置动画循环次数为10，即10秒
+        countdownTimeline.setCycleCount(10); // 设置动画循环次数为10，即10秒
         countdownTimeline.setOnFinished(e -> {
             root.setVisible(false); // 倒计时结束后隐藏表单面板
         });
