@@ -106,12 +106,12 @@ public class MapViewerScene {
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
 
-        Button buttonMove = new Button("OptionBoard Demo");
-        buttonMove.setLayoutY(100);
-        root.getChildren().add(buttonMove);
-
-        buttonMove.setOnAction(event -> {
-            ////开始模拟走路
+        Pane optionBoard =  new OptionBoard().createOptionBoard(new Route(null));//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
+        optionBoard.setLayoutX(200);
+        optionBoard.setLayoutY(200);
+        //暂定是三个 可以可以改代码通过循环绑定所有代码
+        ((Button)optionBoard.lookup("#routeAButton")).setOnAction(event -> {
+            optionBoard.setVisible(false);
             List<Tile> tileList = new LinkedList<Tile>();
             tileList.add(new Tile(100, 100, false, false, false));
             tileList.add(new Tile(200, 200, false, false, false));
@@ -124,7 +124,38 @@ public class MapViewerScene {
             //然后绑定表单控件的id来选择
             createMapScene_AfterChooseOption(stage, path);
         });
+        ((Button)optionBoard.lookup("#routeBButton")).setOnAction(event -> {
+            optionBoard.setVisible(false);
+            List<Tile> tileList = new LinkedList<Tile>();
+            tileList.add(new Tile(100, 100, false, false, false));
+            tileList.add(new Tile(200, 200, false, false, false));
+            tileList.add(new Tile(300, 300, false, false, false));
+            tileList.add(new Tile(400, 400, false, false, false));
+            tileList.add(new Tile(500, 500, false, false, false));
 
+            Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
+            ////需要生成当前地图的Route实例-保存PathList
+            //然后绑定表单控件的id来选择
+            createMapScene_AfterChooseOption(stage, path);
+        });
+        ((Button)optionBoard.lookup("#routeCButton")).setOnAction(event -> {
+            optionBoard.setVisible(false);
+            List<Tile> tileList = new LinkedList<Tile>();
+            tileList.add(new Tile(100, 100, false, false, false));
+            tileList.add(new Tile(200, 200, false, false, false));
+            tileList.add(new Tile(300, 300, false, false, false));
+            tileList.add(new Tile(400, 400, false, false, false));
+            tileList.add(new Tile(500, 500, false, false, false));
+
+            Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
+            ////需要生成当前地图的Route实例-保存PathList
+            //然后绑定表单控件的id来选择
+            createMapScene_AfterChooseOption(stage, path);
+        });
+        root.getChildren().add(optionBoard);
+
+        // Line to save map background dynamically generated
+        //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
         stage.setScene(new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
         stage.show();
         // Line to save map background dynamically generated
