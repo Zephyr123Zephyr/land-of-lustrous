@@ -235,7 +235,7 @@ public class MapViewerScene {
 //        updatePlayerPosition(player.getX(), player.getY());
 //        root.getChildren().add(playerSprite);
         try {
-            Image image = new Image(getClass().getResourceAsStream("/images/gem.png"));
+            Image image = new Image(getClass().getResourceAsStream("/images/player.png"));
             if (image.isError()) {
                 throw new RuntimeException("Error loading player image.");
             }
