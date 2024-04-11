@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
@@ -18,7 +19,18 @@ import java.util.Map;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+// Imports for saving map snapshot
+import javafx.embed.swing.SwingFXUtils;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javafx.application.Platform;
+import javafx.scene.image.WritableImage;
+import javafx.scene.SnapshotParameters;
 import org.example.landoflustrous.model.*;
+
+
 
 public class MapViewerScene {
 
