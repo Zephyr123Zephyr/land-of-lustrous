@@ -1,6 +1,7 @@
 package org.example.landoflustrous.controller;
 
 import javafx.stage.Stage;
+import org.example.landoflustrous.model.ScoreCalculator;
 import org.example.landoflustrous.view.LevelSelectionScene;
 
 public class GameStartController {
@@ -11,9 +12,9 @@ public class GameStartController {
         this.stage = stage;
     }
 
-    public void handlePlay() {
+    public void handlePlay(ScoreCalculator scoreCalculator) {
         LevelSelectionScene levelSelection = new LevelSelectionScene();
-        stage.setScene(levelSelection.createLevelSelectionScene(stage));
+        stage.setScene(levelSelection.createLevelSelectionScene(stage,scoreCalculator));
     }
 
     public void handleExit() {

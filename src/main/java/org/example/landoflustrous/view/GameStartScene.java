@@ -7,16 +7,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import org.example.landoflustrous.controller.GameStartController;
+import org.example.landoflustrous.model.ScoreCalculator;
 
 public class GameStartScene {
     private GameStartController controller;
 
-    public Scene createStartScene(Stage stage) {
+    public Scene createStartScene(Stage stage, ScoreCalculator scoreCalculator) {
         controller = new GameStartController(stage);
 
         Label label = new Label("Lust of Lustrous");
         Button buttonNewGame = new Button("Play");
-        buttonNewGame.setOnAction(e -> controller.handlePlay());
+        buttonNewGame.setOnAction(e -> controller.handlePlay(scoreCalculator));
 
         Button buttonExit = new Button("Exit");
         buttonExit.setOnAction(e -> controller.handleExit());

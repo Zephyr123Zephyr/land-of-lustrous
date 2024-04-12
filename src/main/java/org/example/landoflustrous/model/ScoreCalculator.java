@@ -2,6 +2,9 @@ package org.example.landoflustrous.model;
 
 //import src.OptionBoard;
 
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,6 +48,11 @@ public class ScoreCalculator {
 
     public int getTotalPoint() {
         return totalPoint;
+    }
+
+    public Label createTotalPointLabel(){
+        Label label = new Label("Current Total Point"+this.getTotalPoint());
+        return label;
     }
 
 

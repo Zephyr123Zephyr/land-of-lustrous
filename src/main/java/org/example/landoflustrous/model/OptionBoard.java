@@ -18,6 +18,12 @@ public class OptionBoard {
     public OptionBoard() {
 
     }
+
+    public OptionBoard(int point, boolean successFlg) {
+        this.point = point;
+        this.successFlg = successFlg;
+    }
+
     public VBox createOptionBoard(Route route) {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);

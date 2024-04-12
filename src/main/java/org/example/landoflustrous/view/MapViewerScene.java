@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -93,14 +94,13 @@ public class MapViewerScene {
 //    playerSprite.setVisible(true);
 //        return new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE);
 //    }
-    public void createMapScene(Stage stage) {
+    public void createMapScene(Stage stage, ScoreCalculator scoreCalculator) {
         root = new Pane();
 
         drawMap(root);
         // TODO: this is for testing purpose. Move player instantiation to controller later
         // Instantiate a player character for testing
         PlayerCharacter testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
-
         // Add the player character to the scene
         addPlayerCharacter(root, testPlayer);
         initializeGemSequence();
@@ -123,11 +123,11 @@ public class MapViewerScene {
             tileList.add(new Tile(300, 300, false, false, false));
             tileList.add(new Tile(400, 400, false, false, false));
             tileList.add(new Tile(500, 500, false, false, false));
-
+            scoreCalculator.addPoints(new OptionBoard(10,true));
             Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
             ////需要生成当前地图的Route实例-保存PathList
             //然后绑定表单控件的id来选择
-            createMapScene_AfterChooseOption(stage, path);
+            createMapScene_AfterChooseOption(stage, path,scoreCalculator);
         });
         ((Button) optionBoard.lookup("#routeBButton")).setOnAction(event -> {
             optionBoard.setVisible(false);
@@ -137,11 +137,11 @@ public class MapViewerScene {
             tileList.add(new Tile(300, 300, false, false, false));
             tileList.add(new Tile(400, 400, false, false, false));
             tileList.add(new Tile(500, 500, false, false, false));
-
+            scoreCalculator.addPoints(new OptionBoard(20,true));
             Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
             ////需要生成当前地图的Route实例-保存PathList
             //然后绑定表单控件的id来选择
-            createMapScene_AfterChooseOption(stage, path);
+            createMapScene_AfterChooseOption(stage, path, scoreCalculator);
         });
         ((Button) optionBoard.lookup("#routeCButton")).setOnAction(event -> {
             optionBoard.setVisible(false);
@@ -151,11 +151,11 @@ public class MapViewerScene {
             tileList.add(new Tile(300, 300, false, false, false));
             tileList.add(new Tile(400, 400, false, false, false));
             tileList.add(new Tile(500, 500, false, false, false));
-
+            scoreCalculator.addPoints(new OptionBoard(30,true));
             Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
             ////需要生成当前地图的Route实例-保存PathList
             //然后绑定表单控件的id来选择
-            createMapScene_AfterChooseOption(stage, path);
+            createMapScene_AfterChooseOption(stage, path, scoreCalculator);
         });
         root.getChildren().add(optionBoard);
 
@@ -168,7 +168,7 @@ public class MapViewerScene {
 
     }
 
-    public void createMapScene_AfterChooseOption(Stage stage, Path path) {
+    public void createMapScene_AfterChooseOption(Stage stage, Path path, ScoreCalculator scoreCalculator) {
         Pane root = new Pane();
         drawMap(root);
         // TODO: this is for testing purpose. Move player instantiation to controller later
@@ -181,6 +181,19 @@ public class MapViewerScene {
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
         stage.setScene(new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
+        Label labelPoint = scoreCalculator.createTotalPointLabel();
+        labelPoint.setLayoutX(100);
+        labelPoint.setLayoutY(400);
+        labelPoint.setVisible(false);
+        root.getChildren().add(labelPoint);
+        //返回首页按钮测试累加分数
+        Button buttonTestToHome = new Button("Home");
+        buttonTestToHome.setOnAction(event -> {
+            stage.setScene(new GameStartScene().createStartScene(stage,scoreCalculator));
+        });
+        buttonTestToHome.setVisible(false);
+        root.getChildren().add(buttonTestToHome);
+        //小人走路
         final int[] changeCount = {0};
         int maxChanges = 3;
         Timeline timeline = new Timeline(
@@ -194,9 +207,13 @@ public class MapViewerScene {
                         changeCount[0]++;
                     } else {
                         new Timeline().stop();
+                        labelPoint.setVisible(true);
+                        buttonTestToHome.setVisible(true);
+
                     }
                 })
         );
+
 
 
         timeline.setCycleCount(Timeline.INDEFINITE); // 设置为无限循环

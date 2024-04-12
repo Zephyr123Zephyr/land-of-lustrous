@@ -1,23 +1,24 @@
 package org.example.landoflustrous.view;
 
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.example.landoflustrous.model.ScoreCalculator;
 
 import java.io.InputStream;
 
 public class LevelSelectionScene {
 
-    public Scene createLevelSelectionScene(Stage stage) {
+
+
+
+    public Scene createLevelSelectionScene(Stage stage,ScoreCalculator scoreCalculator) {
         // Create the grid pane for the images
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -39,16 +40,16 @@ public class LevelSelectionScene {
 //        Button button4 = createImageButton(imageView4, () -> openMapPage(stage, "Map 4"));
         // Modified Implementation to interact with updated openMapPage method. Difference: parameter takes 'Level 1' instead of 'Map 1'
         ImageView imageView1 = createImageView("/images/image1.jpg");
-        Button button1 = createImageButton(imageView1, () -> openMapPage(stage, "Level 1"));
+        Button button1 = createImageButton(imageView1, () -> openMapPage(stage, "Level 1",scoreCalculator));
 
         ImageView imageView2 = createImageView("/images/image2.jpg");
-        Button button2 = createImageButton(imageView2, () -> openMapPage(stage, "Level 2"));
+        Button button2 = createImageButton(imageView2, () -> openMapPage(stage, "Level 2",scoreCalculator));
 
         ImageView imageView3 = createImageView("/images/image3.jpg");
-        Button button3 = createImageButton(imageView3, () -> openMapPage(stage, "Level 3"));
+        Button button3 = createImageButton(imageView3, () -> openMapPage(stage, "Level 3",scoreCalculator));
 
         ImageView imageView4 = createImageView("/images/image4.jpg");
-        Button button4 = createImageButton(imageView4, () -> openMapPage(stage, "Level 4"));
+        Button button4 = createImageButton(imageView4, () -> openMapPage(stage, "Level 4",scoreCalculator));
         // Add buttons to the grid instead of ImageViews
         grid.add(button1, 0, 0);
         grid.add(button2, 1, 0);
@@ -58,7 +59,7 @@ public class LevelSelectionScene {
         // Create the "Return" button
         Button returnBtn = new Button("Return");
         // Sets the scene to the main scene when "Return" is clicked. This action should be defined in Main.
-        returnBtn.setOnAction(e -> stage.setScene(new GameStartScene().createStartScene(stage))); // Adjust according to Main class
+        returnBtn.setOnAction(e -> stage.setScene(new GameStartScene().createStartScene(stage, scoreCalculator))); // Adjust according to Main class
 
         // Create the root stack pane and add the grid and the button
         StackPane rootStack = new StackPane();
@@ -102,10 +103,10 @@ public class LevelSelectionScene {
 //        Scene mapScene = mapViewer.createMapScene();
 //        stage.setScene(mapScene);
 //    }
-    private void openMapPage(Stage stage, String levelIdentifier) {
+    private void openMapPage(Stage stage, String levelIdentifier, ScoreCalculator scoreCalculator) {
         MapViewerScene mapViewer = new MapViewerScene(levelIdentifier); // Use the level identifier directly
 //        Scene mapScene = mapViewer.createMapScene();
-        mapViewer.createMapScene(stage);
+        mapViewer.createMapScene(stage,scoreCalculator);
 
     }
 
