@@ -10,6 +10,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.geometry.Insets;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,7 +37,9 @@ import org.example.landoflustrous.model.*;
 public class MapViewerScene {
     private static final int MAX_GEMS_PER_LEVEL = 5; //TODO: HARD CODED. Subject to change for each level (controller's job)
     private Pane root;
+    private VBox base;
     private GameMap gameMap;
+    private static final int statusBoardHeight = 100;
     private static final int TILE_SIZE = 20;
     private ImageView playerSprite;
     private java.util.Queue<Gem> gemQueue;
@@ -104,12 +109,14 @@ public class MapViewerScene {
 //        return new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE);
 //    }
     public void createMapScene(Stage stage, ScoreCalculator scoreCalculator) {
+        base = new javafx.scene.layout.VBox();
         root = new Pane();
 
         drawMap(root);
         // TODO: this is for testing purpose. Move player instantiation to controller later
         // Instantiate a player character for testing
         PlayerCharacter testPlayer;
+
         int lastCollectedIndex = -1;
         for(int i=0;i<currentGemList.size();i++){
             if(currentGemList.get(i).isCollected()){
@@ -124,6 +131,9 @@ public class MapViewerScene {
         }
         // Add the player character to the scene
         addPlayerCharacter(root, testPlayer);
+        Pane statusBoard = createStatusBoard(testPlayer);
+        base.getChildren().add(root); // Add the map pane to the base VBox
+        base.getChildren().add(statusBoard); // Add the status board pane to the base VBox
 
         //生成宝石对象
 
@@ -221,7 +231,7 @@ public class MapViewerScene {
             root.getChildren().add(optionBoard);
         // Line to save map background dynamically generated
         //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
-        stage.setScene(new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
+        stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE + statusBoardHeight));
         stage.show();
         // Line to save map background dynamically generated
         //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
@@ -476,6 +486,24 @@ public class MapViewerScene {
 //                System.out.println(i);
             }
         }
+
+    private Pane createStatusBoard(PlayerCharacter player) {
+        // Create a horizontal box to hold the status labels
+        HBox statusBoard = new HBox(10);
+        statusBoard.setPadding(new Insets(10));
+        statusBoard.setStyle("-fx-background-color: #336699;"); // Set a background color
+
+        // Create labels for the player status
+        Label carbonFootprintLabel = new Label("Carbon Footprint: " + player.getCarbonFootprint());
+        Label timeLeftLabel = new Label("Time Left: " + player.getRemainingFictionalTime());
+        Label scoreLabel = new Label("Score: " + player.getScore());
+
+        // Add labels to the status board
+        statusBoard.getChildren().addAll(carbonFootprintLabel, timeLeftLabel, scoreLabel);
+
+        // Return the status board pane
+        return statusBoard;
+    }
 
 
 
