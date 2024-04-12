@@ -21,7 +21,7 @@ public class OptionBoard {
     public VBox createOptionBoard(Route route) {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
-
+        int test =1;
         // 创建倒计时标签
         Label countdownLabel = new Label("10");
         countdownLabel.setStyle("-fx-font-size: 24px;");
