@@ -37,8 +37,8 @@ public class MapViewerScene {
     private GameMap gameMap;
     private static final int TILE_SIZE = 20;
     private ImageView playerSprite;
-//    private java.util.Queue<Gem> gemQueue;
-//    private ImageView currentGemSprite;
+    private java.util.Queue<Gem> gemQueue;
+        private ImageView currentGemSprite;
     private String levelIdentifier;
 
     private List<Gem> currentGemList;
@@ -429,75 +429,71 @@ public class MapViewerScene {
         int num = (levelIdentifier.toCharArray()[levelIdentifier.length() - 1] - '0') + 1;
         List<Gem> gems = generateGems(num); // Generate 5 gems
         currentGemList = new LinkedList<>(gems);
+//        displayNextGem(levelIdentifier,gemQueue);
+                // Start the timer for the gem's display
+//                startGemTimer(gem);
+//                System.out.println(i);
+    }
+//
+//        return gems;
 
+    private void bindTimer(ImageView imageView, int durationSeconds) {
+        Duration duration = Duration.seconds(durationSeconds);
+        Timeline timeline = new Timeline(new KeyFrame(duration, event -> {
+            // 当时间到达指定值时执行的操作
+            imageView.setVisible(false); // 或者从父节点中移除 imageView
+        }));
+        timeline.play(); // 启动计时器
+    }
+
+    private void displayNextGem(String levelIdentifier, Queue<Gem> gemQueue) {
+
+
+
+
+            if (currentGemSprite != null) {
+                root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
+            }
+
+            Gem gem = this.gemQueue.poll(); // Retrieve and remove the next gem
+            ImageView imageView;
+
+            if (gem != null) {
+                Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
+                imageView = new ImageView(image);
+                imageView.setX(gem.getX() * TILE_SIZE);
+                imageView.setY(gem.getY() * TILE_SIZE);
+                imageView.resize(10,10);
+                bindTimer(imageView,gem.getLiveTime());
+                currentGemSprite = new ImageView(image);
+                currentGemSprite.setX(gem.getX() * TILE_SIZE);
+                currentGemSprite.setY(gem.getY() * TILE_SIZE);
+                currentGemSprite.resize(10,10);
+                root.getChildren().add(imageView);
 
                 // Start the timer for the gem's display
 //                startGemTimer(gem);
 //                System.out.println(i);
-
-    }
-//        displayNextGem(levelIdentifier,gemQueue);
-//        return gems;
-
-        private void bindTimer(ImageView imageView, int durationSeconds) {
-            Duration duration = Duration.seconds(durationSeconds);
-            Timeline timeline = new Timeline(new KeyFrame(duration, event -> {
-                // 当时间到达指定值时执行的操作
-                imageView.setVisible(false); // 或者从父节点中移除 imageView
-            }));
-            timeline.play(); // 启动计时器
+            }
         }
 
-//    private void displayNextGem(String levelIdentifier, Queue<Gem> gemQueue) {
-        //levelIdentifier 需要根据这个levelIdentifier来判断生成几个宝石和打印几个宝石 而不是都打印出来
-        //同时实现了每个宝石绑定一个自己的倒计时
-        //目前测试阶段的逻辑我写成了第几关有几个
 
 
-//        for(int i=0;i<num;i++){
-////            if (currentGemSprite != null) {
-////                root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
-////            }
-//
-//            Gem gem = this.gemQueue.poll(); // Retrieve and remove the next gem
-//            ImageView imageView;
-//
-//            if (gem != null) {
-//                Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
-//                imageView = new ImageView(image);
-//                imageView.setX(gem.getX() * TILE_SIZE);
-//                imageView.setY(gem.getY() * TILE_SIZE);
-//                imageView.resize(10,10);
-//                bindTimer(imageView,gem.getLiveTime());
-////                currentGemSprite = new ImageView(image);
-////                currentGemSprite.setX(gem.getX() * TILE_SIZE);
-////                currentGemSprite.setY(gem.getY() * TILE_SIZE);
-////                currentGemSprite.resize(10,10);
-//                root.getChildren().add(imageView);
-//
-//                // Start the timer for the gem's display
-////                startGemTimer(gem);
-////                System.out.println(i);
-//            }
-//        }
 
-
-//    }
-
-//    private void startGemTimer(Gem gem) {
-//        new Thread(() -> {
-//            try {
-//                Thread.sleep(gem.getLiveTime() * 1000); // Convert seconds to milliseconds
-//                Platform.runLater(() -> {
-//                    if (!gem.isCollected()) { // Check if not collected
-//                        displayNextGem(levelIdentifier, gemQueue); // Display next gem
-//                    }
-//                });
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
-//    }
+    private void startGemTimer(Gem gem) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(gem.getLiveTime() * 1000); // Convert seconds to milliseconds
+                Platform.runLater(() -> {
+                    if (!gem.isCollected()) { // Check if not collected
+                        displayNextGem(levelIdentifier, gemQueue); // Display next gem
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
 
 //    }
