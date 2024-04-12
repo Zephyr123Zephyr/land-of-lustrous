@@ -76,7 +76,7 @@ public class OptionBoard {
         VBox gemInfoBox = new VBox(10);
         gemInfoBox.setAlignment(Pos.CENTER_RIGHT);
         gemInfoBox.setPadding(new Insets(0, 20, 0, 0)); // 设置左边距
-        gemInfoBox.getChildren().add(new Label("这关你能拿到的宝石信息！！！！"));
+        gemInfoBox.getChildren().add(new Label("Gem Info"));
         // 循环遍历gemList并创建Label显示每个Gem的信息
 
             Label gemLabel = new Label("Gem ID: " + gem.getGemID() +

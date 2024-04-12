@@ -11,7 +11,7 @@ import java.util.List;
 
 public class GameApplication extends Application {
     private ScoreCalculator scoreCalculator = new ScoreCalculator();
-    public static List<Gem> GemList;
+
 
     @Override
     public void start(Stage primaryStage) {
