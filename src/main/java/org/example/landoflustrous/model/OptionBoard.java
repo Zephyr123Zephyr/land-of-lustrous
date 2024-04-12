@@ -31,15 +31,13 @@ public class OptionBoard {
         this.successFlg = successFlg;
     }
 
-    public VBox createOptionBoard(Route route, List<Gem> gemList) {
+    public VBox createOptionBoard(Route route, Gem gem) {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         int test =1;
         // 创建倒计时标签
-        int maxTime = -1;
-        for(Gem gem: gemList){
-            maxTime = Math.max(maxTime,gem.getLiveTime());
-        }
+        int maxTime = gem.getLiveTime();
+
         Label countdownLabel = new Label(""+maxTime);
         countdownLabel.setStyle("-fx-font-size: 24px;");
 
@@ -80,14 +78,14 @@ public class OptionBoard {
         gemInfoBox.setPadding(new Insets(0, 20, 0, 0)); // 设置左边距
         gemInfoBox.getChildren().add(new Label("这关你能拿到的宝石信息！！！！"));
         // 循环遍历gemList并创建Label显示每个Gem的信息
-        for (Gem gem : gemList) {
+
             Label gemLabel = new Label("Gem ID: " + gem.getGemID() +
                     ", Type: " + gem.getType() +
                     ", X: " + gem.getX() +
                     ", Y: " + gem.getY() +
                     ", Live Time: " + gem.getLiveTime());
             gemInfoBox.getChildren().add(gemLabel);
-        }
+
         root.getChildren().add(gemInfoBox);
 
 

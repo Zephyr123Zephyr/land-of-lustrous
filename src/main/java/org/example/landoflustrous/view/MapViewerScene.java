@@ -26,6 +26,7 @@ import java.io.File;
 import javafx.application.Platform;
 import javafx.scene.image.WritableImage;
 import javafx.scene.SnapshotParameters;
+import org.example.landoflustrous.GameApplication;
 import org.example.landoflustrous.model.*;
 
 
@@ -36,11 +37,12 @@ public class MapViewerScene {
     private GameMap gameMap;
     private static final int TILE_SIZE = 20;
     private ImageView playerSprite;
-    private java.util.Queue<Gem> gemQueue;
-    private ImageView currentGemSprite;
+//    private java.util.Queue<Gem> gemQueue;
+//    private ImageView currentGemSprite;
     private String levelIdentifier;
 
-    private List<Gem> gemList;
+    private List<Gem> currentGemList;
+    private int  cycle=0;
 
     // A mapping from level identifiers to file paths
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
@@ -57,10 +59,14 @@ public class MapViewerScene {
 //                "rail", List.of("LocalJavaGame/MapEdit/leve2/rail.txt"),
 //                "bus", List.of("MapEdit/leve2/bus.txt")));
         // Add mappings for other levels as needed
+
+
     }
 
     public MapViewerScene(String levelIdentifier) {
-        this.levelIdentifier=levelIdentifier;
+        this.levelIdentifier = levelIdentifier;
+
+        
         Map<String, Object> paths = levelPathMapping.get(levelIdentifier);
         if (paths != null) {
             try {
@@ -71,6 +77,7 @@ public class MapViewerScene {
 
                 // Pass the extracted paths to the GameMap constructor
                 this.gameMap = new GameMap(mapPath, railPaths, busPaths);
+                initializeGemSequence();//gemList本关的在该函数中存储完毕
             } catch (IOException e) {
                 e.printStackTrace(); // TODO: Consider a better error handling strategy
             } catch (ClassCastException e) {
@@ -79,6 +86,7 @@ public class MapViewerScene {
         } else {
             throw new IllegalArgumentException("Invalid level identifier: " + levelIdentifier);
         }
+
     }
 
     //    public Scene createMapScene() {
@@ -101,76 +109,116 @@ public class MapViewerScene {
         drawMap(root);
         // TODO: this is for testing purpose. Move player instantiation to controller later
         // Instantiate a player character for testing
-        PlayerCharacter testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
+        PlayerCharacter testPlayer;
+        int lastCollectedIndex = -1;
+        for(int i=0;i<currentGemList.size();i++){
+            if(currentGemList.get(i).isCollected()){
+                lastCollectedIndex=i;
+                break;
+            }
+        }
+        if(lastCollectedIndex==-1){
+            testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
+        }else{
+            testPlayer = new PlayerCharacter("TestPlayer", currentGemList.get(lastCollectedIndex).getX(), currentGemList.get(lastCollectedIndex).getY(), 100, null, null, 1); // Adjust the parameters as needed
+        }
         // Add the player character to the scene
         addPlayerCharacter(root, testPlayer);
 
         //生成宝石对象
-        initializeGemSequence();//gemList本关的在该函数中存储完毕
+
 
 
         playerSprite.toFront();
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
 
+
         //optionboard code
-        Pane optionBoard = new OptionBoard().createOptionBoard(new Route(null),gemList);//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
-        optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
-            // 在这里执行属性变化时的操作
-            Button buttonTestToHome = new Button("Home");
-            buttonTestToHome.setOnAction(event -> {
-                stage.setScene(new GameStartScene().createStartScene(stage,scoreCalculator));
+            int i=cycle;
+            Gem currentGem = currentGemList.get(i);
+            Image image = new Image(getClass().getResourceAsStream("/images/" + currentGem.getType() + ".png"));
+            ImageView imageView = new ImageView(image);
+            imageView.setX(currentGem.getX() * TILE_SIZE);
+            imageView.setY(currentGem.getY() * TILE_SIZE);
+            imageView.resize(10, 10);
+            bindTimer(imageView, currentGem.getLiveTime());
+            root.getChildren().add(imageView);
+            Pane optionBoard = new OptionBoard().createOptionBoard(new Route(null), currentGem);//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
+            Label labelForClick = new Label("UnClick");
+            labelForClick.setVisible(false);
+            root.getChildren().add(labelForClick);
+            if(i==currentGemList.size()-1){
+                optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
+                    // 在这里执行属性变化时的操作
+                    Button buttonTestToHome = new Button("Home");
+                    buttonTestToHome.setOnAction(event -> {
+                        stage.setScene(new GameStartScene().createStartScene(stage, scoreCalculator));
+                    });
+                    root.getChildren().add(buttonTestToHome);
+
+                });
+            }else{
+                optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
+                    // 在这里执行属性变化时的操作
+                   String s = labelForClick.textProperty().getValue();
+                    if(labelForClick.textProperty().getValue().equals("UnClick")){
+                       cycle++;
+                       createMapScene(stage, scoreCalculator);
+                   }
+
+                });
+            }
+
+            optionBoard.setLayoutX(200);
+            optionBoard.setLayoutY(200);
+
+
+            //暂定是三个 可以可以改代码通过循环绑定所有代码
+            ((Button) optionBoard.lookup("#routeAButton")).setOnAction(event -> {
+
+                labelForClick.setText("click");
+                optionBoard.setVisible(false);
+                Gem temp = currentGemList.get(cycle);
+                temp.collected=true;
+                currentGemList.set(cycle,temp);
+                List<Tile> tileList = new LinkedList<Tile>();
+                tileList.add(new Tile(currentGem.getX()* TILE_SIZE, currentGem.getY()* TILE_SIZE, false, false, false));
+                scoreCalculator.addPoints(new OptionBoard(10, 10, true));
+                Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
+                ////需要生成当前地图的Route实例-保存PathList
+                //然后绑定表单控件的id来选择
+                createMapScene_AfterChooseOption(stage, path, scoreCalculator,currentGem);
             });
-            root.getChildren().add(buttonTestToHome);
-
-        });
-        optionBoard.setLayoutX(200);
-        optionBoard.setLayoutY(200);
-        //暂定是三个 可以可以改代码通过循环绑定所有代码
-        ((Button) optionBoard.lookup("#routeAButton")).setOnAction(event -> {
-            optionBoard.setVisible(false);
-            List<Tile> tileList = new LinkedList<Tile>();
-            tileList.add(new Tile(100, 100, false, false, false));
-            tileList.add(new Tile(200, 200, false, false, false));
-            tileList.add(new Tile(300, 300, false, false, false));
-            tileList.add(new Tile(400, 400, false, false, false));
-            tileList.add(new Tile(500, 500, false, false, false));
-            scoreCalculator.addPoints(new OptionBoard(10,10,true));
-            Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
-            ////需要生成当前地图的Route实例-保存PathList
-            //然后绑定表单控件的id来选择
-            createMapScene_AfterChooseOption(stage, path,scoreCalculator);
-        });
-        ((Button) optionBoard.lookup("#routeBButton")).setOnAction(event -> {
-            optionBoard.setVisible(false);
-            List<Tile> tileList = new LinkedList<Tile>();
-            tileList.add(new Tile(100, 100, false, false, false));
-            tileList.add(new Tile(200, 200, false, false, false));
-            tileList.add(new Tile(300, 300, false, false, false));
-            tileList.add(new Tile(400, 400, false, false, false));
-            tileList.add(new Tile(500, 500, false, false, false));
-            scoreCalculator.addPoints(new OptionBoard(20,20,true));
-            Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
-            ////需要生成当前地图的Route实例-保存PathList
-            //然后绑定表单控件的id来选择
-            createMapScene_AfterChooseOption(stage, path, scoreCalculator);
-        });
-        ((Button) optionBoard.lookup("#routeCButton")).setOnAction(event -> {
-            optionBoard.setVisible(false);
-            List<Tile> tileList = new LinkedList<Tile>();
-            tileList.add(new Tile(100, 100, false, false, false));
-            tileList.add(new Tile(200, 200, false, false, false));
-            tileList.add(new Tile(300, 300, false, false, false));
-            tileList.add(new Tile(400, 400, false, false, false));
-            tileList.add(new Tile(500, 500, false, false, false));
-            scoreCalculator.addPoints(new OptionBoard(30,30,true));
-            Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
-            ////需要生成当前地图的Route实例-保存PathList
-            //然后绑定表单控件的id来选择
-            createMapScene_AfterChooseOption(stage, path, scoreCalculator);
-        });
-        root.getChildren().add(optionBoard);
-
+            ((Button) optionBoard.lookup("#routeBButton")).setOnAction(event -> {
+                labelForClick.setText("click");
+                optionBoard.setVisible(false);
+                Gem temp = currentGemList.get(cycle);
+                temp.collected=true;
+                currentGemList.set(cycle,temp);
+                List<Tile> tileList = new LinkedList<Tile>();
+                tileList.add(new Tile(currentGem.getX()* TILE_SIZE, currentGem.getY()* TILE_SIZE, false, false, false));
+                scoreCalculator.addPoints(new OptionBoard(20, 20, true));
+                Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
+                ////需要生成当前地图的Route实例-保存PathList
+                //然后绑定表单控件的id来选择
+                createMapScene_AfterChooseOption(stage, path, scoreCalculator,currentGem);
+            });
+            ((Button) optionBoard.lookup("#routeCButton")).setOnAction(event -> {
+                labelForClick.setText("click");
+                optionBoard.setVisible(false);
+                Gem temp = currentGemList.get(cycle);
+                temp.collected=true;
+                currentGemList.set(cycle,temp);
+                List<Tile> tileList = new LinkedList<Tile>();
+                tileList.add(new Tile(currentGem.getX()* TILE_SIZE, currentGem.getY()* TILE_SIZE, false, false, false));
+                scoreCalculator.addPoints(new OptionBoard(30, 30, true));
+                Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
+                ////需要生成当前地图的Route实例-保存PathList
+                //然后绑定表单控件的id来选择
+                createMapScene_AfterChooseOption(stage, path, scoreCalculator,currentGem);
+            });
+            root.getChildren().add(optionBoard);
         // Line to save map background dynamically generated
         //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
         stage.setScene(new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
@@ -180,18 +228,38 @@ public class MapViewerScene {
 
     }
 
-    public void createMapScene_AfterChooseOption(Stage stage, Path path, ScoreCalculator scoreCalculator) {
+    public void createMapScene_AfterChooseOption(Stage stage, Path path, ScoreCalculator scoreCalculator,Gem gem) {
         Pane root = new Pane();
         drawMap(root);
         // TODO: this is for testing purpose. Move player instantiation to controller later
         // Instantiate a player character for testing
-        PlayerCharacter testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
+        PlayerCharacter testPlayer;
+        int lastCollectedIndex = -1;
+        for(int i=0;i<currentGemList.size();i++){
+            if(currentGemList.get(i).isCollected()){
+                lastCollectedIndex=i;
+                break;
+            }
+        }
+        if(lastCollectedIndex==-1){
+            testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
+        }else{
+            testPlayer = new PlayerCharacter("TestPlayer", currentGemList.get(lastCollectedIndex).getX(), currentGemList.get(lastCollectedIndex).getY(), 100, null, null, 1); // Adjust the parameters as needed
+        }
 
         // Add the player character to the scene
         addPlayerCharacter(root, testPlayer);
         playerSprite.toFront();
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
+        //Add 本关的宝石在scene中 此时不会消失
+        ImageView imageView;
+        Image image = new Image(getClass().getResourceAsStream("/images/" + gem.getType() + ".png"));
+        imageView = new ImageView(image);
+        imageView.setX(gem.getX() * TILE_SIZE);
+        imageView.setY(gem.getY() * TILE_SIZE);
+        imageView.resize(10, 10);
+        root.getChildren().add(imageView);
         //显示分数
         Label labelCarbonPoint = scoreCalculator.createTotalCarbonPointLabel();
         labelCarbonPoint.setLayoutX(100);
@@ -206,27 +274,35 @@ public class MapViewerScene {
         //返回首页按钮测试累加分数
         Button buttonTestToHome = new Button("Home");
         buttonTestToHome.setOnAction(event -> {
-            stage.setScene(new GameStartScene().createStartScene(stage,scoreCalculator));
+            stage.setScene(new GameStartScene().createStartScene(stage, scoreCalculator));
         });
         buttonTestToHome.setVisible(false);
         root.getChildren().add(buttonTestToHome);
         //小人走路
         final int[] changeCount = {0};
-        int maxChanges = 3;
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(1), event -> {
                     if (changeCount[0] < path.getTileList().size()) {
                         double newX = path.getTileList().get(changeCount[0]).x; // 增加水平方向的坐标
                         double newY = path.getTileList().get(changeCount[0]).y; // 增加垂直方向的坐标
                         //循环条件可以改成便利Path中的Tile的X Y坐标 当前时间间隔是0.5秒
-                        playerSprite.setLayoutX(newX);
-                        playerSprite.setLayoutY(newY);
+                        playerSprite.setX(newX);
+                        playerSprite.setY(newY);
                         changeCount[0]++;
                     } else {
                         new Timeline().stop();
-                        labelGemPoint.setVisible(true);
-                        labelCarbonPoint.setVisible(true);
-                        buttonTestToHome.setVisible(true);
+                        imageView.setVisible(false);
+
+                        if(cycle==currentGemList.size()-1){
+                            labelGemPoint.setVisible(true);
+                            labelCarbonPoint.setVisible(true);
+                            buttonTestToHome.setVisible(true);
+                        }else{
+                            cycle++;
+                            createMapScene(stage,scoreCalculator);
+
+                        }
+
 
                     }
                 })
@@ -328,12 +404,13 @@ public class MapViewerScene {
             System.out.println("Failed to save map.");
         }
     }
-    private List<Gem> generateGems(int count) {
-        List<Gem> gems = new java.util.ArrayList<>();
+    private  List<Gem> generateGems(int count) {
+        List<Gem> gems = new ArrayList<Gem>();
         for (int i = 0; i < count; i++) {
             Gem newGem = null;
             do {
-                newGem = new Gem(); // Gem constructor assigns type, x, and y randomly
+                newGem = new Gem();
+                newGem.collected=false;// Gem constructor assigns type, x, and y randomly
             } while (gameMap.getTile(newGem.getX(), newGem.getY()).isForbidden);
             gems.add(newGem);
         }
@@ -347,72 +424,81 @@ public class MapViewerScene {
         }
         return gems;
     }
-    public void initializeGemSequence() {
-        List<Gem> gems = generateGems(5); // Generate 5 gems
-        gemQueue = new LinkedList<>(gems);
-        displayNextGem(levelIdentifier,gemQueue);
-//        return gems;
-    }
 
-    private void displayNextGem(String levelIdentifier, Queue<Gem> gemQueue) {
-        //levelIdentifier 需要根据这个levelIdentifier来判断生成几个宝石和打印几个宝石 而不是都打印出来
-        //同时实现了每个宝石绑定一个自己的倒计时
-        //目前测试阶段的逻辑我写成了第几关有几个
-        int num = (levelIdentifier.toCharArray()[levelIdentifier.length()-1]-'0')+1;
-        if(gemList==null||gemList.size()!=0){
-            gemList = new LinkedList<Gem>();
-        }
-        for(int i=0;i<num;i++){
-//            if (currentGemSprite != null) {
-//                root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
-//            }
+    public  void initializeGemSequence() {
+        int num = (levelIdentifier.toCharArray()[levelIdentifier.length() - 1] - '0') + 1;
+        List<Gem> gems = generateGems(num); // Generate 5 gems
+        currentGemList = new LinkedList<>(gems);
 
-            Gem gem = this.gemQueue.poll(); // Retrieve and remove the next gem
-            ImageView imageView;
-            gemList.add(gem);
-            if (gem != null) {
-                Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
-                imageView = new ImageView(image);
-                imageView.setX(gem.getX() * TILE_SIZE);
-                imageView.setY(gem.getY() * TILE_SIZE);
-                imageView.resize(10,10);
-                bindTimer(imageView,gem.getLiveTime());
-//                currentGemSprite = new ImageView(image);
-//                currentGemSprite.setX(gem.getX() * TILE_SIZE);
-//                currentGemSprite.setY(gem.getY() * TILE_SIZE);
-//                currentGemSprite.resize(10,10);
-                root.getChildren().add(imageView);
 
                 // Start the timer for the gem's display
 //                startGemTimer(gem);
 //                System.out.println(i);
-            }
+
+    }
+//        displayNextGem(levelIdentifier,gemQueue);
+//        return gems;
+
+        private void bindTimer(ImageView imageView, int durationSeconds) {
+            Duration duration = Duration.seconds(durationSeconds);
+            Timeline timeline = new Timeline(new KeyFrame(duration, event -> {
+                // 当时间到达指定值时执行的操作
+                imageView.setVisible(false); // 或者从父节点中移除 imageView
+            }));
+            timeline.play(); // 启动计时器
         }
 
+//    private void displayNextGem(String levelIdentifier, Queue<Gem> gemQueue) {
+        //levelIdentifier 需要根据这个levelIdentifier来判断生成几个宝石和打印几个宝石 而不是都打印出来
+        //同时实现了每个宝石绑定一个自己的倒计时
+        //目前测试阶段的逻辑我写成了第几关有几个
 
-    }
 
-    private void startGemTimer(Gem gem) {
-        new Thread(() -> {
-            try {
-                Thread.sleep(gem.getLiveTime() * 1000); // Convert seconds to milliseconds
-                Platform.runLater(() -> {
-                    if (!gem.isCollected()) { // Check if not collected
-                        displayNextGem(levelIdentifier, gemQueue); // Display next gem
-                    }
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-    private void bindTimer(ImageView imageView, int durationSeconds) {
-        Duration duration = Duration.seconds(durationSeconds);
-        Timeline timeline = new Timeline(new KeyFrame(duration, event -> {
-            // 当时间到达指定值时执行的操作
-            imageView.setVisible(false); // 或者从父节点中移除 imageView
-        }));
-        timeline.play(); // 启动计时器
-    }
+//        for(int i=0;i<num;i++){
+////            if (currentGemSprite != null) {
+////                root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
+////            }
+//
+//            Gem gem = this.gemQueue.poll(); // Retrieve and remove the next gem
+//            ImageView imageView;
+//
+//            if (gem != null) {
+//                Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
+//                imageView = new ImageView(image);
+//                imageView.setX(gem.getX() * TILE_SIZE);
+//                imageView.setY(gem.getY() * TILE_SIZE);
+//                imageView.resize(10,10);
+//                bindTimer(imageView,gem.getLiveTime());
+////                currentGemSprite = new ImageView(image);
+////                currentGemSprite.setX(gem.getX() * TILE_SIZE);
+////                currentGemSprite.setY(gem.getY() * TILE_SIZE);
+////                currentGemSprite.resize(10,10);
+//                root.getChildren().add(imageView);
+//
+//                // Start the timer for the gem's display
+////                startGemTimer(gem);
+////                System.out.println(i);
+//            }
+//        }
 
-    }
+
+//    }
+
+//    private void startGemTimer(Gem gem) {
+//        new Thread(() -> {
+//            try {
+//                Thread.sleep(gem.getLiveTime() * 1000); // Convert seconds to milliseconds
+//                Platform.runLater(() -> {
+//                    if (!gem.isCollected()) { // Check if not collected
+//                        displayNextGem(levelIdentifier, gemQueue); // Display next gem
+//                    }
+//                });
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+//    }
+
+
+//    }
+}
