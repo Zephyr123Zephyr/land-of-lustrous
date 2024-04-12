@@ -37,7 +37,11 @@ import org.example.landoflustrous.model.*;
 public class MapViewerScene {
     private static final int MAX_GEMS_PER_LEVEL = 5; //TODO: HARD CODED. Subject to change for each level (controller's job)
     private Pane root;
-    private VBox base;
+    private VBox base;// the base of map and status board
+
+    private Label carbonFootprintLabel;
+    private Label timeLeftLabel;
+    private Label scoreLabel;
     private GameMap gameMap;
     private static final int statusBoardHeight = 100;
     private static final int TILE_SIZE = 20;
@@ -494,15 +498,29 @@ public class MapViewerScene {
         statusBoard.setStyle("-fx-background-color: #336699;"); // Set a background color
 
         // Create labels for the player status
-        Label carbonFootprintLabel = new Label("Carbon Footprint: " + player.getCarbonFootprint());
-        Label timeLeftLabel = new Label("Time Left: " + player.getRemainingFictionalTime());
-        Label scoreLabel = new Label("Score: " + player.getScore());
+        carbonFootprintLabel = new Label("Carbon Footprint: " + player.getCarbonFootprint());
+        timeLeftLabel = new Label("Time Left: " + player.getRemainingFictionalTime());
+        scoreLabel = new Label("Score: " + player.getScore());
 
         // Add labels to the status board
         statusBoard.getChildren().addAll(carbonFootprintLabel, timeLeftLabel, scoreLabel);
 
         // Return the status board pane
         return statusBoard;
+    }
+
+    // Methods to update status board
+    public void updateStatusBoard(PlayerCharacter player) {
+        // Assuming you have getter methods in PlayerCharacter
+        carbonFootprintLabel.setText("Carbon Footprint: " + player.getCarbonFootprint());
+        timeLeftLabel.setText("Time Left: " + player.getRemainingFictionalTime());
+        scoreLabel.setText("Score: " + player.getScore());
+    }
+
+    //CONTROLLER Call this method whenever you update the player character's attributes
+    public void playerAttributesChanged(PlayerCharacter player) {
+        // Run the update in the UI thread
+        Platform.runLater(() -> updateStatusBoard(player));
     }
 
 
