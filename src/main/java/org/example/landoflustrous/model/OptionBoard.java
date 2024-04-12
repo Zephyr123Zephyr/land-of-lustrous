@@ -2,16 +2,22 @@ package org.example.landoflustrous.model;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.landoflustrous.view.GameStartScene;
+
+import java.util.List;
 
 public class OptionBoard {
     private int optionBoardID;//自己的ID
     private int gemID;//针对哪个ID的宝石
-    private int point;//携带多少分
+    private int gemPoint;//携带多少宝石分
+    private int carbonPoint;//携带多少碳分
     private int lifeTime;//用户选择时间
     private boolean successFlg;//用户是否选择成功
 
@@ -19,17 +25,22 @@ public class OptionBoard {
 
     }
 
-    public OptionBoard(int point, boolean successFlg) {
-        this.point = point;
+    public OptionBoard(int gemPoint, int carbonPoint, boolean successFlg) {
+        this.gemPoint = gemPoint;
+        this.carbonPoint = carbonPoint;
         this.successFlg = successFlg;
     }
 
-    public VBox createOptionBoard(Route route) {
+    public VBox createOptionBoard(Route route, List<Gem> gemList) {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         int test =1;
         // 创建倒计时标签
-        Label countdownLabel = new Label("10");
+        int maxTime = -1;
+        for(Gem gem: gemList){
+            maxTime = Math.max(maxTime,gem.getLiveTime());
+        }
+        Label countdownLabel = new Label(""+maxTime);
         countdownLabel.setStyle("-fx-font-size: 24px;");
 
         // 创建表单内容
@@ -54,12 +65,32 @@ public class OptionBoard {
         Timeline countdownTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(1), e -> updateCountdown(countdownLabel))
         );
-        countdownTimeline.setCycleCount(10); // 设置动画循环次数为10，即10秒
+
+        countdownTimeline.setCycleCount(maxTime); // 设置动画循环次数为当前关卡宝石的最大持续时间
+
         countdownTimeline.setOnFinished(e -> {
             root.setVisible(false); // 倒计时结束后隐藏表单面板
         });
 
         countdownTimeline.play(); // 启动倒计时动画
+
+        // 创建用于显示gemList内容的VBox
+        VBox gemInfoBox = new VBox(10);
+        gemInfoBox.setAlignment(Pos.CENTER_RIGHT);
+        gemInfoBox.setPadding(new Insets(0, 20, 0, 0)); // 设置左边距
+        gemInfoBox.getChildren().add(new Label("这关你能拿到的宝石信息！！！！"));
+        // 循环遍历gemList并创建Label显示每个Gem的信息
+        for (Gem gem : gemList) {
+            Label gemLabel = new Label("Gem ID: " + gem.getGemID() +
+                    ", Type: " + gem.getType() +
+                    ", X: " + gem.getX() +
+                    ", Y: " + gem.getY() +
+                    ", Live Time: " + gem.getLiveTime());
+            gemInfoBox.getChildren().add(gemLabel);
+        }
+        root.getChildren().add(gemInfoBox);
+
+
 
         return root;
     }
@@ -70,13 +101,7 @@ public class OptionBoard {
             countdownLabel.setText(Integer.toString(secondsLeft));
         }
     }
-    public OptionBoard(int optionBoardID,int gemID, int point, int lifeTime, boolean successFlg) {
-        this.optionBoardID = optionBoardID;//API根据数据库里optionBoardID数量 设置ID
-        this.gemID = gemID;//API要传给我们这个borad服务哪个ID的宝石
-        this.point = point;//宝石自己携带的属性
-        this.lifeTime = lifeTime;//宝石自己携带属性
-        this.successFlg = successFlg;//初始化设为false，前端应该监听用户是否点击来判断是否设为有校
-    }
+
 
     public int getOptionBoardID() {
         return optionBoardID;
@@ -94,12 +119,20 @@ public class OptionBoard {
         this.gemID = gemID;
     }
 
-    public int getPoint() {
-        return point;
+    public int getGemPoint() {
+        return gemPoint;
     }
 
-    public void setPoint(int point) {
-        this.point = point;
+    public void setGemPoint(int gemPoint) {
+        this.gemPoint = gemPoint;
+    }
+
+    public int getCarbonPoint() {
+        return carbonPoint;
+    }
+
+    public void setCarbonPoint(int carbonPoint) {
+        this.carbonPoint = carbonPoint;
     }
 
     public int getLifeTime() {

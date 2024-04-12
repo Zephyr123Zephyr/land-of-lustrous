@@ -12,10 +12,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -41,6 +38,9 @@ public class MapViewerScene {
     private ImageView playerSprite;
     private java.util.Queue<Gem> gemQueue;
     private ImageView currentGemSprite;
+    private String levelIdentifier;
+
+    private List<Gem> gemList;
 
     // A mapping from level identifiers to file paths
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
@@ -60,6 +60,7 @@ public class MapViewerScene {
     }
 
     public MapViewerScene(String levelIdentifier) {
+        this.levelIdentifier=levelIdentifier;
         Map<String, Object> paths = levelPathMapping.get(levelIdentifier);
         if (paths != null) {
             try {
@@ -103,7 +104,9 @@ public class MapViewerScene {
         PlayerCharacter testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
         // Add the player character to the scene
         addPlayerCharacter(root, testPlayer);
-        initializeGemSequence();
+
+        //生成宝石对象
+        initializeGemSequence();//gemList本关的在该函数中存储完毕
 
 
         playerSprite.toFront();
@@ -111,7 +114,16 @@ public class MapViewerScene {
         playerSprite.setVisible(true);
 
         //optionboard code
-        Pane optionBoard = new OptionBoard().createOptionBoard(new Route(null));//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
+        Pane optionBoard = new OptionBoard().createOptionBoard(new Route(null),gemList);//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
+        optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
+            // 在这里执行属性变化时的操作
+            Button buttonTestToHome = new Button("Home");
+            buttonTestToHome.setOnAction(event -> {
+                stage.setScene(new GameStartScene().createStartScene(stage,scoreCalculator));
+            });
+            root.getChildren().add(buttonTestToHome);
+
+        });
         optionBoard.setLayoutX(200);
         optionBoard.setLayoutY(200);
         //暂定是三个 可以可以改代码通过循环绑定所有代码
@@ -123,7 +135,7 @@ public class MapViewerScene {
             tileList.add(new Tile(300, 300, false, false, false));
             tileList.add(new Tile(400, 400, false, false, false));
             tileList.add(new Tile(500, 500, false, false, false));
-            scoreCalculator.addPoints(new OptionBoard(10,true));
+            scoreCalculator.addPoints(new OptionBoard(10,10,true));
             Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
             ////需要生成当前地图的Route实例-保存PathList
             //然后绑定表单控件的id来选择
@@ -137,7 +149,7 @@ public class MapViewerScene {
             tileList.add(new Tile(300, 300, false, false, false));
             tileList.add(new Tile(400, 400, false, false, false));
             tileList.add(new Tile(500, 500, false, false, false));
-            scoreCalculator.addPoints(new OptionBoard(20,true));
+            scoreCalculator.addPoints(new OptionBoard(20,20,true));
             Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
             ////需要生成当前地图的Route实例-保存PathList
             //然后绑定表单控件的id来选择
@@ -151,7 +163,7 @@ public class MapViewerScene {
             tileList.add(new Tile(300, 300, false, false, false));
             tileList.add(new Tile(400, 400, false, false, false));
             tileList.add(new Tile(500, 500, false, false, false));
-            scoreCalculator.addPoints(new OptionBoard(30,true));
+            scoreCalculator.addPoints(new OptionBoard(30,30,true));
             Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
             ////需要生成当前地图的Route实例-保存PathList
             //然后绑定表单控件的id来选择
@@ -180,12 +192,17 @@ public class MapViewerScene {
         playerSprite.toFront();
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
-        stage.setScene(new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
-        Label labelPoint = scoreCalculator.createTotalPointLabel();
-        labelPoint.setLayoutX(100);
-        labelPoint.setLayoutY(400);
-        labelPoint.setVisible(false);
-        root.getChildren().add(labelPoint);
+        //显示分数
+        Label labelCarbonPoint = scoreCalculator.createTotalCarbonPointLabel();
+        labelCarbonPoint.setLayoutX(100);
+        labelCarbonPoint.setLayoutY(400);
+        labelCarbonPoint.setVisible(false);
+        root.getChildren().add(labelCarbonPoint);
+        Label labelGemPoint = scoreCalculator.createTotalGemPointLabel();
+        labelGemPoint.setLayoutX(100);
+        labelGemPoint.setLayoutY(500);
+        labelGemPoint.setVisible(false);
+        root.getChildren().add(labelGemPoint);
         //返回首页按钮测试累加分数
         Button buttonTestToHome = new Button("Home");
         buttonTestToHome.setOnAction(event -> {
@@ -207,7 +224,8 @@ public class MapViewerScene {
                         changeCount[0]++;
                     } else {
                         new Timeline().stop();
-                        labelPoint.setVisible(true);
+                        labelGemPoint.setVisible(true);
+                        labelCarbonPoint.setVisible(true);
                         buttonTestToHome.setVisible(true);
 
                     }
@@ -215,7 +233,7 @@ public class MapViewerScene {
         );
 
 
-
+        stage.setScene(new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
         timeline.setCycleCount(Timeline.INDEFINITE); // 设置为无限循环
         timeline.play(); // 启动时间轴
         stage.show();
@@ -332,26 +350,46 @@ public class MapViewerScene {
     public void initializeGemSequence() {
         List<Gem> gems = generateGems(5); // Generate 5 gems
         gemQueue = new LinkedList<>(gems);
-        displayNextGem();
+        displayNextGem(levelIdentifier,gemQueue);
+//        return gems;
     }
 
-    private void displayNextGem() {
-        if (currentGemSprite != null) {
-            root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
+    private void displayNextGem(String levelIdentifier, Queue<Gem> gemQueue) {
+        //levelIdentifier 需要根据这个levelIdentifier来判断生成几个宝石和打印几个宝石 而不是都打印出来
+        //同时实现了每个宝石绑定一个自己的倒计时
+        //目前测试阶段的逻辑我写成了第几关有几个
+        int num = (levelIdentifier.toCharArray()[levelIdentifier.length()-1]-'0')+1;
+        if(gemList==null||gemList.size()!=0){
+            gemList = new LinkedList<Gem>();
+        }
+        for(int i=0;i<num;i++){
+//            if (currentGemSprite != null) {
+//                root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
+//            }
+
+            Gem gem = this.gemQueue.poll(); // Retrieve and remove the next gem
+            ImageView imageView;
+            gemList.add(gem);
+            if (gem != null) {
+                Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
+                imageView = new ImageView(image);
+                imageView.setX(gem.getX() * TILE_SIZE);
+                imageView.setY(gem.getY() * TILE_SIZE);
+                imageView.resize(10,10);
+                bindTimer(imageView,gem.getLiveTime());
+//                currentGemSprite = new ImageView(image);
+//                currentGemSprite.setX(gem.getX() * TILE_SIZE);
+//                currentGemSprite.setY(gem.getY() * TILE_SIZE);
+//                currentGemSprite.resize(10,10);
+                root.getChildren().add(imageView);
+
+                // Start the timer for the gem's display
+//                startGemTimer(gem);
+//                System.out.println(i);
+            }
         }
 
-        Gem gem = gemQueue.poll(); // Retrieve and remove the next gem
-        if (gem != null) {
-            Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
-            currentGemSprite = new ImageView(image);
-            currentGemSprite.setX(gem.getX() * TILE_SIZE);
-            currentGemSprite.setY(gem.getY() * TILE_SIZE);
-            currentGemSprite.resize(10,10);
-            root.getChildren().add(currentGemSprite);
 
-            // Start the timer for the gem's display
-            startGemTimer(gem);
-        }
     }
 
     private void startGemTimer(Gem gem) {
@@ -360,13 +398,21 @@ public class MapViewerScene {
                 Thread.sleep(gem.getLiveTime() * 1000); // Convert seconds to milliseconds
                 Platform.runLater(() -> {
                     if (!gem.isCollected()) { // Check if not collected
-                        displayNextGem(); // Display next gem
+                        displayNextGem(levelIdentifier, gemQueue); // Display next gem
                     }
                 });
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
+    }
+    private void bindTimer(ImageView imageView, int durationSeconds) {
+        Duration duration = Duration.seconds(durationSeconds);
+        Timeline timeline = new Timeline(new KeyFrame(duration, event -> {
+            // 当时间到达指定值时执行的操作
+            imageView.setVisible(false); // 或者从父节点中移除 imageView
+        }));
+        timeline.play(); // 启动计时器
     }
 
     }
