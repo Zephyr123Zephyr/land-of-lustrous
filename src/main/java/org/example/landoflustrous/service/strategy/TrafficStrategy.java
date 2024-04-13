@@ -15,8 +15,6 @@ public abstract class TrafficStrategy {
         this.gameMap = gameMap;
     }
 
-    public abstract Route navigate(Coordinated start, Coordinated end);
-
     public Path findPathRoaming(Coordinated start, Coordinated end, TrafficType trafficType) {
         Map<Tile, Integer> costMap = new HashMap<>();
         Map<Tile, Tile> parentMap = new HashMap<>();

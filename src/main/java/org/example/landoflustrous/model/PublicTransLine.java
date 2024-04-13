@@ -3,11 +3,23 @@ package org.example.landoflustrous.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class PublicTransLine {
+public class PublicTransLine extends Path {
 
-    TrafficType trafficType;
-    List<Tile> tileList = new ArrayList<>();
-    List<Station> stations = new ArrayList<>();
-    int interval;
+    private final List<Station> stations;
+    private final String lineCode;
+
+    public PublicTransLine(TrafficType trafficType, int id) {
+        super(trafficType);
+        this.stations = new ArrayList<>();
+        this.lineCode = trafficType.toString() + id;
+    }
+
+    public String getLineCode() {
+        return lineCode;
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
 
 }

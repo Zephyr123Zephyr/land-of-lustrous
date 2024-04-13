@@ -9,8 +9,7 @@ public class Tile extends Coordinated {
     public boolean isForbidden;
 
     public Tile(int x, int y, boolean isRail, boolean isRoad, boolean isForbidden) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.isRail = isRail;
         this.isRoad = isRoad;
         this.isForbidden = isForbidden;

@@ -33,8 +33,8 @@ public class Constant {
     // This method calculates the estimated shifting time between two trafficTypes.
     public static int timeCostOnShift(TrafficType trafficType1, TrafficType trafficType2) {
         if (trafficType2.equals(TrafficType.WALK)) {
-            if (trafficType1.equals(TrafficType.BIKE)) return 10;  // Return a bike
-            else return 0;
+            if (trafficType1.equals(TrafficType.WALK) || trafficType1.equals(TrafficType.CAR)) return 1;
+            else return 10;
         } else if (trafficType2.equals(TrafficType.BIKE)) return 10;  // Rent a bike
         else if (trafficType2.equals(TrafficType.CAR)) return 50;  // Wait for a taxi
         else return 100;  // Wait for a bus or train

@@ -10,7 +10,7 @@ public enum TrafficType {
             case BIKE -> "bike";
             case BUS -> "bus";
             case CAR -> "car";
-            case TRAIN -> "train";
+            case TRAIN -> "luas";
         };
     }
 }

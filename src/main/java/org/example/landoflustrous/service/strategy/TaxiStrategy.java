@@ -14,10 +14,12 @@ public class TaxiStrategy extends TrafficStrategy {
         super(gameMap);
     }
 
-    @Override
     public Route navigate(Coordinated start, Coordinated end) {
+        return navigate(start, end, findPathRoaming(start, end, TrafficType.WALK));
+    }
 
-        Path walkPath = findPathRoaming(start, end, TrafficType.WALK);
+    public Route navigate(Coordinated start, Coordinated end, Path walkPath) {
+
         if (walkPath == null) {
             return null;
         }
@@ -35,7 +37,7 @@ public class TaxiStrategy extends TrafficStrategy {
             endEdgeTiles = selectNearestTiles(end, endBlockCosts);
         }
 
-        List<Pair<Tile, Tile>> edgeTilePairs = Pair.generatePairs(startEdgeTiles, endEdgeTiles, 15);
+        List<Pair<Tile, Tile>> edgeTilePairs = Pair.generateFirstNPairs(startEdgeTiles, endEdgeTiles, 15);
         int bestCost = Integer.MAX_VALUE;
         Pair<Tile, Tile> bestPair = null;
         for (Pair<Tile, Tile> edgeTilePair : edgeTilePairs) {

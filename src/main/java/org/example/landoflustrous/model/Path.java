@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Path {
 
-    public TrafficType trafficType;
+    private TrafficType trafficType;
     private final List<Tile> tileList;
     private int cost;
 
@@ -43,6 +43,44 @@ public class Path {
         return Math.max(tileList.size() - 1, 0);
     }
 
+    public TrafficType getTrafficType() {
+        return trafficType;
+    }
+
+    public Path slicePath(Coordinated start, Coordinated end) {
+        List<Tile> recorded = new ArrayList<>();
+        boolean isRecording = false;
+        for (Tile tile : tileList) {
+            if (!isRecording && tile.distance(start) == 0) isRecording = true;
+            if (isRecording) recorded.add(tile);
+            if (tile.distance(end) == 0) isRecording = false;
+        }
+        if (isRecording || recorded.isEmpty()) throw new RuntimeException("Slice point is not in the path");
+        return new Path(trafficType, recorded);
+    }
+
+    public void appendPath(Path path) {
+        if (trafficType != path.trafficType) throw new RuntimeException(String.format("Path types don't match: %s vs %s", trafficType, path.trafficType));
+        for (Tile tile : path.tileList) {
+            if (tile.equals(tileList.getLast())) continue;
+            addTile(tile);
+        }
+    }
+
+    public void appendPath(List<Path> pathList) {
+        pathList.forEach(this::appendPath);
+    }
+
+    public int getCarbon() {
+        return getLength() * trafficType.getCarbon();
+    }
+
+    public static Path mergePath(List<Path> pathList) {
+        Path ret = new Path(pathList.getFirst().getTrafficType());
+        ret.appendPath(pathList);
+        return ret;
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -50,5 +88,25 @@ public class Path {
             stringBuilder.append(tile.getCoordinateString()).append(", ");
         }
         return String.format("%s: %s cost: %s", trafficType.toString(), stringBuilder, cost);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Path path = (Path) o;
+
+        if (cost != path.cost) return false;
+        if (trafficType != path.trafficType) return false;
+        return tileList.equals(path.tileList);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = trafficType.hashCode();
+        result = 31 * result + tileList.hashCode();
+        result = 31 * result + cost;
+        return result;
     }
 }

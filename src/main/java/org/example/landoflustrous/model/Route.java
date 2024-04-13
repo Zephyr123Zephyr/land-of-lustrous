@@ -4,10 +4,11 @@ import org.example.landoflustrous.config.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Route {
 
-    List<Path> pathList;
+    private final List<Path> pathList;
 
     public Route() {
         this.pathList = new ArrayList<>();
@@ -21,23 +22,46 @@ public class Route {
         pathList.add(path);
     }
 
+    public void mergeRoute(Route route) {
+        pathList.addAll(route.pathList);
+    }
+
     public int getTotalCost() {
         int totalCost = 0;
         TrafficType previousTrafficType = null;
         for (Path path : pathList) {
             totalCost += path.getCost();
-            if (previousTrafficType != null && !path.trafficType.equals(previousTrafficType)) {
-                totalCost += Constant.timeCostOnShift(previousTrafficType, path.trafficType);
+            if (previousTrafficType != null) {
+                totalCost += Constant.timeCostOnShift(previousTrafficType, path.getTrafficType());
             }
-            previousTrafficType = path.trafficType;
+            previousTrafficType = path.getTrafficType();
         }
         return totalCost;
+    }
+
+    public int getTotalCarbon() {
+        return pathList.stream().mapToInt(Path::getCarbon).sum();
     }
 
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         pathList.forEach(path -> stringBuilder.append(path.toString()).append('\n'));
-        stringBuilder.append("TOTAL COST: ").append(getTotalCost());
+        stringBuilder.append("Time: ").append(getTotalCost()).append("   Carbon: ").append(getTotalCarbon());
         return stringBuilder.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Route route = (Route) o;
+
+        return Objects.equals(pathList, route.pathList);
+    }
+
+    @Override
+    public int hashCode() {
+        return pathList != null ? pathList.hashCode() : 0;
     }
 }
