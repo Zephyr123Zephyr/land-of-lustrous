@@ -26,17 +26,16 @@ public class Gem extends Coordinated {
 
     // Constructor
     public Gem() {
+        super(random.nextInt(30), random.nextInt(30));
         this.gemID = nextID++;
         this.gemType = new HashMap<>();
         selectRandomGemType();
         this.collected = false;
-        this.x = random.nextInt(30); // Assuming a 100x100 grid
-        this.y = random.nextInt(30);
         this.liveTime = random.nextInt(5) + 10; // 300 to 600 seconds of life
         this.elapsedTime = 0;
     }
 
-    // Method to randomly select a gem type and its score
+    // Method to randomly select a gem type and its
     private void selectRandomGemType() {
         Object[] gemTypes = availableGemTypes.keySet().toArray();
         String selectedType = (String) gemTypes[random.nextInt(gemTypes.length)];

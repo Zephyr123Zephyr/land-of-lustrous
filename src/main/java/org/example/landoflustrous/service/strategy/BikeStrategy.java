@@ -13,10 +13,12 @@ public class BikeStrategy extends TrafficStrategy {
         super(gameMap);
     }
 
-    @Override
     public Route navigate(Coordinated start, Coordinated end) {
+        return navigate(start, end, findPathRoaming(start, end, TrafficType.WALK));
+    }
 
-        Path walkPath = findPathRoaming(start, end, TrafficType.WALK);
+    public Route navigate(Coordinated start, Coordinated end, Path walkPath) {
+
         if (walkPath == null) {
             return null;
         }
@@ -25,7 +27,7 @@ public class BikeStrategy extends TrafficStrategy {
         if ((sortedStartStations = getSortedStationsByDistance(start, walkPath.getLength())).isEmpty()
                 || (sortedEndStations = getSortedStationsByDistance(end, walkPath.getLength())).isEmpty()) return null;
 
-        List<Pair<Station, Station>> stationPairs = Pair.generatePairs(sortedStartStations, sortedEndStations, 6);
+        List<Pair<Station, Station>> stationPairs = Pair.generateFirstNPairs(sortedStartStations, sortedEndStations, 6);
 
         Route bestRoute = null;
         int bestCost = Integer.MAX_VALUE;

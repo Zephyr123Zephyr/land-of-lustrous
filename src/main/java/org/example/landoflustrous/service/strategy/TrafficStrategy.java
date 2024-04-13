@@ -4,18 +4,15 @@ import org.example.landoflustrous.model.*;
 
 import java.util.*;
 
-import static org.example.landoflustrous.config.Constant.timeCostOfTraffic;
-
 
 public abstract class TrafficStrategy {
 
+    static final int WALK_TOLERANCE = 10;
     GameMap gameMap;
 
     public TrafficStrategy(GameMap gameMap) {
         this.gameMap = gameMap;
     }
-
-    public abstract Route navigate(Coordinated start, Coordinated end);
 
     public Path findPathRoaming(Coordinated start, Coordinated end, TrafficType trafficType) {
         Map<Tile, Integer> costMap = new HashMap<>();
@@ -46,7 +43,7 @@ public abstract class TrafficStrategy {
                         continue;
                     }
 
-                    int cost = timeCostOfTraffic(current, neighbor, trafficType);
+                    int cost = trafficType.getCostPer(current, neighbor);
                     if (cost == Integer.MAX_VALUE) {
                         continue;
                     }

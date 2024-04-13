@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GameMap {
 
@@ -45,6 +46,28 @@ public class GameMap {
         return bikeStations;
     }
 
+    public List<BusLine> getBusLines() {
+        return busLines;
+    }
+
+    public List<Station> getBusStations() {
+        return busLines.stream().map(PublicTransLine::getStations).flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    public List<RailLine> getRailLines() {
+        return railLines;
+    }
+
+    public List<Station> getRailStations() {
+        return railLines.stream().map(PublicTransLine::getStations).flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    public List<Station> getPublicStations() {
+        List<Station> stations = new ArrayList<>(getBusStations());
+        stations.addAll(getRailStations());
+        return  stations;
+    }
+
     private void parseTileGrid(String filePath) throws IOException {
         try (InputStream is = getClass().getResourceAsStream(filePath)) {
             if (is == null) {
@@ -60,7 +83,7 @@ public class GameMap {
                         Tile tile = Tile.createTile(index, x, y);
                         row.add(tile);
                         if (index == 7) {
-                            bikeStations.add(new Station(x, y));
+                            bikeStations.add(new Station(x, y, "CityBikes"));
                         }
                     }
                     tileGrid.add(row);
@@ -71,18 +94,19 @@ public class GameMap {
     }
 
 
-
     private void parseBusLines(List<String> filePaths) throws IOException {
+        int id = 0;
         for (String filePath : filePaths) {
-            BusLine busLine = new BusLine();
+            BusLine busLine = new BusLine(id++);
             parseTransLine(filePath, busLine);
             busLines.add(busLine);
         }
     }
 
     private void parseRailLines(List<String> filePaths) throws IOException {
+        int id = 0;
         for (String filePath : filePaths) {
-            RailLine railLine = new RailLine();
+            RailLine railLine = new RailLine(id++);
             parseTransLine(filePath, railLine);
             railLines.add(railLine);
         }
@@ -100,9 +124,9 @@ public class GameMap {
                     for (int x = 0; x < lineContent.length(); x++) {
                         int index = Character.getNumericValue(lineContent.charAt(x));
                         if (index != 0) {
-                            line.tileList.add(tileGrid.get(y).get(x));
+                            line.addTile(getTile(x, y));
                             if (index == 8 || index == 9) {
-                                line.stations.add(new Station(x, y));
+                                line.getStations().add(new Station(x, y, line.getLineCode()));
                             }
                         }
                     }

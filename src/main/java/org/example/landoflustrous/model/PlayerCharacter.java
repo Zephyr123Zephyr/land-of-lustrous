@@ -22,9 +22,8 @@ public class PlayerCharacter extends Coordinated{
     // Constructor
     public PlayerCharacter(String name, int x, int y, int maxFictionalTime, TrafficType trafficType,CarbonFootprint maxCarbonFootprint, int currentLevel)
     {
+        super(x, y);
         this.name = name;
-        this.x = x;
-        this.y = y;
         this.maxFictionalTime = maxFictionalTime;
         this.remainingFictionalTime = maxFictionalTime; // Remaining time is full at start
         this.trafficType = trafficType;

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class RailLine extends PublicTransLine {
 
-    public RailLine() {
-        this.trafficType = TrafficType.TRAIN;
+    public RailLine(int id) {
+        super(TrafficType.TRAIN, id);
     }
 }

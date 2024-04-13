@@ -1,6 +1,10 @@
 package org.example.landoflustrous.model;
 
-public abstract class TrafficEntity extends Actor {
+public abstract class TrafficEntity extends Coordinated {
+
+    public TrafficEntity(int x, int y) {
+        super(x, y);
+    }
 
     public abstract int getSpeed(Tile tile1, Tile tile2);
 

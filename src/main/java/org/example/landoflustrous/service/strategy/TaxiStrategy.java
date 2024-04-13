@@ -1,6 +1,5 @@
 package org.example.landoflustrous.service.strategy;
 
-import org.example.landoflustrous.config.Constant;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.util.Pair;
 
@@ -14,10 +13,12 @@ public class TaxiStrategy extends TrafficStrategy {
         super(gameMap);
     }
 
-    @Override
     public Route navigate(Coordinated start, Coordinated end) {
+        return navigate(start, end, findPathRoaming(start, end, TrafficType.WALK));
+    }
 
-        Path walkPath = findPathRoaming(start, end, TrafficType.WALK);
+    public Route navigate(Coordinated start, Coordinated end, Path walkPath) {
+
         if (walkPath == null) {
             return null;
         }
@@ -35,7 +36,7 @@ public class TaxiStrategy extends TrafficStrategy {
             endEdgeTiles = selectNearestTiles(end, endBlockCosts);
         }
 
-        List<Pair<Tile, Tile>> edgeTilePairs = Pair.generatePairs(startEdgeTiles, endEdgeTiles, 15);
+        List<Pair<Tile, Tile>> edgeTilePairs = Pair.generateFirstNPairs(startEdgeTiles, endEdgeTiles, 15);
         int bestCost = Integer.MAX_VALUE;
         Pair<Tile, Tile> bestPair = null;
         for (Pair<Tile, Tile> edgeTilePair : edgeTilePairs) {
@@ -103,7 +104,7 @@ public class TaxiStrategy extends TrafficStrategy {
             int currentDist = distances.get(current);
 
             for (Tile neighbor : block.getNeighbors(current)) {
-                int dist = Constant.timeCostOfTraffic(current, neighbor, TrafficType.WALK);
+                int dist = TrafficType.WALK.getCostPer(current, neighbor);
                 int newDist = currentDist;
                 if (dist == Integer.MAX_VALUE) newDist = Integer.MAX_VALUE;
                 else newDist += dist;
