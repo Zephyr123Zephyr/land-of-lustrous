@@ -552,27 +552,38 @@ public class MapViewerScene {
     }
 
     private void drawMap(Pane root) {
-        for (int y = 0; y < gameMap.getHeight(); y++) {
-            for (int x = 0; x < gameMap.getWidth(); x++) {
-                Tile tile = gameMap.getTile(x, y);
-                Rectangle rect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                rect.setFill(getTileColor(tile));
-                root.getChildren().add(rect);
-            }
+        // Load the map image
+        Image mapImage = new Image(getClass().getResourceAsStream("/images/map_image.png"));
+        ImageView mapView = new ImageView(mapImage);
+
+        // Assuming the image size matches the size of the game map in terms of tiles
+        mapView.setFitWidth(gameMap.getWidth() * TILE_SIZE);
+        mapView.setFitHeight(gameMap.getHeight() * TILE_SIZE);
+
+        // Add the ImageView to the root pane
+        root.getChildren().add(mapView);
+
+        // draw transparant rectangles 透明格子
+    for (int y = 0; y < gameMap.getHeight(); y++) {
+        for (int x = 0; x < gameMap.getWidth(); x++) {
+            Rectangle rect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            rect.setFill(Color.TRANSPARENT); // Set the fill to transparent
+            root.getChildren().add(rect);
         }
+
     }
 
-    private Color getTileColor(Tile tile) {
-        // Replace with your actual tile property checks and color assignments
-        if (tile.isRail) {
-            return Color.YELLOW;
-        } else if (tile.isRoad) {
-            return Color.GRAY;
-        } else if (tile.isForbidden) {
-            return Color.LIGHTBLUE;
-        } else {
-            return Color.GREEN;
-        }
+//    private Color getTileColor(Tile tile) {
+//        // Replace with your actual tile property checks and color assignments
+//        if (tile.isRail) {
+//            return Color.YELLOW;
+//        } else if (tile.isRoad) {
+//            return Color.GRAY;
+//        } else if (tile.isForbidden) {
+//            return Color.LIGHTBLUE;
+//        } else {
+//            return Color.GREEN;
+//        }
     }
 
     public void addPlayerCharacter(Pane root, PlayerCharacter player) {
