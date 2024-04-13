@@ -277,7 +277,7 @@ public class MapViewerScene {
         // Create a horizontal box to hold the status labels
         HBox statusBoard = new HBox(10);
         statusBoard.setPadding(new Insets(10));
-        statusBoard.setStyle("-fx-background-color: #336699;"); // Set a background color
+        statusBoard.setStyle("-fx-background-color: #FFFFFF;"); // Set a background color
 
         // Create labels for the player status
         String s = scoreCalculator.getTotalCarbonPoint()==-1?"N/A":(""+scoreCalculator.getTotalCarbonPoint());
@@ -677,7 +677,7 @@ public class MapViewerScene {
         // Create a horizontal box to hold the status labels
         HBox statusBoard = new HBox(10);
         statusBoard.setPadding(new Insets(10));
-        statusBoard.setStyle("-fx-background-color: #336699;"); // Set a background color
+        statusBoard.setStyle("-fx-background-color: #FFFFFF;"); // Set a background color
 
         // Create labels for the player status
         carbonFootprintLabel = new Label("Carbon Footprint: " + player.getCarbonFootprint());
