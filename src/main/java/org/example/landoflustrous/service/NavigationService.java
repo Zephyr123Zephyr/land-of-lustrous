@@ -45,10 +45,10 @@ public class NavigationService {
         }
 
         List<Route> routeList = listOfRouteRecommended.stream().filter(Objects::nonNull).toList();
-        routeList.forEach(route -> {
-            System.out.println(route);
-            System.out.println();
-        });
+//        routeList.forEach(route -> {
+//            System.out.println(route);
+//            System.out.println();
+//        });
         return routeList;
     }
 

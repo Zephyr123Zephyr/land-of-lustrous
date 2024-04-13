@@ -40,9 +40,13 @@ public class GameOverScene {
 
 
         Label resultHeadLabel = new Label("Your Game Result");
-        Label carbonLabel = new Label("Total Carbon Point: "+scoreCalculator.getTotalCarbonPoint());
-        Label gemLabel = new Label("Total Carbon Point: "+scoreCalculator.getTotalGemPoint());
+        String s = scoreCalculator.getTotalCarbonPoint()==-1?"No Valid Choice":(""+scoreCalculator.getTotalCarbonPoint());
+        Label carbonLabel = new Label("Total Carbon Point: "+s);
+        s = scoreCalculator.getTotalGemPoint()==-1?"No Valid Choice":(""+scoreCalculator.getTotalGemPoint());
+        Label gemLabel = new Label("Total Carbon Point: "+s);
+
         Label gemNumLabel = new Label("Num of collected gem: "+scoreCalculator.getOptionBoardList().size());
+        Label gemTimeLabel = new Label("Time Cost: "+(timeLifeCalculator.getInitialLifeRemain()-timeLifeCalculator.getCurLifeRemain())+"/"+timeLifeCalculator.getInitialLifeRemain());
         Button buttonExit = new Button("Exit");
         VBox layout = new VBox(20);
         layout.setAlignment(Pos.CENTER); // 设置布局中心对齐
@@ -55,6 +59,7 @@ public class GameOverScene {
         carbonLabel.setEffect(dropShadow);
         gemLabel.setEffect(dropShadow);
         gemNumLabel.setEffect(dropShadow);
+        gemTimeLabel.setEffect(dropShadow);
 
         buttonExit.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px;");
         buttonExit.setPrefWidth(120);
@@ -65,7 +70,7 @@ public class GameOverScene {
 
 
 
-        layout.getChildren().addAll(resultHeadLabel, carbonLabel, gemLabel,gemNumLabel,buttonExit);
+        layout.getChildren().addAll(resultHeadLabel, carbonLabel, gemLabel,gemNumLabel,gemTimeLabel,buttonExit);
         scene = new Scene(layout, 500, 500);
 //        String css = this.getClass().getResource("src/main/java/resources/GameOverScene.css").toExternalForm(); // Ensure the path matches the actual CSS file location
 //        scene.getStylesheets().add(css);

@@ -38,17 +38,34 @@ public class OptionBoard {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         int test =1;
+        // 创建用于显示gemList内容的VBox
+        VBox gemInfoBox = new VBox(10);
+        gemInfoBox.setAlignment(Pos.CENTER_RIGHT);
+        gemInfoBox.setPadding(new Insets(0, 20, 0, 0)); // 设置左边距
+
+
+        // 循环遍历gemList并创建Label显示每个Gem的信息
+        Label gemLabel = new Label(
+                      "Current Gem->Live Time: " + gem.getLiveTime()+
+                        ", Score: "+gem.getScore());
+        gemLabel.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+
+        gemInfoBox.getChildren().add(gemLabel);
+        root.getChildren().add(gemInfoBox);
+
         // 创建倒计时标签
         int maxTime = gem.getLiveTime();
-
         Label countdownLabel = new Label(""+maxTime);
-        countdownLabel.setStyle("-fx-font-size: 24px;");
+//        countdownLabel.setStyle("-fx-font-size: 24px;");
+        countdownLabel.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+
 
         // 创建表单内容
         Label titleLabel = new Label("Choose Route:");
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;"); // 设置标题样式
+        titleLabel.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+        root.getChildren().add(titleLabel);
         for(int i=0;i<routeList.size();i++){
-            String s = "Route "+(i+1)+" Time Cost: "+routeList.get(i).getTotalCost();
+            String s = "Route "+(i+1)+" Time Cost: "+routeList.get(i).getTotalCost()+" Carbon: "+routeList.get(i).getTotalCarbon();
             Button routeButton = new Button(s);
             routeButton.setId("Route"+(i+1)); // 设置按钮ID
             routeButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
@@ -58,7 +75,7 @@ public class OptionBoard {
             });
             root.getChildren().add(routeButton);
         }
-        root.getChildren().addAll(countdownLabel, titleLabel);
+        root.getChildren().add(countdownLabel);
 
 
 
@@ -79,21 +96,7 @@ public class OptionBoard {
 
         countdownTimeline.play(); // 启动倒计时动画
 
-        // 创建用于显示gemList内容的VBox
-        VBox gemInfoBox = new VBox(10);
-        gemInfoBox.setAlignment(Pos.CENTER_RIGHT);
-        gemInfoBox.setPadding(new Insets(0, 20, 0, 0)); // 设置左边距
-        gemInfoBox.getChildren().add(new Label("Gem Info"));
-        // 循环遍历gemList并创建Label显示每个Gem的信息
 
-            Label gemLabel = new Label("Gem ID: " + gem.getGemID() +
-                    ", Type: " + gem.getType() +
-                    ", X: " + gem.getX() +
-                    ", Y: " + gem.getY() +
-                    ", Live Time: " + gem.getLiveTime());
-            gemInfoBox.getChildren().add(gemLabel);
-
-        root.getChildren().add(gemInfoBox);
 
 
 

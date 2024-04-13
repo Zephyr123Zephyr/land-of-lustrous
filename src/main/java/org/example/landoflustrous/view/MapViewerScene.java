@@ -34,7 +34,8 @@ import org.example.landoflustrous.service.NavigationService;
 
 
 public class MapViewerScene {
-    private static final int MAX_GEMS_PER_LEVEL = 5; //TODO: HARD CODED. Subject to change for each level (controller's job)
+    private static final int MAX_GEMS_PER_LEVEL = 5;
+    //TODO: HARD CODED. Subject to change for each level (controller's job)
     private Pane root;
     private VBox base;// the base of map and status board
 
@@ -42,7 +43,7 @@ public class MapViewerScene {
     private Label timeLeftLabel;
     private Label scoreLabel;
     private GameMap gameMap;
-    private static final int statusBoardHeight = 10;
+    private final int statusBoardHeight = 10;
     private static final int TILE_SIZE = 20;
     private ImageView playerSprite;
     private java.util.Queue<Gem> gemQueue;
@@ -53,6 +54,7 @@ public class MapViewerScene {
     private int curLevelGemPoint = 0;
     private int curLevelCarbonPoint = 0;
     private int curLevelGemNum=0;
+    private int curLevelTimeUse=0;
     int pre = -1;
 
     private int  cycle=0;
@@ -182,22 +184,11 @@ public class MapViewerScene {
                         });
                         root.getChildren().add(buttonTestToHome);
 
-                        //标签
-                        Label labelCarbonPoint = new Label("本关你取到的Carbon分数: "+curLevelCarbonPoint);
-                        labelCarbonPoint.setLayoutX(100);
-                        labelCarbonPoint.setLayoutY(400);
-                        root.getChildren().add(labelCarbonPoint);
+                        Pane level = createLevlResultCardWithLabels();
+                        level.setLayoutX(100);
+                        level.setLayoutY(400);
 
-
-                        Label labelGemPoint = new Label("本关你取到的宝石分数: "+curLevelGemPoint);
-                        labelGemPoint.setLayoutX(100);
-                        labelGemPoint.setLayoutY(450);
-                        root.getChildren().add(labelGemPoint);
-
-                        Label labelGemNum = new Label("本关你取到的宝石个数: "+curLevelGemNum);
-                        labelGemNum.setLayoutX(100);
-                        labelGemNum.setLayoutY(500);
-                        root.getChildren().add(labelGemNum);
+                        root.getChildren().add(level);
 
                         //返回下一关按钮如果分数满足的话 直接下一关
                         Button buttonToNextLevel = new Button("To Next Level");
@@ -236,7 +227,7 @@ public class MapViewerScene {
             }
 
             optionBoard.setLayoutX(200);
-            optionBoard.setLayoutY(200);
+            optionBoard.setLayoutY(100);
 
 
 
@@ -254,10 +245,11 @@ public class MapViewerScene {
                     temp.collected=true;
                     currentGemList.set(cycle,temp);
 
-                    OptionBoard curOptionBoard = new OptionBoard(10, currentRoute.getTotalCarbon(), true);
+                    OptionBoard curOptionBoard = new OptionBoard(temp.getScore(), currentRoute.getTotalCarbon(), true);
 
                     curLevelCarbonPoint+=curOptionBoard.getCarbonPoint();
                     curLevelGemPoint+=curOptionBoard.getGemPoint();
+                    curLevelTimeUse+=currentRoute.getTotalCost();
                     curLevelGemNum++;
                     if(timeLifeCalculator.getCurLifeRemain()-totalCost<0){pre=totalCost;}else{scoreCalculator.addPoints(curOptionBoard);}
                     timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain()-totalCost);
@@ -269,46 +261,7 @@ public class MapViewerScene {
                 });
             }
 
-//            ((Button) optionBoard.lookup("#Route1")).setOnAction(event -> {
-//                labelForClick.setText("click");
-//                optionBoard.setVisible(false);
-//                Gem temp = currentGemList.get(cycle);
-//                temp.collected=true;
-//                currentGemList.set(cycle,temp);
-//                List<Tile> tileList = new LinkedList<Tile>();
-//                tileList.add(new Tile(currentGem.getX()* TILE_SIZE, currentGem.getY()* TILE_SIZE, false, false, false));
-//                OptionBoard curOptionBoard = new OptionBoard(20, 20, true);
-////                scoreCalculator.addPoints(curOptionBoard);
-//                curLevelCarbonPoint+=curOptionBoard.getCarbonPoint();
-//                curLevelGemPoint+=curOptionBoard.getGemPoint();
-//                curLevelGemNum++;
-//                if(timeLifeCalculator.getCurLifeRemain()-10<0){pre=10;}else{scoreCalculator.addPoints(curOptionBoard);}
-//                timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain()-10);
-//                Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
-//                ////需要生成当前地图的Route实例-保存PathList
-//                //然后绑定表单控件的id来选择
-//                createMapScene_AfterChooseOption(stage, path, scoreCalculator,temp, timeLifeCalculator, curOptionBoard);
-//            });
-//            ((Button) optionBoard.lookup("#Route1")).setOnAction(event -> {
-//                labelForClick.setText("click");
-//                optionBoard.setVisible(false);
-//                Gem temp = currentGemList.get(cycle);
-//                temp.collected=true;
-//                currentGemList.set(cycle,temp);
-//                List<Tile> tileList = new LinkedList<Tile>();
-//                tileList.add(new Tile(currentGem.getX()* TILE_SIZE, currentGem.getY()* TILE_SIZE, false, false, false));
-//                OptionBoard curOptionBoard = new OptionBoard(30, 30, true);
-////                scoreCalculator.addPoints(curOptionBoard);
-//                curLevelCarbonPoint+=curOptionBoard.getCarbonPoint();
-//                curLevelGemPoint+=curOptionBoard.getGemPoint();
-//                curLevelGemNum++;
-//                if(timeLifeCalculator.getCurLifeRemain()-10<0){pre=10;}else{scoreCalculator.addPoints(curOptionBoard);}
-//                timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain()-10);
-//                Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
-//                ////需要生成当前地图的Route实例-保存PathList
-//                //然后绑定表单控件的id来选择
-//                createMapScene_AfterChooseOption(stage, path, scoreCalculator,temp, timeLifeCalculator, curOptionBoard);
-//            });
+//
             root.getChildren().add(optionBoard);
         // Line to save map background dynamically generated
         //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
@@ -368,7 +321,7 @@ public class MapViewerScene {
         playerSprite.setVisible(true);
         //底部显示栏
 
-        base.getChildren().add(root); // Add the map pane to the base VBox
+         // Add the map pane to the base VBox
 
         //Add 本关的宝石在scene中 此时不会消失
         ImageView imageView;
@@ -382,42 +335,38 @@ public class MapViewerScene {
         if(timeLifeCalculator.getCurLifeRemain()<0){
             timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain()+pre);
             Pane statusBoard = createStatusBoard(scoreCalculator,timeLifeCalculator);
-            base.getChildren().add(statusBoard); // Add the status board pane to the base VBox
             Label infoLabel = new Label("剩余时间无法支持本次路线选择无效 游戏结束 请点击结算按钮");
             infoLabel.setLayoutX(100);
             infoLabel.setLayoutY(350);
             root.getChildren().add(infoLabel);
 
             curLevelCarbonPoint-=curOptionBoard.getCarbonPoint();
-            Label labelCarbonPoint = new Label("本关你取到的Carbon分数: "+curLevelCarbonPoint);
-            labelCarbonPoint.setLayoutX(100);
-            labelCarbonPoint.setLayoutY(400);
-            root.getChildren().add(labelCarbonPoint);
-
             curLevelGemPoint-=curOptionBoard.getGemPoint();
-            Label labelGemPoint = new Label("本关你取到的宝石分数: "+curLevelGemPoint);
-            labelGemPoint.setLayoutX(100);
-            labelGemPoint.setLayoutY(450);
-            root.getChildren().add(labelGemPoint);
-
             curLevelGemNum--;
-            Label labelGemNum = new Label("本关你取到的宝石个数: "+curLevelGemNum);
-            labelGemNum.setLayoutX(100);
-            labelGemNum.setLayoutY(500);
-            root.getChildren().add(labelGemNum);
+            curLevelTimeUse-=pre;
+            Pane level = createLevlResultCardWithLabels();
+            level.setLayoutX(100);
+            level.setLayoutY(400);
+
+            root.getChildren().add(level);
+
 
             Button buttonTestToOver = new Button("结算按钮");
             buttonTestToOver.setOnAction(event -> {
                 stage.setScene(new GameOverScene(stage,scoreCalculator,timeLifeCalculator).getScene());
             });
             root.getChildren().add(buttonTestToOver);
+            base.getChildren().add(root);
+            base.getChildren().add(statusBoard); // Add the status board pane to the base VBox
 
-            stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, (gameMap.getHeight()+statusBoardHeight) * TILE_SIZE));
+
+            stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE+statusBoardHeight));
 
             stage.show();
             return;
         }
         Pane statusBoard = createStatusBoard(scoreCalculator,timeLifeCalculator);
+        base.getChildren().add(root);
         base.getChildren().add(statusBoard); // Add the status board pane to the base VBox
 
         //返回Level按钮测试累加分数
@@ -462,43 +411,37 @@ public class MapViewerScene {
         final int[] pathIndex = {0};  // Index for paths in the route
         final int[] tileIndex = {0};  // Index for tiles within the current path
         final int[] changeCount = {0};
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(0.1), event -> {if (pathIndex[0] < route.getPathList().size()) {
-                    Path currentPath = route.getPathList().get(pathIndex[0]);
-                    if (tileIndex[0] < currentPath.getTileList().size()) {
-                        Tile currentTile = currentPath.getTileList().get(tileIndex[0]);
-                        double newX = currentTile.x * TILE_SIZE;
-                        double newY = currentTile.y * TILE_SIZE;
-                        updatePlayerSpriteImage(currentPath.getTrafficType()); // Update image based on TrafficType
-                        playerSprite.setX(newX);
-                        playerSprite.setY(newY);
-                        tileIndex[0]++;
-                    } else {
-                        tileIndex[0] = 0;  // Reset tile index for next path
-                        pathIndex[0]++;  // Move to next path in the route
-                    }
+        final Timeline[] timeline = new Timeline[1]; // 声明为数组以在匿名类中引用
+        timeline[0] = new Timeline(
+                new KeyFrame(Duration.seconds(0.1), event -> {
+                    if (pathIndex[0] < route.getPathList().size()) {
+                        Path currentPath = route.getPathList().get(pathIndex[0]);
+                        if (tileIndex[0] < currentPath.getTileList().size()) {
+                            Tile currentTile = currentPath.getTileList().get(tileIndex[0]);
+                            double newX = currentTile.x * TILE_SIZE;
+                            double newY = currentTile.y * TILE_SIZE;
+                            updatePlayerSpriteImage(currentPath.getTrafficType()); // Update image based on TrafficType
+                            playerSprite.setX(newX);
+                            playerSprite.setY(newY);
+                            tileIndex[0]++;
+                        } else {
+                            tileIndex[0] = 0;  // Reset tile index for next path
+                            pathIndex[0]++;  // Move to next path in the route
+                        }
                     } else {
 
-                        new Timeline().stop();
+                        timeline[0].stop();
                         imageView.setVisible(false);
                         int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length()-1)-'0')*10;
                         if(cycle==currentGemList.size()-1){
-                            System.out.println("1");
-                            Label labelCarbonPoint = new Label("本关你取到的Carbon分数: "+curLevelCarbonPoint);
-                            labelCarbonPoint.setLayoutX(100);
-                            labelCarbonPoint.setLayoutY(400);
-                            root.getChildren().add(labelCarbonPoint);
+//                            System.out.println("1");
+                            Pane level = createLevlResultCardWithLabels();
+                            level.setLayoutX(100);
+                            level.setLayoutY(400);
+
+                            root.getChildren().add(level);
 
 
-                            Label labelGemPoint = new Label("本关你取到的宝石分数: "+curLevelGemPoint);
-                            labelGemPoint.setLayoutX(100);
-                            labelGemPoint.setLayoutY(450);
-                            root.getChildren().add(labelGemPoint);
-
-                            Label labelGemNum = new Label("本关你取到的宝石个数: "+curLevelGemNum);
-                            labelGemNum.setLayoutX(100);
-                            labelGemNum.setLayoutY(500);
-                            root.getChildren().add(labelGemNum);
                             if(curLevelGemPoint>=objectScoreLvel){buttonToNextLevel.setVisible(true);}else{buttonTestToOver.setVisible(true);}
 
 
@@ -513,6 +456,7 @@ public class MapViewerScene {
                         }
 
 
+
                     }
                 })
         );
@@ -521,8 +465,8 @@ public class MapViewerScene {
 
 
         stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
-        timeline.setCycleCount(Timeline.INDEFINITE); // 设置为无限循环
-        timeline.play(); // 启动时间轴
+        timeline[0].setCycleCount(Timeline.INDEFINITE); // 设置为无限循环
+        timeline[0].play(); // 启动时间轴
         stage.show();
 
     }
@@ -665,14 +609,14 @@ public class MapViewerScene {
             } while (gameMap.getTile(newGem.getX(), newGem.getY()).isForbidden || gameMap.getTile(newGem.getX(), newGem.getY()).isRail);
             gems.add(newGem);
         }
-        System.out.println("Generated Gems:");
-        for (Gem gem : gems) {
-            System.out.println("Gem ID: " + gem.getGemID() +
-                    ", Type: " + gem.getType() +
-                    ", X: " + gem.getX() +
-                    ", Y: " + gem.getY() +
-                    ", Live Time: " + gem.getLiveTime());
-        }
+//        System.out.println("Generated Gems:");
+//        for (Gem gem : gems) {
+//            System.out.println("Gem ID: " + gem.getGemID() +
+//                    ", Type: " + gem.getType() +
+//                    ", X: " + gem.getX() +
+//                    ", Y: " + gem.getY() +
+//                    ", Live Time: " + gem.getLiveTime());
+//        }
         return gems;
     }
 
@@ -776,6 +720,34 @@ public class MapViewerScene {
                 e.printStackTrace();
             }
         }).start();
+    }
+    public Pane createLevlResultCardWithLabels() {
+        // 创建一个 Pane 作为卡片背景
+        Pane cardPane = new Pane();
+        cardPane.setPrefSize(300, 200); // 设置卡片大小
+        cardPane.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;"); // 设置样式
+
+        // 创建三个 Label
+        Label labelCarbonPoint = new Label("Carbon FootPrint Gained in this Level: "+curLevelCarbonPoint);
+        labelCarbonPoint.setLayoutX(10);
+        labelCarbonPoint.setLayoutY(20);
+
+        Label labelGemPoint = new Label("Gem Point Gained in this Level:: "+curLevelGemPoint);
+        labelGemPoint.setLayoutX(10);
+        labelGemPoint.setLayoutY(50);
+
+        Label labelGemNum = new Label("Num of Gem Collected in this Level: "+curLevelGemNum);
+        labelGemNum.setLayoutX(10);
+        labelGemNum.setLayoutY(80);
+
+        Label labelTime = new Label("Time cost in this Level: "+curLevelTimeUse);
+        labelTime.setLayoutX(10);
+        labelTime.setLayoutY(110);
+
+        // 将 Label 添加到 Pane 中
+        cardPane.getChildren().addAll(labelCarbonPoint, labelGemPoint, labelGemNum,labelTime);
+
+        return cardPane;
     }
 
 
