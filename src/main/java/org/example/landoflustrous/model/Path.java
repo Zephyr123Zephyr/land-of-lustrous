@@ -11,6 +11,10 @@ public class Path {
     private final List<Tile> tileList;
     private int cost;
 
+    public Path(int x, int y, int x1, int y1, TrafficType trafficType, List<Tile> tileList) {
+        this.tileList = tileList;
+    }
+
     public List<Tile> getTileList() {
         return tileList;
     }

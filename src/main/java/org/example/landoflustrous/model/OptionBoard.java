@@ -20,6 +20,7 @@ public class OptionBoard {
     private int carbonPoint;//携带多少碳分
     private int lifeTime;//用户选择时间
     private boolean successFlg;//用户是否选择成功
+    private boolean visible = true;
 
     public OptionBoard() {
 
@@ -30,6 +31,8 @@ public class OptionBoard {
         this.carbonPoint = carbonPoint;
         this.successFlg = successFlg;
     }
+
+
 
     public VBox createOptionBoard(Route route, Gem gem) {
         VBox root = new VBox(20);
@@ -49,13 +52,28 @@ public class OptionBoard {
         routeAButton.setId("routeAButton"); // 设置按钮ID
         routeAButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
 
+        routeAButton.setOnAction(event -> {
+            this.successFlg = true;
+            setVisible(false);  // 用户做出选择，设置面板不可见
+        });
+
         Button routeBButton = new Button("Route B");
         routeBButton.setId("routeBButton"); // 设置按钮ID
         routeBButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #008CBA; -fx-text-fill: white;");
 
+        routeBButton.setOnAction(event -> {
+            this.successFlg = true;
+            setVisible(false);  // 用户做出选择，设置面板不可见
+        });
+
         Button routeCButton = new Button("Route C");
         routeCButton.setId("routeCButton"); // 设置按钮ID
         routeCButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #f44336; -fx-text-fill: white;");
+
+        routeCButton.setOnAction(event -> {
+            this.successFlg = true;
+            setVisible(false);  // 用户做出选择，设置面板不可见
+        });
 
         root.getChildren().addAll(countdownLabel, titleLabel, routeAButton, routeBButton, routeCButton);
 
@@ -153,5 +171,17 @@ public class OptionBoard {
     public String toString() {
         return
                 "optionBoardID=" + optionBoardID ;
+    }
+
+    public boolean isVisible() {
+        return this.visible;  // 返回当前可见性状态
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;  // 设置可见性状态
+    }
+
+    public VBox createOptionBoard(Route route) {
+        return null;
     }
 }

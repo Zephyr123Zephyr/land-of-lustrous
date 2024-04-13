@@ -36,7 +36,7 @@ public class Gem extends Coordinated {
         this.elapsedTime = 0;
     }
 
-    // Method to randomly select a gem type and its score
+    // Method to randomly select a gem type and its
     private void selectRandomGemType() {
         Object[] gemTypes = availableGemTypes.keySet().toArray();
         String selectedType = (String) gemTypes[random.nextInt(gemTypes.length)];
