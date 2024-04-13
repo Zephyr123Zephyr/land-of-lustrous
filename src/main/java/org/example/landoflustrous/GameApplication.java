@@ -45,9 +45,9 @@ public class GameApplication extends Application {
     }
 
     //根据player位置和Gem位置生成route
-//    private void createRoute() {
-//        recommendedRoutes
-//    }
+    private void createRoute() {
+        recommendedRoutes
+    }
 
     private void gameLoop(Stage primaryStage) {
         Level level = new Level(primaryStage, player, 3, 2);
