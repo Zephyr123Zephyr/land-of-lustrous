@@ -81,6 +81,7 @@ public class MapViewerScene {
     public MapViewerScene(String levelIdentifier) {
         this.levelIdentifier = levelIdentifier;
 
+
         
         Map<String, Object> paths = levelPathMapping.get(levelIdentifier);
         if (paths != null) {
