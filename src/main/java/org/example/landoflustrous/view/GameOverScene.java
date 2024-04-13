@@ -37,6 +37,8 @@ public class GameOverScene {
 //        VBox layout = new VBox(10);
 //        layout.getChildren().addAll(gameOverLabel, educationalLabel, redoButton);
         // 创建标签和按钮
+
+
         Label resultHeadLabel = new Label("Your Game Result");
         Label carbonLabel = new Label("Total Carbon Point: "+scoreCalculator.getTotalCarbonPoint());
         Label gemLabel = new Label("Total Carbon Point: "+scoreCalculator.getTotalGemPoint());
