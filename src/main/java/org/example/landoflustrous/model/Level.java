@@ -26,9 +26,9 @@ public class Level {
 //            Route route = new Route(player.getX(), player.getY(), gem.getX(), gem.getY());
             optionBoard = new OptionBoard();
 //          optionBoard = new OptionBoard(1, gem.getGemID(), 10, 10, false);
-            VBox board = optionBoard.createOptionBoard(route);
-
-            stage.setScene(new Scene(board));
+//            VBox board = optionBoard.createOptionBoard(route);
+//
+//            stage.setScene(new Scene(board));
             stage.show();
 
             // 等待玩家做出选择或时间结束

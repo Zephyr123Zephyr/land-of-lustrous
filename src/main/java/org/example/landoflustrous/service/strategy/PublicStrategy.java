@@ -93,7 +93,7 @@ public class PublicStrategy extends TrafficStrategy {
         for (Station currentStation = station1;!confirmedStations.containsKey(station2) && !queuedStations.isEmpty();) {
             Station finalCurrentStation = currentStation;
             matrix.get(currentStation).forEach((station, edge) -> {
-                if ((enableTrain || edge.getTrafficType() == TrafficType.BUS) && edge.getCost() + costTable.get(finalCurrentStation) < costTable.get(station)) {
+                if ((enableTrain || edge.getTrafficType() != TrafficType.TRAIN) && edge.getCost() + costTable.get(finalCurrentStation) < costTable.get(station)) {
                     costTable.put(station, edge.getCost() + costTable.get(finalCurrentStation));
                     queuedStations.put(station, finalCurrentStation);
                 }

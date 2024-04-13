@@ -29,6 +29,7 @@ public class NavigationService {
 
     // Get your recommended routes here!!!
     public List<Route> navigate(Coordinated start, Coordinated end) {
+        if (start.distance(end) == 0) throw new RuntimeException("Same location!!!");
         Path walkPath = walkStrategy.findPathRoaming(start, end, TrafficType.WALK);
         if (walkPath == null) throw new RuntimeException("No path exists!!!");
         List<Route> listOfRouteRecommended = new ArrayList<>(List.of(walkStrategy.navigate(start, end, walkPath)));
@@ -39,7 +40,7 @@ public class NavigationService {
             listOfRouteRecommended.add(onlyBusRoute);
             if (!gameMap.getRailLines().isEmpty()) {
                 Route mixedRoute = publicStrategy.navigate(start, end, walkPath, true);
-                if (!mixedRoute.equals(onlyBusRoute)) listOfRouteRecommended.add(mixedRoute);
+                if (mixedRoute != null && !mixedRoute.equals(onlyBusRoute)) listOfRouteRecommended.add(mixedRoute);
             }
         }
         return listOfRouteRecommended.stream().filter(Objects::nonNull).toList();
@@ -48,7 +49,12 @@ public class NavigationService {
     public static void main(String[] args) throws IOException {
         GameMap gameMap = new GameMap("/maps/map1/map.txt", List.of("/maps/map1/rail.txt"), List.of("/maps/map1/bus1.txt", "/maps/map1/bus2.txt"));
         NavigationService navigationService = new NavigationService(gameMap);
-        List<Route> routeList = navigationService.navigate(new Coordinated(1,5), new Coordinated(5,24));
-        routeList.forEach(System.out::println);
+        List<Route> routeList = navigationService.navigate(new Coordinated(5, 27), new Coordinated(25,12));
+        routeList.forEach(route -> {
+            System.out.println(route);
+            System.out.println();
+        });
+//        Route route = navigationService.publicStrategy.navigate(new Coordinated(1,5), new Coordinated(5,24), false);
+//        System.out.println(route);
     }
 }
