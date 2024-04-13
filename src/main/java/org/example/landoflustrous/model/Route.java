@@ -1,7 +1,5 @@
 package org.example.landoflustrous.model;
 
-import org.example.landoflustrous.config.Constant;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +16,14 @@ public class Route {
         this.pathList = pathList;
     }
 
+    public Tile getFirst() {
+        return pathList.getFirst().getTileList().getFirst();
+    }
+
+    public Tile getLast() {
+        return pathList.getLast().getTileList().getLast();
+    }
+
     public void addPath(Path path) {
         pathList.add(path);
     }
@@ -32,15 +38,15 @@ public class Route {
         for (Path path : pathList) {
             totalCost += path.getCost();
             if (previousTrafficType != null) {
-                totalCost += Constant.timeCostOnShift(previousTrafficType, path.getTrafficType());
+                totalCost += previousTrafficType.getChangeCost(path.getTrafficType());
             }
             previousTrafficType = path.getTrafficType();
         }
         return totalCost;
     }
 
-    public int getTotalCarbon() {
-        return pathList.stream().mapToInt(Path::getCarbon).sum();
+    public double getTotalCarbon() {
+        return pathList.stream().mapToDouble(Path::getCarbon).sum();
     }
 
     public String toString() {

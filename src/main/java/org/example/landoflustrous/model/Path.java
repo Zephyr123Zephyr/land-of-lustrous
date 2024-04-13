@@ -1,7 +1,5 @@
 package org.example.landoflustrous.model;
 
-import org.example.landoflustrous.config.Constant;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +8,10 @@ public class Path {
     private TrafficType trafficType;
     private final List<Tile> tileList;
     private int cost;
+
+    public Path(int x, int y, int x1, int y1, TrafficType trafficType, List<Tile> tileList) {
+        this.tileList = tileList;
+    }
 
     public List<Tile> getTileList() {
         return tileList;
@@ -30,7 +32,7 @@ public class Path {
 
     public void addTile(Tile tile) {
         if (!tileList.isEmpty()) {
-            cost += Constant.timeCostOfTraffic(tileList.getLast(), tile, trafficType);
+            cost += trafficType.getCostPer(tileList.getLast(), tile);
         }
         tileList.add(tile);
     }
@@ -71,8 +73,8 @@ public class Path {
         pathList.forEach(this::appendPath);
     }
 
-    public int getCarbon() {
-        return getLength() * trafficType.getCarbon();
+    public double getCarbon() {
+        return getLength() * trafficType.getCarbonPer();
     }
 
     public static Path mergePath(List<Path> pathList) {

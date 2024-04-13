@@ -1,12 +1,10 @@
 package org.example.landoflustrous.service.strategy;
 
-import org.example.landoflustrous.config.Constant;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.util.ListGrouper;
 import org.example.landoflustrous.util.Pair;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PublicStrategy extends TrafficStrategy {
 
@@ -33,7 +31,7 @@ public class PublicStrategy extends TrafficStrategy {
         stationLists.add(busStationsList);
 
         Pair.generateUnorderedPairs(stationLists).forEach(listPair -> Pair.generatePairs(listPair.getLeft(), listPair.getRight()).forEach(pair -> {
-            if (pair.getLeft().distance(pair.getRight()) < Constant.WALK_TOLERANCE * 2) {
+            if (pair.getLeft().distance(pair.getRight()) < WALK_TOLERANCE * 2) {
                 addEdge(pair.getLeft(), pair.getRight(), new Edge(findPathRoaming(pair.getLeft(), pair.getRight(), TrafficType.WALK)));
             }
         }));
@@ -151,7 +149,7 @@ class Edge {
     }
 
     public int getCost() {
-        return path.getCost() + ((path.getTrafficType() == TrafficType.WALK)? Constant.timeCostOnShift(TrafficType.WALK, TrafficType.BUS) : 0);
+        return path.getCost() + ((path.getTrafficType() == TrafficType.WALK)? TrafficType.WALK.getChangeCost(TrafficType.BUS) : 0);
     }
 
     public TrafficType getTrafficType() {

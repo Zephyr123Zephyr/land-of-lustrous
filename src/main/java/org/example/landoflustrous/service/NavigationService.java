@@ -27,6 +27,7 @@ public class NavigationService {
         this.publicStrategy = new PublicStrategy(gameMap);
     }
 
+    // Get your recommended routes here!!!
     public List<Route> navigate(Coordinated start, Coordinated end) {
         Path walkPath = walkStrategy.findPathRoaming(start, end, TrafficType.WALK);
         if (walkPath == null) throw new RuntimeException("No path exists!!!");

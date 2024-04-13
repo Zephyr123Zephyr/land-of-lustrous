@@ -1,6 +1,5 @@
 package org.example.landoflustrous.service.strategy;
 
-import org.example.landoflustrous.config.Constant;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.util.Pair;
 
@@ -105,7 +104,7 @@ public class TaxiStrategy extends TrafficStrategy {
             int currentDist = distances.get(current);
 
             for (Tile neighbor : block.getNeighbors(current)) {
-                int dist = Constant.timeCostOfTraffic(current, neighbor, TrafficType.WALK);
+                int dist = TrafficType.WALK.getCostPer(current, neighbor);
                 int newDist = currentDist;
                 if (dist == Integer.MAX_VALUE) newDist = Integer.MAX_VALUE;
                 else newDist += dist;
