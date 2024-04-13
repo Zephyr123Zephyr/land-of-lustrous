@@ -662,7 +662,7 @@ public class MapViewerScene {
             do {
                 newGem = new Gem();
                 newGem.collected=false;// Gem constructor assigns type, x, and y randomly
-            } while (gameMap.getTile(newGem.getX(), newGem.getY()).isForbidden);
+            } while (gameMap.getTile(newGem.getX(), newGem.getY()).isForbidden || gameMap.getTile(newGem.getX(), newGem.getY()).isRail);
             gems.add(newGem);
         }
         System.out.println("Generated Gems:");
