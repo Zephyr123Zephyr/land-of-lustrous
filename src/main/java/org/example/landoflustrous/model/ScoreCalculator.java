@@ -46,7 +46,6 @@ public class ScoreCalculator {
             totalGemPoint+=optionBorad.getGemPoint();
             totalCarbonPoint+=optionBorad.getCarbonPoint();
             return "New Option Recorded";
-
         }
         return "Unvalid Option";
 

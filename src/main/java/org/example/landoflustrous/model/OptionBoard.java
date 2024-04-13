@@ -17,7 +17,7 @@ public class OptionBoard {
     private int optionBoardID;//自己的ID
     private int gemID;//针对哪个ID的宝石
     private int gemPoint;//携带多少宝石分
-    private int carbonPoint;//携带多少碳分
+    private double carbonPoint;//携带多少碳分
     private int lifeTime;//用户选择时间
     private boolean successFlg;//用户是否选择成功
     private boolean visible = true;
@@ -26,7 +26,7 @@ public class OptionBoard {
 
     }
 
-    public OptionBoard(int gemPoint, int carbonPoint, boolean successFlg) {
+    public OptionBoard(int gemPoint, double carbonPoint, boolean successFlg) {
         this.gemPoint = gemPoint;
         this.carbonPoint = carbonPoint;
         this.successFlg = successFlg;
@@ -34,7 +34,7 @@ public class OptionBoard {
 
 
 
-    public VBox createOptionBoard(Route route, Gem gem) {
+    public VBox createOptionBoard(List<Route> routeList, Gem gem) {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         int test =1;
@@ -47,35 +47,24 @@ public class OptionBoard {
         // 创建表单内容
         Label titleLabel = new Label("Choose Route:");
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;"); // 设置标题样式
+        for(int i=0;i<routeList.size();i++){
+            String s = "Route "+(i+1)+" Time Cost: "+routeList.get(i).getTotalCost();
+            Button routeButton = new Button(s);
+            routeButton.setId("Route"+(i+1)); // 设置按钮ID
+            routeButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+            routeButton.setOnAction(event -> {
+                this.successFlg = true;
+                setVisible(false);  // 用户做出选择，设置面板不可见
+            });
+            root.getChildren().add(routeButton);
+        }
+        root.getChildren().addAll(countdownLabel, titleLabel);
 
-        Button routeAButton = new Button("Route A");
-        routeAButton.setId("routeAButton"); // 设置按钮ID
-        routeAButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
 
-        routeAButton.setOnAction(event -> {
-            this.successFlg = true;
-            setVisible(false);  // 用户做出选择，设置面板不可见
-        });
 
-        Button routeBButton = new Button("Route B");
-        routeBButton.setId("routeBButton"); // 设置按钮ID
-        routeBButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #008CBA; -fx-text-fill: white;");
 
-        routeBButton.setOnAction(event -> {
-            this.successFlg = true;
-            setVisible(false);  // 用户做出选择，设置面板不可见
-        });
 
-        Button routeCButton = new Button("Route C");
-        routeCButton.setId("routeCButton"); // 设置按钮ID
-        routeCButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #f44336; -fx-text-fill: white;");
 
-        routeCButton.setOnAction(event -> {
-            this.successFlg = true;
-            setVisible(false);  // 用户做出选择，设置面板不可见
-        });
-
-        root.getChildren().addAll(countdownLabel, titleLabel, routeAButton, routeBButton, routeCButton);
 
         // 创建倒计时动画
         Timeline countdownTimeline = new Timeline(
@@ -143,7 +132,7 @@ public class OptionBoard {
         this.gemPoint = gemPoint;
     }
 
-    public int getCarbonPoint() {
+    public double getCarbonPoint() {
         return carbonPoint;
     }
 

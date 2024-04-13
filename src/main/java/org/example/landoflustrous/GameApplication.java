@@ -1,6 +1,7 @@
 package org.example.landoflustrous;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.example.landoflustrous.model.Gem;
 import org.example.landoflustrous.model.ScoreCalculator;
@@ -20,12 +21,13 @@ public class GameApplication extends Application {
     private NavigationService navigationService;
 
     private ScoreCalculator scoreCalculator = new ScoreCalculator();
+    private TimeLifeCalculator timeLifeCalculator = new TimeLifeCalculator(3000);//最多使用时间是
 
 
     @Override
     public void start(Stage primaryStage) {
         GameStartScene gameStartScene = new GameStartScene();
-        primaryStage.setScene(gameStartScene.createStartScene(primaryStage,scoreCalculator));
+        primaryStage.setScene(gameStartScene.createStartScene(primaryStage,scoreCalculator,timeLifeCalculator));
         primaryStage.setTitle("Game Demo");
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -63,6 +65,8 @@ public class GameApplication extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+
 
 }
 
