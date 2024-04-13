@@ -42,7 +42,7 @@ public class MapViewerScene {
     private Label timeLeftLabel;
     private Label scoreLabel;
     private GameMap gameMap;
-    private static final int statusBoardHeight = 100;
+    private static final int statusBoardHeight = 10;
     private static final int TILE_SIZE = 20;
     private ImageView playerSprite;
     private java.util.Queue<Gem> gemQueue;
@@ -242,6 +242,7 @@ public class MapViewerScene {
 
             //绑定按钮
             for(int j=0;j<routeList.size();j++){
+                Route currentRoute = routeList.get(j);
                 List<Tile> tileList = routeList.get(j).totalTileList();
                 double carbonPoint = routeList.get(j).getTotalCarbon();
                 int totalCost = routeList.get(j).getTotalCost();
@@ -253,7 +254,7 @@ public class MapViewerScene {
                     temp.collected=true;
                     currentGemList.set(cycle,temp);
 
-                    OptionBoard curOptionBoard = new OptionBoard(10, carbonPoint, true);
+                    OptionBoard curOptionBoard = new OptionBoard(10, currentRoute.getTotalCarbon(), true);
 
                     curLevelCarbonPoint+=curOptionBoard.getCarbonPoint();
                     curLevelGemPoint+=curOptionBoard.getGemPoint();
@@ -264,7 +265,7 @@ public class MapViewerScene {
                     Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
                     ////需要生成当前地图的Route实例-保存PathList
                     //然后绑定表单控件的id来选择
-                    createMapScene_AfterChooseOption(stage, path, scoreCalculator,temp,timeLifeCalculator,curOptionBoard);
+                    createMapScene_AfterChooseOption(stage, currentRoute, scoreCalculator,temp,timeLifeCalculator,curOptionBoard);
                 });
             }
 
@@ -339,7 +340,7 @@ public class MapViewerScene {
 
     }
 
-    public void createMapScene_AfterChooseOption(Stage stage, Path path, ScoreCalculator scoreCalculator, Gem gem, TimeLifeCalculator timeLifeCalculator, OptionBoard curOptionBoard) {
+    public void createMapScene_AfterChooseOption(Stage stage, Route route, ScoreCalculator scoreCalculator, Gem gem, TimeLifeCalculator timeLifeCalculator, OptionBoard curOptionBoard) {
         base = new javafx.scene.layout.VBox();
         Pane root = new Pane();
         drawMap(root);
@@ -411,7 +412,7 @@ public class MapViewerScene {
             });
             root.getChildren().add(buttonTestToOver);
 
-            stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
+            stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, (gameMap.getHeight()+statusBoardHeight) * TILE_SIZE));
 
             stage.show();
             return;
@@ -458,17 +459,24 @@ public class MapViewerScene {
         root.getChildren().add(buttonKeepLevel);
 
         //小人走路
+        final int[] pathIndex = {0};  // Index for paths in the route
+        final int[] tileIndex = {0};  // Index for tiles within the current path
         final int[] changeCount = {0};
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(0.1), event -> {
-                    if (changeCount[0] < path.getTileList().size()) {
-                        double newX = path.getTileList().get(changeCount[0]).x*TILE_SIZE; // 增加水平方向的坐标
-                        double newY = path.getTileList().get(changeCount[0]).y*TILE_SIZE; // 增加垂直方向的坐标
-                        //循环条件可以改成便利Path中的Tile的X Y坐标 当前时间间隔是0.5秒
+                new KeyFrame(Duration.seconds(0.1), event -> {if (pathIndex[0] < route.getPathList().size()) {
+                    Path currentPath = route.getPathList().get(pathIndex[0]);
+                    if (tileIndex[0] < currentPath.getTileList().size()) {
+                        Tile currentTile = currentPath.getTileList().get(tileIndex[0]);
+                        double newX = currentTile.x * TILE_SIZE;
+                        double newY = currentTile.y * TILE_SIZE;
+                        updatePlayerSpriteImage(currentPath.getTrafficType()); // Update image based on TrafficType
                         playerSprite.setX(newX);
                         playerSprite.setY(newY);
-                        changeCount[0]++;
-//                        System.out.println(newX+" "+newY);
+                        tileIndex[0]++;
+                    } else {
+                        tileIndex[0] = 0;  // Reset tile index for next path
+                        pathIndex[0]++;  // Move to next path in the route
+                    }
                     } else {
 
                         new Timeline().stop();
@@ -511,11 +519,36 @@ public class MapViewerScene {
 
 
 
+
         stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
         timeline.setCycleCount(Timeline.INDEFINITE); // 设置为无限循环
         timeline.play(); // 启动时间轴
         stage.show();
 
+    }
+    private void updatePlayerSpriteImage(TrafficType trafficType) {
+        String imagePath;
+        switch (trafficType) {
+            case BIKE:
+                imagePath = "/images/bike.png";
+                break;
+            case BUS:
+                imagePath = "/images/bus.png";
+                break;
+            case TRAIN:
+                imagePath = "/images/rail.png";
+                break;
+            case CAR:
+                imagePath = "/images/texi.png";
+                break;
+            case WALK:
+                imagePath = "/images/side.png";
+                break;
+            default:
+                imagePath = "/images/player.png"; // Default case for walking or unknown
+                break;
+        }
+        playerSprite.setImage(new Image(getClass().getResourceAsStream(imagePath)));
     }
 
     private void drawMap(Pane root) {
@@ -563,6 +596,11 @@ public class MapViewerScene {
             e.printStackTrace();
             throw new RuntimeException("Failed to add player character.", e);
         }
+    }
+    //更新小人贴图 update playerSprite according to transportation path
+    private void updatePlayerSpriteImage(String imagePath) {
+        Image newImage = new Image(getClass().getResourceAsStream(imagePath));
+        playerSprite.setImage(newImage);
     }
 
     public void updatePlayerPosition(int x, int y) {
