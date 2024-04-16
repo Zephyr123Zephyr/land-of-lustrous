@@ -111,4 +111,8 @@ public class Path {
         result = 31 * result + cost;
         return result;
     }
+
+    public Path copy() {
+        return new Path(this.trafficType, this.tileList);
+    }
 }
