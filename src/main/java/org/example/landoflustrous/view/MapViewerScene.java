@@ -43,11 +43,11 @@ public class MapViewerScene {
 // 将“Level 1”与另一个Map进行映射，这个Map包含关于“Level 1”的详细信息。
         levelPathMapping.put("Level 1", Map.of(
 
-                "map", "/maps/map1/map.txt",
+                "map", "/maps/map1/level1/map.txt",
 
-                "rail", List.of("/maps/map1/rail.txt"),
+                "rail", List.of("/maps/map1/level1/rail.txt"),
 
-                "bus", List.of("/maps/map1/bus1.txt", "/maps/map1/bus2.txt")));
+                "bus", List.of("/maps/map1/level1/bus1.txt", "/maps/map1/level1/bus2.txt")));
     }
 
 

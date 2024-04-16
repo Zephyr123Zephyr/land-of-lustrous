@@ -54,7 +54,7 @@ public class NavigationService {
     }
 
     public static void main(String[] args) throws IOException {
-        GameMap gameMap = new GameMap("/maps/map1/map.txt", List.of("/maps/map1/rail.txt"), List.of("/maps/map1/bus1.txt", "/maps/map1/bus2.txt"));
+        GameMap gameMap = new GameMap("/maps/map1/level1/map.txt", List.of("/maps/map1/level1/rail.txt"), List.of("/maps/map1/level1/bus1.txt", "/maps/map1/level1/bus2.txt"));
         NavigationService navigationService = new NavigationService(gameMap);
         List<Route> routeList = navigationService.navigate(new Coordinated(5, 27), new Coordinated(25, 12));
         routeList.forEach(route -> {

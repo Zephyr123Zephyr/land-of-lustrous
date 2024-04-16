@@ -28,9 +28,9 @@ public class SimpleMapCreator extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Pane root = new GridPane();
-        List<String> mapData = readMapFile("src/main/resources/maps/map1/map.txt");  // 读取地图数据
+        List<String> mapData = readMapFile("src/main/resources/maps/map1/level2/map.txt");  // 读取地图数据
         generateMap(root, mapData);  // 生成地图
-        savePaneAsImage(root, "simple_map.png");  // 保存地图为PNG
+        savePaneAsImage(root, "simple_map_level2.png");  // 保存地图为PNG
 
         Scene scene = new Scene(root);
         primaryStage.setTitle("Simple Map Creator");
@@ -69,9 +69,11 @@ public class SimpleMapCreator extends Application {
             case '4':
                 return Color.web("#98b584"); // 使用绿色表示草地
             case '7':
-                return Color.web("#d75659");//自行车站
+                return Color.DARKGREEN;//自行车站
             case '8':
                 return Color.GRAY; //公交站
+            case '3':
+                return Color.web("#bf7203");  //公路且铁路，即交叉点
 
             default:
                 return Color.web("#98b584");
