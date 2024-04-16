@@ -67,7 +67,7 @@ public class PublicStrategy extends TrafficStrategy {
         List<Path> pathList = new ArrayList<>();
         Path currentPath = null;
         for (int i = 0;i < stationList.size() - 1;i++) {
-            Path thisPath = matrix.get(stationList.get(i)).get(stationList.get(i + 1)).getPath();
+            Path thisPath = matrix.get(stationList.get(i)).get(stationList.get(i + 1)).getPath().copy();
             if (currentPath == null) currentPath = thisPath;
             else if (currentPath.getTrafficType() == thisPath.getTrafficType()) currentPath.appendPath(thisPath);
             else {
