@@ -12,14 +12,14 @@ import javafx.stage.Stage;
 import org.example.landoflustrous.model.ScoreCalculator;
 import org.example.landoflustrous.model.TimeLifeCalculator;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class LevelSelectionScene {
 
 
-
-
     public Scene createLevelSelectionScene(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+
         // Create the grid pane for the images
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -27,30 +27,43 @@ public class LevelSelectionScene {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-//        // Define each ImageView and Button
-//        ImageView imageView1 = createImageView("/gui/img/image1.jpg");
-//        Button button1 = createImageButton(imageView1, () -> openMapPage(stage, "Map 1"));
-//
-//        ImageView imageView2 = createImageView("/gui/img/image1.jpg");
-//        Button button2 = createImageButton(imageView2, () -> openMapPage(stage, "Map 2"));
-//
-//        ImageView imageView3 = createImageView("/gui/img/image1.jpg");
-//        Button button3 = createImageButton(imageView3, () -> openMapPage(stage, "Map 3"));
-//
-//        ImageView imageView4 = createImageView("/gui/img/image1.jpg");
-//        Button button4 = createImageButton(imageView4, () -> openMapPage(stage, "Map 4"));
-        // Modified Implementation to interact with updated openMapPage method. Difference: parameter takes 'Level 1' instead of 'Map 1'
         ImageView imageView1 = createImageView("/images/image1.jpg");
-        Button button1 = createImageButton(imageView1, () -> openMapPage(stage, "Level 1",scoreCalculator,timeLifeCalculator));
+        Button button1 = createImageButton(imageView1, () -> {
+            try {
+                openMapPage(stage, "Level 1", scoreCalculator, timeLifeCalculator);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         ImageView imageView2 = createImageView("/images/image2.jpg");
-        Button button2 = createImageButton(imageView2, () -> openMapPage(stage, "Level 2",scoreCalculator,timeLifeCalculator));
+        Button button2 = createImageButton(imageView2, () -> {
+            try {
+                openMapPage(stage, "Level 2", scoreCalculator, timeLifeCalculator);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         ImageView imageView3 = createImageView("/images/image3.jpg");
-        Button button3 = createImageButton(imageView3, () -> openMapPage(stage, "Level 3",scoreCalculator,timeLifeCalculator));
+        Button button3 = createImageButton(imageView3, () -> {
+            try {
+                openMapPage(stage, "Level 3", scoreCalculator, timeLifeCalculator);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         ImageView imageView4 = createImageView("/images/image4.jpg");
-        Button button4 = createImageButton(imageView4, () -> openMapPage(stage, "Level 4",scoreCalculator,timeLifeCalculator));
+        Button button4 = createImageButton(imageView4, () -> {
+            try {
+                openMapPage(stage, "Level 4", scoreCalculator, timeLifeCalculator);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+
         // Add buttons to the grid instead of ImageViews
         grid.add(button1, 0, 0);
         grid.add(button2, 1, 0);
@@ -68,8 +81,10 @@ public class LevelSelectionScene {
         StackPane.setAlignment(returnBtn, Pos.BOTTOM_CENTER);
         StackPane.setMargin(returnBtn, new Insets(0, 0, 20, 0));
 
+
         // Create the scene with the stack pane as the root
-        return new Scene(rootStack, 640, 480);
+        return new Scene(rootStack, 1500, 900);
+
     }
 
     private ImageView createImageView(String imagePath) {
@@ -91,29 +106,15 @@ public class LevelSelectionScene {
         return button;
     }
 
-    //    private void openMapPage(Stage stage, String mapName) {
-//        Label mapLabel = new Label(mapName); // For demonstration
-//        VBox mapPageLayout = new VBox(mapLabel);
-//        mapPageLayout.setAlignment(Pos.CENTER);
-//        Scene mapPageScene = new Scene(mapPageLayout, 300, 200);
-//        stage.setScene(mapPageScene);
-//    }
-    // Modified implementation to link with MapViewerScene.java.
-//    private void openMapPage(Stage stage, String levelIdentifier) {
-//        MapViewerScene mapViewer = new MapViewerScene(levelIdentifier); // Use the level identifier directly
-//        Scene mapScene = mapViewer.createMapScene();
-//        stage.setScene(mapScene);
-//    }
-    public void openMapPage(Stage stage, String levelIdentifier, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+
+    public void openMapPage(Stage stage, String levelIdentifier, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) throws IOException {
         MapViewerScene mapViewer = new MapViewerScene(levelIdentifier); // Use the level identifier directly
 //        Scene mapScene = mapViewer.createMapScene();
-        mapViewer.createMapScene(stage,scoreCalculator,timeLifeCalculator);
+        mapViewer.createMapScene(stage, scoreCalculator, timeLifeCalculator);
 
     }
 
 }
-
-
 
 //public class LevelSelection extends Application {
 //

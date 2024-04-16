@@ -39,4 +39,14 @@ public class Tile extends Coordinated {
             default -> throw new IllegalArgumentException("Invalid index: " + index);
         };
     }
+
+    // Getter for x coordinate
+    public int getX() {
+        return x;
+    }
+
+    // Getter for y coordinate
+    public int getY() {
+        return y;
+    }
 }

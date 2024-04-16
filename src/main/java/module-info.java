@@ -16,4 +16,6 @@ module org.example.landoflustrous {
     exports org.example.landoflustrous;
     exports org.example.landoflustrous.controller;
     opens org.example.landoflustrous.controller to javafx.fxml;
+
+    exports org.example.landoflustrous.util to javafx.graphics;
 }

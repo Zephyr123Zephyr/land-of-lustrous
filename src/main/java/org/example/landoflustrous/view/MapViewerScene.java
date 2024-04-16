@@ -6,325 +6,363 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.geometry.Insets;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import org.example.landoflustrous.model.*;
+import org.example.landoflustrous.service.NavigationService;
 
 import java.io.IOException;
 import java.util.*;
 
-import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
-import javafx.util.Duration;
-
-// Imports for saving map snapshot
-import javafx.embed.swing.SwingFXUtils;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javafx.application.Platform;
-import javafx.scene.image.WritableImage;
-import javafx.scene.SnapshotParameters;
-import org.example.landoflustrous.model.*;
-import org.example.landoflustrous.service.NavigationService;
-
 
 public class MapViewerScene {
     private static final int MAX_GEMS_PER_LEVEL = 5;
-    //TODO: HARD CODED. Subject to change for each level (controller's job)
     private Pane root;
     private VBox base;// the base of map and status board
-
-    private Label carbonFootprintLabel;
-    private Label timeLeftLabel;
-    private Label scoreLabel;
     private GameMap gameMap;
-    private final int statusBoardHeight = 10;
-    private static final int TILE_SIZE = 20;
+    private static final int TILE_SIZE = 30;
     private ImageView playerSprite;
-    private java.util.Queue<Gem> gemQueue;
-        private ImageView currentGemSprite;
     private String levelIdentifier;
-
     private List<Gem> currentGemList;
     private int curLevelGemPoint = 0;
     private int curLevelCarbonPoint = 0;
-    private int curLevelGemNum=0;
-    private int curLevelTimeUse=0;
+    private int curLevelGemNum = 0;
+    private int curLevelTimeUse = 0;
     int pre = -1;
+    private int cycle = 0;
 
-    private int  cycle=0;
-
-    // A mapping from level identifiers to file paths
+    // 定义一个私有的、静态的、不可变的HashMap，用于存储“level”与另一个“Map”之间的映射关系。这个“Map”则包含键值对，其中键为字符串类型，值为Object类型。
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
 
-    //TODO: MOVE TO CONFIG AFTER MAKING SURE IT RUNS
+
     static {
-        // Initialize the mapping of levels to files
+// 将“Level 1”与另一个Map进行映射，这个Map包含关于“Level 1”的详细信息。
         levelPathMapping.put("Level 1", Map.of(
-                "map", "/maps/map1/map.txt", // Single string for the map file path
-                "rail", List.of("/maps/map1/rail.txt"), // List for rail file paths
-                "bus", List.of("/maps/map1/bus1.txt", "/maps/map1/bus2.txt"))); // List for bus file paths
-//        levelPathMapping.put("Level 2", Map.of(
-//                "map", "LocalJavaGame/MapEdit/level2/map.txt",
-//                "rail", List.of("LocalJavaGame/MapEdit/leve2/rail.txt"),
-//                "bus", List.of("MapEdit/leve2/bus.txt")));
-        // Add mappings for other levels as needed
 
+                "map", "/maps/map1/map.txt",
 
+                "rail", List.of("/maps/map1/rail.txt"),
+
+                "bus", List.of("/maps/map1/bus1.txt", "/maps/map1/bus2.txt")));
     }
 
+
+    //根据传入的关卡标识符，从预先定义的路径映射中获取相关文件的路径，并用这些路径创建一个 GameMap 对象，然后初始化宝石序列
     public MapViewerScene(String levelIdentifier) {
         this.levelIdentifier = levelIdentifier;
 
-
-        
         Map<String, Object> paths = levelPathMapping.get(levelIdentifier);
         if (paths != null) {
             try {
-                // Cast the objects back to their expected types
                 String mapPath = (String) paths.get("map");
+
                 List<String> railPaths = (List<String>) paths.get("rail");
+
                 List<String> busPaths = (List<String>) paths.get("bus");
 
-                // Pass the extracted paths to the GameMap constructor
+
                 this.gameMap = new GameMap(mapPath, railPaths, busPaths);
-                initializeGemSequence();//gemList本关的在该函数中存储完毕
+// 调用initializeGemSequence方法，初始化本关的宝石序列，并在该函数中存储完毕。
+                initializeGemSequence();
             } catch (IOException e) {
-                e.printStackTrace(); // TODO: Consider a better error handling strategy
+// 如果在文件操作中出现异常，打印堆栈跟踪信息。
+// TODO: 这里应该考虑更好的错误处理策略，例如提供用户友好的错误提示或记录日志。
+                e.printStackTrace();
             } catch (ClassCastException e) {
-                e.printStackTrace(); // This will catch any cast errors in case of a wrong type
+// 如果在类型转换过程中出现错误，捕获ClassCastException并打印堆栈跟踪信息。
+// 这将捕获任何由于类型错误导致的转换异常。
+                e.printStackTrace();
             }
         } else {
+// 如果根据levelIdentifier没有找到对应的路径映射，则抛出IllegalArgumentException异常。
             throw new IllegalArgumentException("Invalid level identifier: " + levelIdentifier);
         }
-
     }
 
-    //    public Scene createMapScene() {
-//        Pane root = new Pane();
-//        drawMap(root);
-//        // TODO: this is for testing purpose. Move player instantiation to controller later
-//        // Instantiate a player character for testing
-//        PlayerCharacter testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
-//
-//        // Add the player character to the scene
-//        addPlayerCharacter(root, testPlayer);
-//        playerSprite.toFront();
-//        playerSprite.setOpacity(1.0);
-//    playerSprite.setVisible(true);
-//        return new Scene(root, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE);
-//    }
-    public void createMapScene(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
-        base = new javafx.scene.layout.VBox();
-        root = new Pane();
 
+    private void drawMap(Pane root) {
+
+        Image mapImage = new Image(getClass().getResourceAsStream("/images/map_level1.png"));
+        ImageView mapView = new ImageView(mapImage);
+        mapView.setFitWidth(gameMap.getWidth() * TILE_SIZE);
+        mapView.setFitHeight(gameMap.getHeight() * TILE_SIZE);
+        root.getChildren().add(mapView);
+    }
+
+
+    public void addPlayerCharacter(Pane root, PlayerCharacter player) {
+        try {
+            // 尝试加载玩家图像，如果图像加载失败，则抛出异常。
+            Image image = new Image(getClass().getResourceAsStream("/images/player.png"));
+            if (image.isError()) {
+                throw new RuntimeException("Error loading player image.");
+            }
+
+            // 创建玩家精灵的 ImageView，并设置图像。
+            playerSprite = new ImageView(image);
+            playerSprite.setFitWidth(TILE_SIZE); // 设置图像视图的宽度以适应地图格子的尺寸。
+            playerSprite.setFitHeight(TILE_SIZE);
+
+            // 根据玩家的网格坐标定位精灵。
+            playerSprite.setX(player.getX() * TILE_SIZE);
+            playerSprite.setY(player.getY() * TILE_SIZE);
+
+            // 将玩家精灵添加到根面板中。
+            root.getChildren().add(playerSprite);
+
+        } catch (Exception e) {
+            // 在控制台打印异常堆栈，方便调试。
+            e.printStackTrace();
+            // 向外部抛出运行时异常，指示添加玩家角色失败。
+            throw new RuntimeException("Failed to add player character.", e);
+        }
+    }
+
+
+    // 定义 createMapScene 方法，用于创建游戏的地图场景。这个方法接受一个舞台 (Stage) 对象和两个计算器类的实例，分别用于计算分数和生命时长。
+    public void createMapScene(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+
+        base = new VBox();
+        root = new Pane();
         drawMap(root);
-        // TODO: this is for testing purpose. Move player instantiation to controller later
-        // Instantiate a player character for testing
         PlayerCharacter testPlayer;
 
+// 初始化索引变量来标记最后一次收集的宝石位置。
         int lastCollectedIndex = -1;
-        for(int i=0;i<currentGemList.size();i++){
-            if(currentGemList.get(i).isCollected()){
-                lastCollectedIndex=i;
+
+// 遍历宝石列表，检查每个宝石是否已经被收集。
+        for (int i = 0; i < currentGemList.size(); i++) {
+            if (currentGemList.get(i).isCollected()) {
+                lastCollectedIndex = i;
                 break;
             }
         }
-        if(lastCollectedIndex==-1){
-            testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
-        }else{
-            testPlayer = new PlayerCharacter("TestPlayer", currentGemList.get(lastCollectedIndex).getX(), currentGemList.get(lastCollectedIndex).getY(), 100, null, null, 1); // Adjust the parameters as needed
+
+        // 根据宝石的收集情况，初始化测试玩家的位置和状态。
+        // 检查上一次收集的宝石索引，如果为-1，则表示没有收集到任何宝石。
+        if (lastCollectedIndex == -1) {
+            // 如果没有收集到宝石，则初始化测试玩家在地图的默认位置（例如，坐标(2, 2)）上，并且设置其初始状态（如生命值为100）。
+            // PlayerCharacter构造函数的参数分别为：玩家名称、玩家初始X坐标、玩家初始Y坐标、玩家初始生命值、其他可能的参数（此处为null）、其他可能的参数（此处为null）、玩家等级。
+            testPlayer = new PlayerCharacter("TestPlayer", 0, 0, 100, null, null, 1);
+        } else {
+            // 如果收集到了宝石（lastCollectedIndex不是-1），则根据最后收集的宝石的位置来初始化测试玩家的位置。
+            // 获取最后收集的宝石的X坐标和Y坐标。
+            // currentGemList是一个存储宝石信息的列表，lastCollectedIndex是最后一次收集的宝石在列表中的索引。
+            // getX()和getY()方法用于获取宝石的坐标。
+            // 然后使用这些坐标作为测试玩家的初始位置，并设置其初始状态（如生命值为100）。
+            testPlayer = new PlayerCharacter("TestPlayer", currentGemList.get(lastCollectedIndex).getX(), currentGemList.get(lastCollectedIndex).getY(), 100, null, null, 1);
         }
-        // Add the player character to the scene
+
+
+// 将测试玩家添加到场景中。
         addPlayerCharacter(root, testPlayer);
-        //底部显示栏
-        Pane statusBoard = createStatusBoard(scoreCalculator,timeLifeCalculator);
-        base.getChildren().add(root); // Add the map pane to the base VBox
-        base.getChildren().add(statusBoard); // Add the status board pane to the base VBox
 
+        // 创建状态显示板，并将其添加到 VBox 布局中。
+        Pane statusBoard = createStatusBoard(scoreCalculator, timeLifeCalculator);
+        base.getChildren().add(root);
+        base.getChildren().add(statusBoard);
 
+        // 设置玩家的精灵为最前显示，并设置其不透明度和可见性。
         playerSprite.toFront();
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
 
-        //获取当前起点 以及 目标钻石的路线集合
+// 实例化导航服务，并计算从当前玩家位置到目标宝石的路线。
         NavigationService navigationService = new NavigationService(gameMap);
-        List<Route> routeList = navigationService.navigate(new Coordinated(testPlayer.getX(),testPlayer.getY()),new Coordinated(currentGemList.get(cycle).getX(),currentGemList.get(cycle).getY()));
 
 
+// 创建一个从测试玩家当前位置到指定宝石位置的导航路线列表。
+
+// 获取测试玩家的当前坐标
+        Coordinated playerCoordinate = new Coordinated(testPlayer.getX(), testPlayer.getY());
+
+// 获取目标宝石的坐标
+// 在 Java 中，List 接口提供了 get(int index) 方法，这使得我们可以通过索引来访问列表中的元素。
+        Coordinated gemCoordinate = new Coordinated(currentGemList.get(cycle).getX(), currentGemList.get(cycle).getY());
+
+// 使用导航服务计算从玩家到宝石的路线
+        List<Route> routeList = navigationService.navigate(playerCoordinate, gemCoordinate);
 
 
-        //optionboard code
-            int i=cycle;
-            Gem currentGem = currentGemList.get(i);
-            Image image = new Image(getClass().getResourceAsStream("/images/" + currentGem.getType() + ".png"));
-            ImageView imageView = new ImageView(image);
-            imageView.setX(currentGem.getX() * TILE_SIZE);
-            imageView.setY(currentGem.getY() * TILE_SIZE);
-            imageView.resize(10, 10);
-            bindTimer(imageView, currentGem.getLiveTime());
-            root.getChildren().add(imageView);
-            Pane optionBoard = new OptionBoard().createOptionBoard(routeList, currentGem);//需要输入Path 或者该章地图的宝石等等参数以确定具体内容
-            Label labelForClick = new Label("UnClick");
-            labelForClick.setVisible(false);
-            root.getChildren().add(labelForClick);
-            if(i==currentGemList.size()-1){
-                String s = labelForClick.textProperty().getValue();
-//                if(labelForClick.textProperty().getValue().equals("UnClick"))
-                {
-                    optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
-                        // 在这里执行属性变化时的操作
-                        Button buttonTestToHome = new Button("Home");
-                        buttonTestToHome.setOnAction(event -> {
-                            stage.setScene(new GameStartScene().createStartScene(stage, scoreCalculator, timeLifeCalculator));
-                        });
-                        root.getChildren().add(buttonTestToHome);
+// 创建选项面板，用于显示路线选择和宝石的相关信息。
+        int i = cycle;
+        Gem currentGem = currentGemList.get(i);
+        Image image = new Image(getClass().getResourceAsStream("/images/" + currentGem.getType() + ".png"));
+        ImageView imageView_gem = new ImageView(image);
+        imageView_gem.setX(currentGem.getX() * TILE_SIZE);
+        imageView_gem.setY(currentGem.getY() * TILE_SIZE);
+        imageView_gem.resize(30, 30);
 
-                        Pane level = createLevlResultCardWithLabels();
-                        level.setLayoutX(100);
-                        level.setLayoutY(400);
+        //给宝石设置定时消失效果
+        bindTimer(imageView_gem, currentGem.getLiveTime());
 
-                        root.getChildren().add(level);
+        root.getChildren().add(imageView_gem);
 
-                        //返回下一关按钮如果分数满足的话 直接下一关
-                        Button buttonToNextLevel = new Button("To Next Level");
-                        buttonToNextLevel.setOnAction(event -> {
-//                        String s = "Level "+(levelIdentifier.charAt(levelIdentifier.length()-1)-'0'+1);
-                            String s1 = "Level 1";
-                            new LevelSelectionScene().openMapPage(stage, s1,scoreCalculator,timeLifeCalculator);
-                        });
-                        buttonToNextLevel.setVisible(false);
+        Pane optionBoard = new OptionBoard().createOptionBoard(routeList, currentGem);
 
-                        //返回下一关按钮如果分数不满足的话 游戏失败 结算
-                        Button buttonTestToOver = new Button("分数不足 结算");
-                        buttonTestToOver.setOnAction(event -> {
-                            stage.setScene(new GameOverScene(stage,scoreCalculator,timeLifeCalculator).getScene());
-                        });
-                        root.getChildren().add(buttonTestToOver);
-                        buttonTestToOver.setVisible(false);
-                        int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length()-1)-'0')*10;
-                        if(curLevelGemPoint>=objectScoreLvel){buttonToNextLevel.setVisible(true);}else{buttonTestToOver.setVisible(true);}
+        Label labelForClick = new Label("UnClick");
+        labelForClick.setVisible(false);
+        root.getChildren().add(labelForClick);
 
-                        root.getChildren().add(buttonToNextLevel);
-
-                    });
-                }
-
-            }else{
+// 根据是否到达最后一个宝石，配置选项板的行为。
+        if (i == currentGemList.size() - 1) {
+            String s = labelForClick.textProperty().getValue();
+            {
                 optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
-                    // 在这里执行属性变化时的操作
-                   String s = labelForClick.textProperty().getValue();
-                    if(labelForClick.textProperty().getValue().equals("UnClick")){
-                       cycle++;
-                       createMapScene(stage, scoreCalculator, timeLifeCalculator);
-                   }
+// 添加返回主页按钮。
+                    Button buttonTestToHome = new Button("Home");
+                    buttonTestToHome.setOnAction(event -> {
+                        stage.setScene(new GameStartScene().createStartScene(stage, scoreCalculator, timeLifeCalculator));
+                    });
+                    root.getChildren().add(buttonTestToHome);
+
+// 创建等级结果卡片，并将其添加到场景中。
+                    Pane level = createLevlResultCardWithLabels();
+                    level.setLayoutX(100);
+                    level.setLayoutY(400);
+
+                    root.getChildren().add(level);
+
+// 根据分数决定是否显示“进入下一关”或“游戏结束”按钮。
+                    Button buttonToNextLevel = new Button("To Next Level");
+                    Button buttonTestToOver = new Button("分数不足 结算");
+                    root.getChildren().add(buttonTestToOver);
+                    buttonTestToOver.setVisible(false);
+
+                    int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
+                    //                        buttonToNextLevel.setVisible(true);
+                    if (curLevelGemPoint >= objectScoreLvel) {
+                        buttonToNextLevel.setVisible(true);
+                    } else {
+                        buttonTestToOver.setVisible(true);
+                    }
+
+                    root.getChildren().add(buttonToNextLevel);
 
                 });
             }
 
-            optionBoard.setLayoutX(200);
-            optionBoard.setLayoutY(100);
-
-
-
-            //绑定按钮
-            for(int j=0;j<routeList.size();j++){
-                Route currentRoute = routeList.get(j);
-                List<Tile> tileList = routeList.get(j).totalTileList();
-                double carbonPoint = routeList.get(j).getTotalCarbon();
-                int totalCost = routeList.get(j).getTotalCost();
-                ((Button) optionBoard.lookup("#Route"+(j+1))).setOnAction(event -> {
-
-                    labelForClick.setText("click");
-                    optionBoard.setVisible(false);
-                    Gem temp = currentGemList.get(cycle);
-                    temp.collected=true;
-                    currentGemList.set(cycle,temp);
-
-                    OptionBoard curOptionBoard = new OptionBoard(temp.getScore(), currentRoute.getTotalCarbon(), true);
-
-                    curLevelCarbonPoint+=curOptionBoard.getCarbonPoint();
-                    curLevelGemPoint+=curOptionBoard.getGemPoint();
-                    curLevelTimeUse+=currentRoute.getTotalCost();
-                    curLevelGemNum++;
-                    if(timeLifeCalculator.getCurLifeRemain()-totalCost<0){pre=totalCost;}else{scoreCalculator.addPoints(curOptionBoard);}
-                    timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain()-totalCost);
-
-                    Path path = new Path(TrafficType.BIKE, tileList);//自己生成的
-                    ////需要生成当前地图的Route实例-保存PathList
-                    //然后绑定表单控件的id来选择
-                    createMapScene_AfterChooseOption(stage, currentRoute, scoreCalculator,temp,timeLifeCalculator,curOptionBoard);
-                });
-            }
-
+        }
+//        else {
+//            optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
+//// 当选项板状态改变时，如果未点击则进入下一次循环。
+//                String s = labelForClick.textProperty().getValue();
+//                if (labelForClick.textProperty().getValue().equals("UnClick")) {
+//                    cycle++;
+//                    createMapScene(stage, scoreCalculator, timeLifeCalculator);
+//                }
 //
-            root.getChildren().add(optionBoard);
-        // Line to save map background dynamically generated
-        //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
-        stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE + statusBoardHeight));
-        stage.show();
-        // Line to save map background dynamically generated
-        //    Platform.runLater(() -> savePaneAsImage(root, "src/gui/img/map_image.png"));
+//            });
+//        }
 
+        optionBoard.setLayoutX(200);
+        optionBoard.setLayoutY(100);
+
+// 绑定按钮以处理路线选择。
+        for (int j = 0; j < routeList.size(); j++) {
+            Route currentRoute = routeList.get(j);
+            List<Tile> tileList = routeList.get(j).totalTileList();
+            double carbonPoint = routeList.get(j).getTotalCarbon();
+            int totalCost = routeList.get(j).getTotalCost();
+            ((Button) optionBoard.lookup("#Route" + (j + 1))).setOnAction(event -> {
+// 设置点击行为和更新当前状态。
+                labelForClick.setText("click");
+                optionBoard.setVisible(false);
+                Gem temp = currentGemList.get(cycle);
+                temp.collected = true;
+                currentGemList.set(cycle, temp);
+
+                OptionBoard curOptionBoard = new OptionBoard(temp.getScore(), currentRoute.getTotalCarbon(), true);
+
+                curLevelCarbonPoint += curOptionBoard.getCarbonPoint();
+                curLevelGemPoint += curOptionBoard.getGemPoint();
+                curLevelTimeUse += currentRoute.getTotalCost();
+                curLevelGemNum++;
+                if (timeLifeCalculator.getCurLifeRemain() - totalCost < 0) {
+                    pre = totalCost;
+                } else {
+                    scoreCalculator.addPoints(curOptionBoard);
+                }
+                timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain() - totalCost);
+
+                Path path = new Path(TrafficType.BIKE, tileList);
+                createMapScene_AfterChooseOption(stage, currentRoute, scoreCalculator, temp, timeLifeCalculator, curOptionBoard);
+            });
+        }
+
+        root.getChildren().add(optionBoard);
+
+// 设置场景，并显示舞台。
+// stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE + statusBoardHeight));
+
+        stage.setScene(new Scene(base, 1500, 900));
+        stage.show();
     }
 
-    private Pane createStatusBoard(ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
-        // Create a horizontal box to hold the status labels
-        HBox statusBoard = new HBox(10);
-        statusBoard.setPadding(new Insets(10));
-        statusBoard.setStyle("-fx-background-color: #FFFFFF;"); // Set a background color
 
-        // Create labels for the player status
-        String s = scoreCalculator.getTotalCarbonPoint()==-1?"N/A":(""+scoreCalculator.getTotalCarbonPoint());
+    // 定义一个私有方法 createStatusBoard，用于创建游戏的状态显示板。该方法接收两个参数：scoreCalculator 和 timeLifeCalculator，分别用于计分和计算剩余时间。
+    private Pane createStatusBoard(ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+
+        HBox statusBoard = new HBox(30);
+
+//        VBox.setMargin(statusBoard, new Insets(100, 0, 0, 0));
+
+        statusBoard.setStyle("-fx-background-color: #FFFFFF;");
+
+        // 创建并初始化碳足迹标签，显示当前的总碳点数。如果碳点数未初始化，则显示 "N/A"。
+        String s = scoreCalculator.getTotalCarbonPoint() == -1 ? "N/A" : ("" + scoreCalculator.getTotalCarbonPoint());
         Label carbonFootprintLabel = new Label("Carbon Footprint: " + s);
 
+        // 创建并初始化剩余时间标签，显示当前的生命剩余时间。
         Label timeLeftLabel = new Label("Time Left: " + timeLifeCalculator.getCurLifeRemain());
-        s = scoreCalculator.getTotalGemPoint()==-1?"N/A":(""+scoreCalculator.getTotalGemPoint());
+
+        // 创建并初始化宝石分数标签，显示当前的总宝石点数。如果宝石点数未初始化，则显示 "N/A"。
+        s = scoreCalculator.getTotalGemPoint() == -1 ? "N/A" : ("" + scoreCalculator.getTotalGemPoint());
         Label scoreLabel = new Label("Gem Score: " + s);
-        // Add labels to the status board
+
+        // 将所有标签添加到状态板中。
         statusBoard.getChildren().addAll(carbonFootprintLabel, timeLeftLabel, scoreLabel);
 
-        // Return the status board pane
+        // 返回包含所有状态信息的 HBox 容器。
         return statusBoard;
-
     }
 
+    // 定义 createMapScene_AfterChooseOption 方法，该方法在用户选择完路径选项后调用，用于更新地图场景和游戏状态。
     public void createMapScene_AfterChooseOption(Stage stage, Route route, ScoreCalculator scoreCalculator, Gem gem, TimeLifeCalculator timeLifeCalculator, OptionBoard curOptionBoard) {
+
         base = new javafx.scene.layout.VBox();
+// 创建根面板，用于添加游戏元素。
         Pane root = new Pane();
+// 绘制地图,接收了
         drawMap(root);
-        // TODO: this is for testing purpose. Move player instantiation to controller later
-        // Instantiate a player character for testing
+// 实例化测试用的玩家角色，注意未来需要移到控制器中。
         PlayerCharacter testPlayer;
 
+// 寻找最后一个被收集的宝石的索引。
         int lastCollectedIndex = -1;
-        for(int i=0;i<currentGemList.size();i++){
-            if(currentGemList.get(i).isCollected()){
-                lastCollectedIndex=i;
+        for (int i = 0; i < currentGemList.size(); i++) {
+            if (currentGemList.get(i).isCollected()) {
+                lastCollectedIndex = i;
                 break;
             }
         }
-        if(lastCollectedIndex==-1){
-            testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1); // Adjust the parameters as needed
-        }else{
-            testPlayer = new PlayerCharacter("TestPlayer", currentGemList.get(lastCollectedIndex).getX(), currentGemList.get(lastCollectedIndex).getY(), 100, null, null, 1); // Adjust the parameters as needed
+// 根据是否有宝石被收集来初始化玩家角色的位置。
+        if (lastCollectedIndex == -1) {
+            testPlayer = new PlayerCharacter("TestPlayer", 2, 2, 100, null, null, 1);
+        } else {
+            testPlayer = new PlayerCharacter("TestPlayer", currentGemList.get(lastCollectedIndex).getX(), currentGemList.get(lastCollectedIndex).getY(), 100, null, null, 1);
         }
-
-        // Add the player character to the scene
+// 将玩家添加到场景中。
         addPlayerCharacter(root, testPlayer);
         playerSprite.toFront();
         playerSprite.setOpacity(1.0);
         playerSprite.setVisible(true);
-        //底部显示栏
 
-         // Add the map pane to the base VBox
-
-        //Add 本关的宝石在scene中 此时不会消失
+// 在场景中添加本关的宝石图像。
         ImageView imageView;
         Image image = new Image(getClass().getResourceAsStream("/images/" + gem.getType() + ".png"));
         imageView = new ImageView(image);
@@ -332,45 +370,79 @@ public class MapViewerScene {
         imageView.setY(gem.getY() * TILE_SIZE);
         imageView.resize(10, 10);
         root.getChildren().add(imageView);
-        //如果选项时间太长，需要提示用户该选择无法支持 游戏失败
-        if(timeLifeCalculator.getCurLifeRemain()<0){
-            timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain()+pre);
-            Pane statusBoard = createStatusBoard(scoreCalculator,timeLifeCalculator);
+
+// 如果剩余时间小于0，说明时间不足，触发游戏结束逻辑处理
+        if (timeLifeCalculator.getCurLifeRemain() < 0) {
+
+// 尝试为剩余时间增加pre值（这里可能是个逻辑错误，因为时间应该不能是负数，这行代码可能是尝试修复负时间的情况）
+// 但这样做并不符合常规的游戏逻辑，通常应该是结束游戏而不是增加时间
+            timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain() + pre);
+
+// 创建一个状态面板，展示分数和时间等游戏状态信息
+            Pane statusBoard = createStatusBoard(scoreCalculator, timeLifeCalculator);
+
+// 创建一个标签，用于显示游戏结束信息
             Label infoLabel = new Label("剩余时间无法支持本次路线选择无效 游戏结束 请点击结算按钮");
+
+// 设置标签的位置
             infoLabel.setLayoutX(100);
             infoLabel.setLayoutY(350);
+
+// 将标签添加到root节点中
             root.getChildren().add(infoLabel);
 
-            curLevelCarbonPoint-=curOptionBoard.getCarbonPoint();
-            curLevelGemPoint-=curOptionBoard.getGemPoint();
+// 更新当前关卡中的碳点数、宝石点数、宝石数量和时间消耗
+            curLevelCarbonPoint -= curOptionBoard.getCarbonPoint();
+            curLevelGemPoint -= curOptionBoard.getGemPoint();
             curLevelGemNum--;
-            curLevelTimeUse-=pre;
+            curLevelTimeUse -= pre;
+
+// 创建一个关卡结果卡片，用于展示关卡结束后的相关信息
             Pane level = createLevlResultCardWithLabels();
+
+// 设置关卡结果卡片的位置
             level.setLayoutX(100);
             level.setLayoutY(400);
 
+// 将关卡结果卡片添加到root节点中
             root.getChildren().add(level);
 
-
+// 创建一个按钮，用于结算游戏
             Button buttonTestToOver = new Button("结算按钮");
+
+// 设置按钮的点击事件处理
             buttonTestToOver.setOnAction(event -> {
-                stage.setScene(new GameOverScene(stage,scoreCalculator,timeLifeCalculator).getScene());
+// 原本这里可能是跳转到游戏结束场景，但现在被注释掉了
+                stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
+
+// 现在点击按钮后直接跳转到分数板场景
+// stage.setScene(new ScoreBoardScene().getScene());
             });
+
+// 将结算按钮添加到root节点中
             root.getChildren().add(buttonTestToOver);
+
+// 将root节点和其他相关组件添加到base节点中
             base.getChildren().add(root);
-            base.getChildren().add(statusBoard); // Add the status board pane to the base VBox
+            base.getChildren().add(statusBoard);
 
+// 创建一个新的场景，将base节点设置为场景的根节点，并设置场景的尺寸
+            stage.setScene(new Scene(base, 1500, 900));
 
-            stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE+statusBoardHeight));
-
+// 显示舞台（即显示整个游戏界面）
             stage.show();
+
+// 返回某种值或继续执行后续逻辑（这里返回类型未明确，可能是void或其他类型）
             return;
         }
-        Pane statusBoard = createStatusBoard(scoreCalculator,timeLifeCalculator);
-        base.getChildren().add(root);
-        base.getChildren().add(statusBoard); // Add the status board pane to the base VBox
 
-        //返回Level按钮测试累加分数
+
+// 添加状态板至主容器。
+        Pane statusBoard = createStatusBoard(scoreCalculator, timeLifeCalculator);
+        base.getChildren().add(root);
+        base.getChildren().add(statusBoard);
+
+// 设置各种按钮并根据游戏状态决定其可见性。
         Button buttonTestToHome = new Button("Home");
         buttonTestToHome.setOnAction(event -> {
             stage.setScene(new GameStartScene().createStartScene(stage, scoreCalculator, timeLifeCalculator));
@@ -378,41 +450,40 @@ public class MapViewerScene {
         buttonTestToHome.setVisible(false);
         root.getChildren().add(buttonTestToHome);
 
-        //返回下一关按钮如果分数满足的话 直接下一关
         Button buttonToNextLevel = new Button("To Next Level");
         buttonToNextLevel.setOnAction(event -> {
-//            String s = "Level "+(levelIdentifier.charAt(levelIdentifier.length()-1)-'0'+1);
-            String s = "Level 1";
-            new LevelSelectionScene().openMapPage(stage, s,scoreCalculator,timeLifeCalculator);
+            String s = "Level 1"; // 此处需根据实际游戏逻辑调整
+            try {
+                new LevelSelectionScene().openMapPage(stage, s, scoreCalculator, timeLifeCalculator);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
+
+
         buttonToNextLevel.setVisible(false);
         root.getChildren().add(buttonToNextLevel);
 
-
-
-        //返回下一关按钮如果分数不满足的话 游戏失败 结算
         Button buttonTestToOver = new Button("分数不足 结算");
         buttonTestToOver.setOnAction(event -> {
-            stage.setScene(new GameOverScene(stage,scoreCalculator,timeLifeCalculator).getScene());
+            stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
         });
-        root.getChildren().add(buttonTestToOver);
         buttonTestToOver.setVisible(false);
+        root.getChildren().add(buttonTestToOver);
 
-        //返回下一关按钮如果分数满足的话 继续玩
         Button buttonKeepLevel = new Button("Keep Playing this Level");
         buttonKeepLevel.setLayoutY(100);
         buttonKeepLevel.setVisible(false);
         buttonKeepLevel.setOnAction(event -> {
             cycle++;
-            createMapScene(stage,scoreCalculator, timeLifeCalculator);
+            createMapScene(stage, scoreCalculator, timeLifeCalculator);
         });
         root.getChildren().add(buttonKeepLevel);
 
-        //小人走路
-        final int[] pathIndex = {0};  // Index for paths in the route
-        final int[] tileIndex = {0};  // Index for tiles within the current path
-        final int[] changeCount = {0};
-        final Timeline[] timeline = new Timeline[1]; // 声明为数组以在匿名类中引用
+// 处理玩家角色按照选定路线移动的动画逻辑。
+        final int[] pathIndex = {0};
+        final int[] tileIndex = {0};
+        final Timeline[] timeline = new Timeline[1];
         timeline[0] = new Timeline(
                 new KeyFrame(Duration.seconds(0.1), event -> {
                     if (pathIndex[0] < route.getPathList().size()) {
@@ -421,56 +492,48 @@ public class MapViewerScene {
                             Tile currentTile = currentPath.getTileList().get(tileIndex[0]);
                             double newX = currentTile.x * TILE_SIZE;
                             double newY = currentTile.y * TILE_SIZE;
-                            updatePlayerSpriteImage(currentPath.getTrafficType()); // Update image based on TrafficType
+                            updatePlayerSpriteImage(currentPath.getTrafficType());
                             playerSprite.setX(newX);
                             playerSprite.setY(newY);
                             tileIndex[0]++;
                         } else {
-                            tileIndex[0] = 0;  // Reset tile index for next path
-                            pathIndex[0]++;  // Move to next path in the route
+                            tileIndex[0] = 0;
+                            pathIndex[0]++;
                         }
                     } else {
-
                         timeline[0].stop();
                         imageView.setVisible(false);
-                        int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length()-1)-'0')*10;
-                        if(cycle==currentGemList.size()-1){
-//                            System.out.println("1");
+                        int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
+                        if (cycle == currentGemList.size() - 1) {
                             Pane level = createLevlResultCardWithLabels();
                             level.setLayoutX(100);
                             level.setLayoutY(400);
 
                             root.getChildren().add(level);
 
-
-                            if(curLevelGemPoint>=objectScoreLvel){buttonToNextLevel.setVisible(true);}else{buttonTestToOver.setVisible(true);}
-
-
-                        }else if(curLevelGemPoint>=objectScoreLvel){
+                            if (curLevelGemPoint >= objectScoreLvel) {
+                                buttonToNextLevel.setVisible(true);
+                            } else {
+                                buttonTestToOver.setVisible(true);
+                            }
+                        } else if (curLevelGemPoint >= objectScoreLvel) {
                             buttonToNextLevel.setVisible(true);
                             buttonKeepLevel.setVisible(true);
-                        }
-                        else{
+                        } else {
                             cycle++;
-                            createMapScene(stage,scoreCalculator, timeLifeCalculator);
-
+                            createMapScene(stage, scoreCalculator, timeLifeCalculator);
                         }
-
-
-
                     }
                 })
         );
 
-
-
-
-        stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE));
-        timeline[0].setCycleCount(Timeline.INDEFINITE); // 设置为无限循环
-        timeline[0].play(); // 启动时间轴
+        stage.setScene(new Scene(base, 1500, 900));
+        timeline[0].setCycleCount(Timeline.INDEFINITE);
+        timeline[0].play();
         stage.show();
-
     }
+
+    // 更新玩家角色的图像以反映当前的移动方式，例如自行车或公交车。
     private void updatePlayerSpriteImage(TrafficType trafficType) {
         String imagePath;
         switch (trafficType) {
@@ -490,267 +553,79 @@ public class MapViewerScene {
                 imagePath = "/images/side.png";
                 break;
             default:
-                imagePath = "/images/player.png"; // Default case for walking or unknown
+                imagePath = "/images/player.png"; // 默认情况下使用行走图像
                 break;
         }
         playerSprite.setImage(new Image(getClass().getResourceAsStream(imagePath)));
     }
 
-    private void drawMap(Pane root) {
-        // Load the map image
-        Image mapImage = new Image(getClass().getResourceAsStream("/images/map_image.png"));
-        ImageView mapView = new ImageView(mapImage);
 
-        // Assuming the image size matches the size of the game map in terms of tiles
-        mapView.setFitWidth(gameMap.getWidth() * TILE_SIZE);
-        mapView.setFitHeight(gameMap.getHeight() * TILE_SIZE);
-
-        // Add the ImageView to the root pane
-        root.getChildren().add(mapView);
-
-        // draw transparant rectangles 透明格子
-    for (int y = 0; y < gameMap.getHeight(); y++) {
-        for (int x = 0; x < gameMap.getWidth(); x++) {
-            Rectangle rect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            rect.setFill(Color.TRANSPARENT); // Set the fill to transparent
-            root.getChildren().add(rect);
-        }
-
-    }
-
-//    private Color getTileColor(Tile tile) {
-//        // Replace with your actual tile property checks and color assignments
-//        if (tile.isRail) {
-//            return Color.YELLOW;
-//        } else if (tile.isRoad) {
-//            return Color.GRAY;
-//        } else if (tile.isForbidden) {
-//            return Color.LIGHTBLUE;
-//        } else {
-//            return Color.GREEN;
-//        }
-    }
-
-    public void addPlayerCharacter(Pane root, PlayerCharacter player) {
-//        Image image = new Image("/gui/img/playercharacter.png");
-//        playerSprite = new ImageView(image);
-//        updatePlayerPosition(player.getX(), player.getY());
-//        root.getChildren().add(playerSprite);
-        try {
-            Image image = new Image(getClass().getResourceAsStream("/images/player.png"));
-            if (image.isError()) {
-                throw new RuntimeException("Error loading player image.");
-            }
-
-            playerSprite = new ImageView(image);
-            playerSprite.setFitWidth(TILE_SIZE);  // Set the image view size to fit the tile size
-            playerSprite.setFitHeight(TILE_SIZE);
-            playerSprite.setX(player.getX() * TILE_SIZE);  // Position the sprite based on the player's grid coordinates
-            playerSprite.setY(player.getY() * TILE_SIZE);
-            root.getChildren().add(playerSprite);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to add player character.", e);
-        }
-    }
-    //更新小人贴图 update playerSprite according to transportation path
-    private void updatePlayerSpriteImage(String imagePath) {
-        Image newImage = new Image(getClass().getResourceAsStream(imagePath));
-        playerSprite.setImage(newImage);
-    }
-
-    public void updatePlayerPosition(int x, int y) {
-        if (playerSprite != null) {
-            playerSprite.setX(x * TILE_SIZE);
-            playerSprite.setY(y * TILE_SIZE);
-        }
-    }
-
-    // dynamically generate texture for map's tiles and paint it
-    private ImagePattern getTilePattern(Tile tile) {
-        Image image = null;
-        if (tile.isRail) {
-            image = new Image("/images/rail.png"); // Update the path to your rail image
-        } else if (tile.isRoad) {
-            image = new Image("/images/road.jpg"); // Update the path to your road image
-        } else if (tile.isForbidden) {
-            image = new Image("/images/water.png"); // Update the path to your forbidden image
-        } else {
-            // Default tile image, for example, grass
-            image = new Image("/images/grass.jpg"); // Update the path to your grass image
-        }
-        return new ImagePattern(image);
-    }
-
-    //Saves textured map
-    private void savePaneAsImage(Pane pane, String filename) {
-        // Take a snapshot of the pane
-        WritableImage writableImage = pane.snapshot(new SnapshotParameters(), null);
-
-        // Convert to BufferedImage
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-
-        // Write the image to a file
-        File outFile = new File(filename);
-        try {
-            ImageIO.write(bufferedImage, "png", outFile);
-            System.out.println("Map saved to " + filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to save map.");
-        }
-    }
-    private  List<Gem> generateGems(int count) {
-        List<Gem> gems = new ArrayList<Gem>();
+    // 定义 generateGems 方法，用于随机生成一定数量的宝石。
+    private List<Gem> generateGems(int count) {
+        List<Gem> gems = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            Gem newGem = null;
+            Gem newGem;
             do {
-                newGem = new Gem();
-                newGem.collected=false;// Gem constructor assigns type, x, and y randomly
+// 创建宝石实例，并确保其位置不在禁止区域或轨道上。
+                newGem = new Gem(); // 宝石的类型、x 坐标和 y 坐标随机生成。
+                newGem.collected = false;
             } while (gameMap.getTile(newGem.getX(), newGem.getY()).isForbidden || gameMap.getTile(newGem.getX(), newGem.getY()).isRail);
             gems.add(newGem);
         }
-//        System.out.println("Generated Gems:");
-//        for (Gem gem : gems) {
-//            System.out.println("Gem ID: " + gem.getGemID() +
-//                    ", Type: " + gem.getType() +
-//                    ", X: " + gem.getX() +
-//                    ", Y: " + gem.getY() +
-//                    ", Live Time: " + gem.getLiveTime());
-//        }
         return gems;
     }
 
-    public  void initializeGemSequence() {
-        int num = (levelIdentifier.toCharArray()[levelIdentifier.length() - 1] - '0') + 1;
-        List<Gem> gems = generateGems(num); // Generate 5 gems
-        currentGemList = new LinkedList<>(gems);
-//        displayNextGem(levelIdentifier,gemQueue);
-                // Start the timer for the gem's display
-//                startGemTimer(gem);
-//                System.out.println(i);
-    }
-//
-//        return gems;
 
+    // 初始化宝石序列，用于根据当前关卡生成宝石。
+    public void initializeGemSequence() {
+// 根据当前关卡标识符的最后一个字符确定生成宝石的数量。
+        int num = (levelIdentifier.toCharArray()[levelIdentifier.length() - 1] - '0') + 1;
+        List<Gem> gems = generateGems(num);
+        currentGemList = new LinkedList<>(gems);
+    }
+
+    // 定义 bindTimer 方法，用于为图像视图设置定时隐藏功能。
     private void bindTimer(ImageView imageView, int durationSeconds) {
+        // 设置定时器的时长。
         Duration duration = Duration.seconds(durationSeconds);
         Timeline timeline = new Timeline(new KeyFrame(duration, event -> {
-            // 当时间到达指定值时执行的操作
-            imageView.setVisible(false); // 或者从父节点中移除 imageView
+            // 时间到达后执行的操作，如隐藏图像视图。
+            imageView.setVisible(false);
         }));
-        timeline.play(); // 启动计时器
-    }
-
-    private void displayNextGem(String levelIdentifier, Queue<Gem> gemQueue) {
-
-
-
-
-            if (currentGemSprite != null) {
-                root.getChildren().remove(currentGemSprite); // Remove the previous gem sprite
-            }
-
-            Gem gem = this.gemQueue.poll(); // Retrieve and remove the next gem
-            ImageView imageView;
-
-            if (gem != null) {
-                Image image = new Image(getClass().getResourceAsStream("/images/"+gem.getType()+".png"));
-                imageView = new ImageView(image);
-                imageView.setX(gem.getX() * TILE_SIZE);
-                imageView.setY(gem.getY() * TILE_SIZE);
-                imageView.resize(10,10);
-                bindTimer(imageView,gem.getLiveTime());
-                currentGemSprite = new ImageView(image);
-                currentGemSprite.setX(gem.getX() * TILE_SIZE);
-                currentGemSprite.setY(gem.getY() * TILE_SIZE);
-                currentGemSprite.resize(10,10);
-                root.getChildren().add(imageView);
-
-                // Start the timer for the gem's display
-//                startGemTimer(gem);
-//                System.out.println(i);
-            }
-        }
-
-    private Pane createStatusBoard(PlayerCharacter player) {
-        // Create a horizontal box to hold the status labels
-        HBox statusBoard = new HBox(10);
-        statusBoard.setPadding(new Insets(10));
-        statusBoard.setStyle("-fx-background-color: #FFFFFF;"); // Set a background color
-
-        // Create labels for the player status
-        carbonFootprintLabel = new Label("Carbon Footprint: " + player.getCarbonFootprint());
-        timeLeftLabel = new Label("Time Left: " + player.getRemainingFictionalTime());
-        scoreLabel = new Label("Score: " + player.getScore());
-
-        // Add labels to the status board
-        statusBoard.getChildren().addAll(carbonFootprintLabel, timeLeftLabel, scoreLabel);
-
-        // Return the status board pane
-        return statusBoard;
-    }
-
-    // Methods to update status board
-    public void updateStatusBoard(PlayerCharacter player) {
-        // Assuming you have getter methods in PlayerCharacter
-        carbonFootprintLabel.setText("Carbon Footprint: " + player.getCarbonFootprint());
-        timeLeftLabel.setText("Time Left: " + player.getRemainingFictionalTime());
-        scoreLabel.setText("Score: " + player.getScore());
-    }
-
-    //CONTROLLER Call this method whenever you update the player character's attributes
-    public void playerAttributesChanged(PlayerCharacter player) {
-        // Run the update in the UI thread
-        Platform.runLater(() -> updateStatusBoard(player));
+        timeline.play(); // 启动定时器。
     }
 
 
-
-
-    private void startGemTimer(Gem gem) {
-        new Thread(() -> {
-            try {
-                Thread.sleep(gem.getLiveTime() * 1000); // Convert seconds to milliseconds
-                Platform.runLater(() -> {
-                    if (!gem.isCollected()) { // Check if not collected
-                        displayNextGem(levelIdentifier, gemQueue); // Display next gem
-                    }
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
+    // 定义 createLevlResultCardWithLabels 方法，用于创建显示关卡结果的卡片。
     public Pane createLevlResultCardWithLabels() {
-        // 创建一个 Pane 作为卡片背景
+// 创建一个 Pane 作为显示卡片的容器，并设置其样式和大小。
         Pane cardPane = new Pane();
-        cardPane.setPrefSize(300, 200); // 设置卡片大小
-        cardPane.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;"); // 设置样式
+        cardPane.setPrefSize(300, 200);
+        cardPane.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;");
 
-        // 创建三个 Label
-        Label labelCarbonPoint = new Label("Carbon FootPrint Gained in this Level: "+curLevelCarbonPoint);
+// 创建并配置显示碳足迹、宝石分数、收集宝石数和消耗时间的标签。
+        Label labelCarbonPoint = new Label("Carbon FootPrint Gained in this Level: " + curLevelCarbonPoint);
         labelCarbonPoint.setLayoutX(10);
         labelCarbonPoint.setLayoutY(20);
 
-        Label labelGemPoint = new Label("Gem Point Gained in this Level:: "+curLevelGemPoint);
+        Label labelGemPoint = new Label("Gem Point Gained in this Level:: " + curLevelGemPoint);
         labelGemPoint.setLayoutX(10);
         labelGemPoint.setLayoutY(50);
 
-        Label labelGemNum = new Label("Num of Gem Collected in this Level: "+curLevelGemNum);
+        Label labelGemNum = new Label("Num of Gem Collected in this Level: " + curLevelGemNum);
         labelGemNum.setLayoutX(10);
         labelGemNum.setLayoutY(80);
 
-        Label labelTime = new Label("Time cost in this Level: "+curLevelTimeUse);
+        Label labelTime = new Label("Time cost in this Level: " + curLevelTimeUse);
         labelTime.setLayoutX(10);
         labelTime.setLayoutY(110);
 
-        // 将 Label 添加到 Pane 中
-        cardPane.getChildren().addAll(labelCarbonPoint, labelGemPoint, labelGemNum,labelTime);
+// 将标签添加到卡片容器中。
+        cardPane.getChildren().addAll(labelCarbonPoint, labelGemPoint, labelGemNum, labelTime);
 
+// 返回配置好的卡片面板。
         return cardPane;
     }
 
 
-//    }
 }

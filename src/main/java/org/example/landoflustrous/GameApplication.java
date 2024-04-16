@@ -1,15 +1,11 @@
 package org.example.landoflustrous;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
-import org.example.landoflustrous.model.Gem;
-import org.example.landoflustrous.model.ScoreCalculator;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.service.NavigationService;
 import org.example.landoflustrous.view.GameStartScene;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameApplication extends Application {
@@ -21,20 +17,20 @@ public class GameApplication extends Application {
     private NavigationService navigationService;
 
     private ScoreCalculator scoreCalculator = new ScoreCalculator();
-    private TimeLifeCalculator timeLifeCalculator = new TimeLifeCalculator(1000);//最多使用时间是
+    private TimeLifeCalculator timeLifeCalculator = new TimeLifeCalculator(3000);//最多使用时间是
 
 
     @Override
     public void start(Stage primaryStage) {
         GameStartScene gameStartScene = new GameStartScene();
-        primaryStage.setScene(gameStartScene.createStartScene(primaryStage,scoreCalculator,timeLifeCalculator));
+        primaryStage.setScene(gameStartScene.createStartScene(primaryStage, scoreCalculator, timeLifeCalculator));
         primaryStage.setTitle("Game Demo");
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
     //初始Player
-    private void initPlayer(){
+    private void initPlayer() {
         CarbonFootprint carbonFootprint = new CarbonFootprint(100);
 
         PlayerCharacter player = new PlayerCharacter("PlayerOne", 0, 0, 100,
@@ -42,7 +38,7 @@ public class GameApplication extends Application {
     }
 
     //生成Gem
-    private void generateGem(){
+    private void generateGem() {
         gem = new Gem();
     }
 
@@ -57,7 +53,7 @@ public class GameApplication extends Application {
 
     }
 
-    private void endGame(Stage primaryStage){
+    private void endGame(Stage primaryStage) {
 
     }
 
@@ -67,8 +63,4 @@ public class GameApplication extends Application {
     }
 
 
-
 }
-
-
-

@@ -15,7 +15,10 @@ public class GameStartController {
 
     public void handlePlay(ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
         LevelSelectionScene levelSelection = new LevelSelectionScene();
-        stage.setScene(levelSelection.createLevelSelectionScene(stage,scoreCalculator,timeLifeCalculator));
+
+        stage.setScene(levelSelection.createLevelSelectionScene(stage, scoreCalculator, timeLifeCalculator));
+
+
     }
 
     public void handleExit() {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+//加载游戏地图和公共交通线路的信息，并提供方法用于查询地图和交通线路的相关信息。
 public class GameMap {
 
     private final List<List<Tile>> tileGrid;
@@ -65,7 +66,7 @@ public class GameMap {
     public List<Station> getPublicStations() {
         List<Station> stations = new ArrayList<>(getBusStations());
         stations.addAll(getRailStations());
-        return  stations;
+        return stations;
     }
 
     private void parseTileGrid(String filePath) throws IOException {

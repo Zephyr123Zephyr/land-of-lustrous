@@ -18,6 +18,7 @@ public class Gem extends Coordinated {
 
     // Example gem types and scores (could be replaced with actual game data)
     private static Map<String, Integer> availableGemTypes = new HashMap<>();
+
     static {
         availableGemTypes.put("Ruby", 100);
         availableGemTypes.put("Sapphire", 200);
@@ -107,5 +108,9 @@ public class Gem extends Coordinated {
     // Returns a string representation of the gem type
     public String getType() {
         return this.gemType.keySet().iterator().next(); // Since only one type is selected
+    }
+
+    public void setCollected(boolean b) {
+        this.collected = true;
     }
 }

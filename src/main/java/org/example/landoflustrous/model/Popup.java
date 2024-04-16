@@ -33,7 +33,7 @@ public class Popup {
     }
 
     // 随机选择一个环保小贴士
-    private String getRandomEcoTip() {
+    public String getRandomEcoTip() {
         Random random = new Random();
         return ecoTips[random.nextInt(ecoTips.length)];
     }
