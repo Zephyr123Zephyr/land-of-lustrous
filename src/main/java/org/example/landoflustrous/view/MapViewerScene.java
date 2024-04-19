@@ -34,11 +34,14 @@ public class MapViewerScene {
     private int curLevelTimeUse = 0;
     int pre = -1;
     private int cycle = 0;
+    String mapPath;
+    List<String> busPath;
+    List<String> railPath;
 
     // 定义一个私有的、静态的、不可变的HashMap，用于存储“level”与另一个“Map”之间的映射关系。这个“Map”则包含键值对，其中键为字符串类型，值为Object类型。
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
 
-
+//类创建时首先加载地图
     static {
 // 将“Level 1”与另一个Map进行映射，这个Map包含关于“Level 1”的详细信息。
         levelPathMapping.put("Level 1", Map.of(
@@ -48,14 +51,24 @@ public class MapViewerScene {
                 "rail", List.of("/maps/map1/level1/rail.txt"),
 
                 "bus", List.of("/maps/map1/level1/bus1.txt", "/maps/map1/level1/bus2.txt")));
+    levelPathMapping.put("Level 2", Map.of(
+
+            "map", "/maps/map1/level2/map.txt",
+
+            "rail", List.of("/maps/map1/level2/rail1.txt","/maps/map1/level2/rail2.txt"),
+
+            "bus", List.of("/maps/map1/level2/bus1.txt", "/maps/map1/level2/bus2.txt")));
+
     }
 
 
     //根据传入的关卡标识符，从预先定义的路径映射中获取相关文件的路径，并用这些路径创建一个 GameMap 对象，然后初始化宝石序列
     public MapViewerScene(String levelIdentifier) {
         this.levelIdentifier = levelIdentifier;
+//        setupLevelBackround();
 
         Map<String, Object> paths = levelPathMapping.get(levelIdentifier);
+
         if (paths != null) {
             try {
                 String mapPath = (String) paths.get("map");
@@ -85,8 +98,9 @@ public class MapViewerScene {
 
 
     private void drawMap(Pane root) {
-
-        Image mapImage = new Image(getClass().getResourceAsStream("/images/map_level1.png"));
+        int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]",""));
+        String pathToMap = "/images/map_level"+tempLevel+".png";
+        Image mapImage = new Image(getClass().getResourceAsStream(pathToMap));
         ImageView mapView = new ImageView(mapImage);
         mapView.setFitWidth(gameMap.getWidth() * TILE_SIZE);
         mapView.setFitHeight(gameMap.getHeight() * TILE_SIZE);
@@ -135,10 +149,9 @@ public class MapViewerScene {
         int lastCollectedIndex = -1;
 
 // 遍历宝石列表，检查每个宝石是否已经被收集。
-        for (int i = 0; i < currentGemList.size(); i++) {
+        for (int i = cycle - 1; i >= 0; i--) {
             if (currentGemList.get(i).isCollected()) {
                 lastCollectedIndex = i;
-                break;
             }
         }
 
@@ -212,6 +225,8 @@ public class MapViewerScene {
         if (i == currentGemList.size() - 1) {
             String s = labelForClick.textProperty().getValue();
             {
+//                添加一个监听器到optionboard的可见属性，当optionboard的可见属性发生变化时，执行监听器中的代码块
+//                最后一个宝石A页面，用户没点击，optionboard消失，跳出返回home按钮
                 optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
 // 添加返回主页按钮。
                     Button buttonTestToHome = new Button("Home");
@@ -232,7 +247,7 @@ public class MapViewerScene {
                     Button buttonTestToOver = new Button("分数不足 结算");
                     root.getChildren().add(buttonTestToOver);
                     buttonTestToOver.setVisible(false);
-
+//objectscore = level number * 10
                     int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
                     //                        buttonToNextLevel.setVisible(true);
                     if (curLevelGemPoint >= objectScoreLvel) {
@@ -275,7 +290,7 @@ public class MapViewerScene {
                 Gem temp = currentGemList.get(cycle);
                 temp.collected = true;
                 currentGemList.set(cycle, temp);
-
+//建立一个新optionboard接收选择后结果
                 OptionBoard curOptionBoard = new OptionBoard(temp.getScore(), currentRoute.getTotalCarbon(), true);
 
                 curLevelCarbonPoint += curOptionBoard.getCarbonPoint();
@@ -344,10 +359,10 @@ public class MapViewerScene {
 
 // 寻找最后一个被收集的宝石的索引。
         int lastCollectedIndex = -1;
-        for (int i = 0; i < currentGemList.size(); i++) {
+        for (int i = cycle-1; i >= 0; i--) {
             if (currentGemList.get(i).isCollected()) {
                 lastCollectedIndex = i;
-                break;
+
             }
         }
 // 根据是否有宝石被收集来初始化玩家角色的位置。
@@ -376,6 +391,7 @@ public class MapViewerScene {
 
 // 尝试为剩余时间增加pre值（这里可能是个逻辑错误，因为时间应该不能是负数，这行代码可能是尝试修复负时间的情况）
 // 但这样做并不符合常规的游戏逻辑，通常应该是结束游戏而不是增加时间
+//            剩余时间小于0，时间不足，选项为无效选项, 加回之前扣除的时间
             timeLifeCalculator.setCurLifeRemain(timeLifeCalculator.getCurLifeRemain() + pre);
 
 // 创建一个状态面板，展示分数和时间等游戏状态信息
@@ -452,9 +468,11 @@ public class MapViewerScene {
 
         Button buttonToNextLevel = new Button("To Next Level");
         buttonToNextLevel.setOnAction(event -> {
-            String s = "Level 1"; // 此处需根据实际游戏逻辑调整
+            int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]",""));
+            int nextLevel = tempLevel + 1;
+            String nextLevelIdentifier = "Level "+ nextLevel; // level
             try {
-                new LevelSelectionScene().openMapPage(stage, s, scoreCalculator, timeLifeCalculator);
+                new LevelSelectionScene().openMapPage(stage, nextLevelIdentifier, scoreCalculator, timeLifeCalculator);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
