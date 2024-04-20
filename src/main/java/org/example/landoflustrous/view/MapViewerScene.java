@@ -2,7 +2,6 @@ package org.example.landoflustrous.view;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,11 +12,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.example.landoflustrous.controller.GameStartController;
+import org.example.landoflustrous.controller.GameController;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.service.NavigationService;
-import org.example.landoflustrous.controller.GameController;
-
 
 import java.io.IOException;
 import java.util.*;
@@ -47,7 +44,7 @@ public class MapViewerScene {
     // 定义一个私有的、静态的、不可变的HashMap，用于存储“level”与另一个“Map”之间的映射关系。这个“Map”则包含键值对，其中键为字符串类型，值为Object类型。
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
 
-//类创建时首先加载地图
+    //类创建时首先加载地图
     static {
 // 将“Level 1”与另一个Map进行映射，这个Map包含关于“Level 1”的详细信息。
         levelPathMapping.put("Level 1", Map.of(
@@ -57,16 +54,15 @@ public class MapViewerScene {
                 "rail", List.of("/maps/map1/level1/rail.txt"),
 
                 "bus", List.of("/maps/map1/level1/bus1.txt", "/maps/map1/level1/bus2.txt")));
-    levelPathMapping.put("Level 2", Map.of(
+        levelPathMapping.put("Level 2", Map.of(
 
-            "map", "/maps/map1/level2/map.txt",
+                "map", "/maps/map1/level2/map.txt",
 
-            "rail", List.of("/maps/map1/level2/rail1.txt","/maps/map1/level2/rail2.txt"),
+                "rail", List.of("/maps/map1/level2/rail1.txt", "/maps/map1/level2/rail2.txt"),
 
-            "bus", List.of("/maps/map1/level2/bus1.txt", "/maps/map1/level2/bus2.txt")));
+                "bus", List.of("/maps/map1/level2/bus1.txt", "/maps/map1/level2/bus2.txt")));
 
     }
-
 
 
     //根据传入的关卡标识符，从预先定义的路径映射中获取相关文件的路径，并用这些路径创建一个 GameMap 对象，然后初始化宝石序列
@@ -105,8 +101,8 @@ public class MapViewerScene {
 
 
     private void drawMap(Pane root) {
-        int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]",""));
-        String pathToMap = "/images/map_level"+tempLevel+".png";
+        int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]", ""));
+        String pathToMap = "/images/map_level" + tempLevel + ".png";
         Image mapImage = new Image(getClass().getResourceAsStream(pathToMap));
         ImageView mapView = new ImageView(mapImage);
         mapView.setFitWidth(gameMap.getWidth() * TILE_SIZE);
@@ -267,15 +263,15 @@ public class MapViewerScene {
                     //                        buttonToNextLevel.setVisible(true);
                     if (curLevelGemPoint >= objectScoreLvel) {
                         buttonToNextLevel.setVisible(true);
-                        buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());   } else {
+                        buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());
+                    } else {
                     }
 
                     root.getChildren().add(buttonToNextLevel);
 
                 });
             }
-        }
-        else {
+        } else {
             optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
 // 当选项板状态改变时，如果未点击则进入下一次循环。
                 String s = labelForClick.textProperty().getValue();
@@ -328,7 +324,7 @@ public class MapViewerScene {
 // 设置场景，并显示舞台。
 // stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE + statusBoardHeight));
 
-        stage.setScene(new Scene(base,gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE +30));
+        stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE + 30));
         stage.show();
     }
 
@@ -374,7 +370,7 @@ public class MapViewerScene {
 
 // 寻找最后一个被收集的宝石的索引。
         int lastCollectedIndex = -1;
-        for (int i = cycle-1; i >= 0; i--) {
+        for (int i = cycle - 1; i >= 0; i--) {
             if (currentGemList.get(i).isCollected()) {
                 lastCollectedIndex = i;
 
@@ -394,11 +390,15 @@ public class MapViewerScene {
 
 // 在场景中添加本关的宝石图像。
         ImageView imageView;
-        Image image = new Image(getClass().getResourceAsStream("/images/" + gem.getType() + ".png"));
+        Image image = new Image(getClass().getResourceAsStream("/images/" + gem.getType() + ".gif"));
         imageView = new ImageView(image);
         imageView.setX(gem.getX() * TILE_SIZE);
         imageView.setY(gem.getY() * TILE_SIZE);
-        imageView.resize(10, 10);
+        imageView.resize(2, 2);
+        imageView.setFitWidth(35); // 设置图片宽度为50像素
+        imageView.setFitHeight(35); // 设置图片高度为50像素
+
+
         root.getChildren().add(imageView);
 
 // 如果剩余时间小于0，说明时间不足，触发游戏结束逻辑处理
@@ -491,9 +491,9 @@ public class MapViewerScene {
         Button buttonToNextLevel = new Button("To Next Level");
         buttonToNextLevel.setOnAction(event -> {
             controller.goToScoreBoard();
-            int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]",""));
+            int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]", ""));
             int nextLevel = tempLevel + 1;
-            String nextLevelIdentifier = "Level "+ nextLevel; // level
+            String nextLevelIdentifier = "Level " + nextLevel; // level
             try {
                 new LevelSelectionScene().openMapPage(stage, nextLevelIdentifier, scoreCalculator, timeLifeCalculator);
             } catch (IOException e) {
@@ -501,7 +501,6 @@ public class MapViewerScene {
             }
         });
 //        Scene scoreBoardScene = new ScoreBoardScene().getScene();
-
 
 
         buttonToNextLevel.setVisible(false);
@@ -704,6 +703,7 @@ public class MapViewerScene {
         System.out.println("check level complete");
         return cycle >= currentGemList.size() - 1;
     }
+
     public boolean playerHasWon() {
         System.out.println("check player won");
 
@@ -716,9 +716,6 @@ public class MapViewerScene {
         int objectScoreLevel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
         return curLevelGemPoint >= objectScoreLevel;
     }
-
-
-
 
 
 }
