@@ -1,9 +1,6 @@
 package org.example.landoflustrous.model;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Route {
 
@@ -50,9 +47,23 @@ public class Route {
         return pathList.stream().mapToDouble(Path::getCarbon).sum();
     }
 
+    public Set<TrafficType> getTrafficType(){
+        Set<TrafficType> trafficTypes = new HashSet<>();
+        for (Path path : pathList) {
+            trafficTypes.add(path.getTrafficType());
+        }
+        return trafficTypes;
+    }
+
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        pathList.forEach(path -> stringBuilder.append(path.toString()).append('\n'));
+//        pathList.forEach(path -> stringBuilder.append(path.toString()).append('\n'));
+        pathList.forEach(path -> {
+            stringBuilder.append("Path: ").append(path.toString());
+            stringBuilder.append(" (Traffic Type: ").append(path.getTrafficType()).append(")\n");
+        });
+
+
         stringBuilder.append("Time: ").append(getTotalCost()).append("   Carbon: ").append(getTotalCarbon());
         return stringBuilder.toString();
     }

@@ -65,7 +65,7 @@ public class OptionBoard {
         titleLabel.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
         root.getChildren().add(titleLabel);
         for(int i=0;i<routeList.size();i++){
-            String s = "Route "+(i+1)+" Time Cost: "+routeList.get(i).getTotalCost()+" Carbon: "+routeList.get(i).getTotalCarbon();
+            String s = "Route "+(i+1)+" Traffic Type: "+routeList.get(i).getTrafficType()+" Time Cost: "+routeList.get(i).getTotalCost()+" Carbon: "+routeList.get(i).getTotalCarbon();
             Button routeButton = new Button(s);
             routeButton.setId("Route"+(i+1)); // 设置按钮ID
             routeButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white;");

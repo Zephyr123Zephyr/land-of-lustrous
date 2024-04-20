@@ -17,7 +17,7 @@ public class GameApplication extends Application {
     private NavigationService navigationService;
 
     private ScoreCalculator scoreCalculator = new ScoreCalculator();
-    private TimeLifeCalculator timeLifeCalculator = new TimeLifeCalculator(3000);//最多使用时间是
+    private TimeLifeCalculator timeLifeCalculator = new TimeLifeCalculator(1000);//最多使用时间是
 
 
     @Override
@@ -28,6 +28,8 @@ public class GameApplication extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
+
 
     //初始Player
     private void initPlayer() {

@@ -68,16 +68,15 @@ public class GameOverScene {
         });
 
 
-
-
         layout.getChildren().addAll(resultHeadLabel, carbonLabel, gemLabel,gemNumLabel,gemTimeLabel,buttonExit);
         scene = new Scene(layout, 500, 500);
 //        String css = this.getClass().getResource("src/main/java/resources/GameOverScene.css").toExternalForm(); // Ensure the path matches the actual CSS file location
 //        scene.getStylesheets().add(css);
     }
     public Scene getScene() { // Here is the getScene method that returns the Scene object
-        return scene;
+        return this.scene;
     }
+
     public void showScene() {
         stage.setScene(scene);
         stage.show();

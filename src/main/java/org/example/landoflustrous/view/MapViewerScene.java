@@ -2,6 +2,7 @@ package org.example.landoflustrous.view;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,8 +13,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.landoflustrous.controller.GameStartController;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.service.NavigationService;
+import org.example.landoflustrous.controller.GameController;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -37,6 +41,8 @@ public class MapViewerScene {
     String mapPath;
     List<String> busPath;
     List<String> railPath;
+    private GameController controller;
+
 
     // 定义一个私有的、静态的、不可变的HashMap，用于存储“level”与另一个“Map”之间的映射关系。这个“Map”则包含键值对，其中键为字符串类型，值为Object类型。
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
@@ -60,6 +66,7 @@ public class MapViewerScene {
             "bus", List.of("/maps/map1/level2/bus1.txt", "/maps/map1/level2/bus2.txt")));
 
     }
+
 
 
     //根据传入的关卡标识符，从预先定义的路径映射中获取相关文件的路径，并用这些路径创建一个 GameMap 对象，然后初始化宝石序列
@@ -139,6 +146,8 @@ public class MapViewerScene {
 
     // 定义 createMapScene 方法，用于创建游戏的地图场景。这个方法接受一个舞台 (Stage) 对象和两个计算器类的实例，分别用于计算分数和生命时长。
     public void createMapScene(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+        controller = new GameController(stage, this);
+
 
         base = new VBox();
         root = new Pane();
@@ -237,6 +246,7 @@ public class MapViewerScene {
 
 // 创建等级结果卡片，并将其添加到场景中。
                     Pane level = createLevlResultCardWithLabels();
+
                     level.setLayoutX(100);
                     level.setLayoutY(400);
 
@@ -244,16 +254,20 @@ public class MapViewerScene {
 
 // 根据分数决定是否显示“进入下一关”或“游戏结束”按钮。
                     Button buttonToNextLevel = new Button("To Next Level");
+                    buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());
+
                     Button buttonTestToOver = new Button("分数不足 结算");
                     root.getChildren().add(buttonTestToOver);
                     buttonTestToOver.setVisible(false);
 //objectscore = level number * 10
+//                    buttonTestToOver.setOnAction(e -> controller.goToGameOver());
+
+
                     int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
                     //                        buttonToNextLevel.setVisible(true);
                     if (curLevelGemPoint >= objectScoreLvel) {
                         buttonToNextLevel.setVisible(true);
-                    } else {
-                        buttonTestToOver.setVisible(true);
+                        buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());   } else {
                     }
 
                     root.getChildren().add(buttonToNextLevel);
@@ -299,6 +313,7 @@ public class MapViewerScene {
                 curLevelGemNum++;
                 if (timeLifeCalculator.getCurLifeRemain() - totalCost < 0) {
                     pre = totalCost;
+//                    controller.goToGameOver();
                 } else {
                     scoreCalculator.addPoints(curOptionBoard);
                 }
@@ -321,7 +336,6 @@ public class MapViewerScene {
 
     // 定义一个私有方法 createStatusBoard，用于创建游戏的状态显示板。该方法接收两个参数：scoreCalculator 和 timeLifeCalculator，分别用于计分和计算剩余时间。
     private Pane createStatusBoard(ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
-
         HBox statusBoard = new HBox(30);
 
 //        VBox.setMargin(statusBoard, new Insets(100, 0, 0, 0));
@@ -343,11 +357,13 @@ public class MapViewerScene {
         statusBoard.getChildren().addAll(carbonFootprintLabel, timeLeftLabel, scoreLabel);
 
         // 返回包含所有状态信息的 HBox 容器。
+
         return statusBoard;
     }
 
     // 定义 createMapScene_AfterChooseOption 方法，该方法在用户选择完路径选项后调用，用于更新地图场景和游戏状态。
     public void createMapScene_AfterChooseOption(Stage stage, Route route, ScoreCalculator scoreCalculator, Gem gem, TimeLifeCalculator timeLifeCalculator, OptionBoard curOptionBoard) {
+        controller = new GameController(stage, this);
 
         base = new javafx.scene.layout.VBox();
 // 创建根面板，用于添加游戏元素。
@@ -388,6 +404,7 @@ public class MapViewerScene {
 
 // 如果剩余时间小于0，说明时间不足，触发游戏结束逻辑处理
         if (timeLifeCalculator.getCurLifeRemain() < 0) {
+//            controller.goToGameOver();
 
 // 尝试为剩余时间增加pre值（这里可能是个逻辑错误，因为时间应该不能是负数，这行代码可能是尝试修复负时间的情况）
 // 但这样做并不符合常规的游戏逻辑，通常应该是结束游戏而不是增加时间
@@ -396,6 +413,8 @@ public class MapViewerScene {
 
 // 创建一个状态面板，展示分数和时间等游戏状态信息
             Pane statusBoard = createStatusBoard(scoreCalculator, timeLifeCalculator);
+//            controller.goToGameOver();
+
 
 // 创建一个标签，用于显示游戏结束信息
             Label infoLabel = new Label("剩余时间无法支持本次路线选择无效 游戏结束 请点击结算按钮");
@@ -415,6 +434,7 @@ public class MapViewerScene {
 
 // 创建一个关卡结果卡片，用于展示关卡结束后的相关信息
             Pane level = createLevlResultCardWithLabels();
+            controller.goToScoreBoard();
 
 // 设置关卡结果卡片的位置
             level.setLayoutX(100);
@@ -424,11 +444,12 @@ public class MapViewerScene {
             root.getChildren().add(level);
 
 // 创建一个按钮，用于结算游戏
-            Button buttonTestToOver = new Button("结算按钮");
+            Button buttonTestToOver = new Button("结算按钮");// ScoreBoard
 
 // 设置按钮的点击事件处理
             buttonTestToOver.setOnAction(event -> {
 // 原本这里可能是跳转到游戏结束场景，但现在被注释掉了
+
                 stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
 
 // 现在点击按钮后直接跳转到分数板场景
@@ -455,6 +476,8 @@ public class MapViewerScene {
 
 // 添加状态板至主容器。
         Pane statusBoard = createStatusBoard(scoreCalculator, timeLifeCalculator);
+//        controller.goToGameOver();
+
         base.getChildren().add(root);
         base.getChildren().add(statusBoard);
 
@@ -468,6 +491,7 @@ public class MapViewerScene {
 
         Button buttonToNextLevel = new Button("To Next Level");
         buttonToNextLevel.setOnAction(event -> {
+            controller.goToScoreBoard();
             int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]",""));
             int nextLevel = tempLevel + 1;
             String nextLevelIdentifier = "Level "+ nextLevel; // level
@@ -477,13 +501,19 @@ public class MapViewerScene {
                 throw new RuntimeException(e);
             }
         });
+        Scene scoreBoardScene = new ScoreBoardScene().getScene();
+
 
 
         buttonToNextLevel.setVisible(false);
+//        buttonToNextLevel.setOnAction(e ->
+////                controller.goToGameOver()
+//        );
         root.getChildren().add(buttonToNextLevel);
 
-        Button buttonTestToOver = new Button("分数不足 结算");
+        Button buttonTestToOver = new Button("分数不足 结算");//GameOver
         buttonTestToOver.setOnAction(event -> {
+//            controller.goToGameOver();
             stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
         });
         buttonTestToOver.setVisible(false);
@@ -524,6 +554,9 @@ public class MapViewerScene {
                         int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
                         if (cycle == currentGemList.size() - 1) {
                             Pane level = createLevlResultCardWithLabels();
+                            controller.goToScoreBoard();
+
+
                             level.setLayoutX(100);
                             level.setLayoutY(400);
 
@@ -531,11 +564,16 @@ public class MapViewerScene {
 
                             if (curLevelGemPoint >= objectScoreLvel) {
                                 buttonToNextLevel.setVisible(true);
+                                buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());
                             } else {
                                 buttonTestToOver.setVisible(true);
+
+//                                buttonTestToOver.setOnAction(e -> controller.goToGameOver());
+
                             }
                         } else if (curLevelGemPoint >= objectScoreLvel) {
                             buttonToNextLevel.setVisible(true);
+                            buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());
                             buttonKeepLevel.setVisible(true);
                         } else {
                             cycle++;
@@ -545,7 +583,7 @@ public class MapViewerScene {
                 })
         );
 
-        stage.setScene(new Scene(base, 1500, 900));
+        stage.setScene(new Scene(base, 1300, 700));
         timeline[0].setCycleCount(Timeline.INDEFINITE);
         timeline[0].play();
         stage.show();
@@ -644,6 +682,44 @@ public class MapViewerScene {
 // 返回配置好的卡片面板。
         return cardPane;
     }
+
+    // 访问器方法
+    public int getCurLevelGemPoint() {
+        return curLevelGemPoint;
+    }
+
+    public int getCurLevelCarbonPoint() {
+        return curLevelCarbonPoint;
+    }
+
+    public int getCurLevelGemNum() {
+        return curLevelGemNum;
+    }
+
+    public int getCurLevelTimeUse() {
+        return curLevelTimeUse;
+    }
+
+    // 假设的方法来检测关卡是否完成和玩家是否赢得了关卡
+    public boolean isLevelComplete() {
+        System.out.println("check level complete");
+        return cycle >= currentGemList.size() - 1;
+    }
+    public boolean playerHasWon() {
+        System.out.println("check player won");
+
+        // 首先检查时间和碳点数是否耗尽
+        if (getCurLevelCarbonPoint() >= 300 || getCurLevelTimeUse() >= 1000) {
+            return false;  // 如果任一条件满足，玩家输了游戏
+        }
+
+        // 然后检查玩家是否达到了赢得游戏所需的宝石点数
+        int objectScoreLevel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
+        return curLevelGemPoint >= objectScoreLevel;
+    }
+
+
+
 
 
 }
