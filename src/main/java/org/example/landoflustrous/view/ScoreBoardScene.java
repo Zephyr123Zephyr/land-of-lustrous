@@ -1,5 +1,6 @@
 package org.example.landoflustrous.view;
 
+import com.almasb.fxgl.core.util.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,10 +26,10 @@ public class ScoreBoardScene {
     private Scene scene;
     private Popup popup;
 
-    private Stage stage;
+    public Stage stage;
 
     // 主构造器
-    public ScoreBoardScene(int carbon, int gemNum, int gemScore, int time) {
+    public ScoreBoardScene(Stage stage, int carbon, int gemNum, int gemScore, int time) {
         this.stage = stage;
         setupScene(carbon, gemNum, gemScore, time);
     }
@@ -36,14 +37,13 @@ public class ScoreBoardScene {
     // 默认构造器
     public ScoreBoardScene() {
         // 调用主构造器，所有参数设置为默认值0
-        this(0, 0, 0, 0);
+        this(null,0, 0, 0, 0);
     }
 
     private void setupScene(int carbon, int gemNum, int gemScore, int time) {
         Popup popup1 = new Popup();
         root = new StackPane();
         root.setStyle("-fx-background-color:rgb(243,243,243);");
-
 
         Button btn = new Button("NEXT LEVEL");
         btn.setBackground(new Background(new BackgroundFill(Color.web("#4CAF50"), null, null)));
@@ -55,7 +55,6 @@ public class ScoreBoardScene {
         btn.setOnAction(event -> {
             System.out.println("Next level button clicked - Going to level selection");
             goToNextLevel();
-
         });
 
         Text text = new Text("SCORE BOARD");
@@ -127,8 +126,8 @@ public class ScoreBoardScene {
 //                text_gem, text_carbon, text_time, text_totalscore);
 
 
-        root.getChildren().addAll(btn, text, rectangle, rectangle2, vbox, line,
-                text_gem, text_carbon, text_time, text_totalscore);
+        root.getChildren().addAll(text, rectangle, rectangle2, vbox, line,
+                text_gem, text_carbon, text_time, text_totalscore, btn);
 
         StackPane.setAlignment(btn, Pos.CENTER); // 将按钮置于中心，确保没有被遮挡
 
@@ -178,8 +177,5 @@ public class ScoreBoardScene {
         stage.setScene(levelSelectionSceneView);
         stage.show();
     }
-
-
-
 
 }

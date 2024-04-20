@@ -274,19 +274,18 @@ public class MapViewerScene {
 
                 });
             }
-
         }
-//        else {
-//            optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
-//// 当选项板状态改变时，如果未点击则进入下一次循环。
-//                String s = labelForClick.textProperty().getValue();
-//                if (labelForClick.textProperty().getValue().equals("UnClick")) {
-//                    cycle++;
-//                    createMapScene(stage, scoreCalculator, timeLifeCalculator);
-//                }
-//
-//            });
-//        }
+        else {
+            optionBoard.visibleProperty().addListener((observable, oldValue, newValue) -> {
+// 当选项板状态改变时，如果未点击则进入下一次循环。
+                String s = labelForClick.textProperty().getValue();
+                if (labelForClick.textProperty().getValue().equals("UnClick")) {
+                    cycle++;
+                    createMapScene(stage, scoreCalculator, timeLifeCalculator);
+                }
+
+            });
+        }
 
         optionBoard.setLayoutX(200);
         optionBoard.setLayoutY(100);
@@ -501,7 +500,7 @@ public class MapViewerScene {
                 throw new RuntimeException(e);
             }
         });
-        Scene scoreBoardScene = new ScoreBoardScene().getScene();
+//        Scene scoreBoardScene = new ScoreBoardScene().getScene();
 
 
 

@@ -31,7 +31,7 @@ public class GameController {
         int gemScore = mapViewerScene.getCurLevelGemPoint();
         int time = mapViewerScene.getCurLevelTimeUse();
 
-        ScoreBoardScene scoreBoardScene = new ScoreBoardScene(carbon, gemNum, gemScore, time);
+        ScoreBoardScene scoreBoardScene = new ScoreBoardScene(stage, carbon, gemNum, gemScore, time);
         stage.setScene(scoreBoardScene.getScene());
         stage.show();
     }
