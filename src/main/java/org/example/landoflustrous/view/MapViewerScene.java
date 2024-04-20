@@ -28,7 +28,7 @@ public class MapViewerScene {
     private Pane root;
     private VBox base;// the base of map and status board
     private GameMap gameMap;
-    private static final int TILE_SIZE = 30;
+    private static final int TILE_SIZE = 27;
     private ImageView playerSprite;
     private String levelIdentifier;
     private List<Gem> currentGemList;
@@ -328,7 +328,7 @@ public class MapViewerScene {
 // 设置场景，并显示舞台。
 // stage.setScene(new Scene(base, gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE + statusBoardHeight));
 
-        stage.setScene(new Scene(base, 1500, 900));
+        stage.setScene(new Scene(base,gameMap.getWidth() * TILE_SIZE, gameMap.getHeight() * TILE_SIZE + 30));
         stage.show();
     }
 
@@ -463,7 +463,7 @@ public class MapViewerScene {
             base.getChildren().add(statusBoard);
 
 // 创建一个新的场景，将base节点设置为场景的根节点，并设置场景的尺寸
-            stage.setScene(new Scene(base, 1500, 900));
+            stage.setScene(new Scene(base, 1500, 930));
 
 // 显示舞台（即显示整个游戏界面）
             stage.show();
