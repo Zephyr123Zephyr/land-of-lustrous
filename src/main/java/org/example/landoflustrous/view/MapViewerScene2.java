@@ -392,7 +392,7 @@ public class MapViewerScene2 {
 // 设置按钮的点击事件处理
             buttonTestToOver.setOnAction(event -> {
 // 原本这里可能是跳转到游戏结束场景，但现在被注释掉了
-                stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
+//                stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
 
 // 现在点击按钮后直接跳转到分数板场景
 // stage.setScene(new ScoreBoardScene().getScene());
@@ -445,7 +445,7 @@ public class MapViewerScene2 {
 
         Button buttonTestToOver = new Button("分数不足 结算");
         buttonTestToOver.setOnAction(event -> {
-            stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
+//            stage.setScene(new GameOverScene(stage, scoreCalculator, timeLifeCalculator).getScene());
         });
         buttonTestToOver.setVisible(false);
         root.getChildren().add(buttonTestToOver);

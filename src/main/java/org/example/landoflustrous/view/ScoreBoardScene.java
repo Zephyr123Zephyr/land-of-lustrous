@@ -173,7 +173,7 @@ public class ScoreBoardScene {
 
     private void goToNextLevel() {
         LevelSelectionScene levelSelectionScene = new LevelSelectionScene();
-        Scene levelSelectionSceneView = levelSelectionScene.createLevelSelectionScene(stage, new ScoreCalculator(), new TimeLifeCalculator(100000));
+        Scene levelSelectionSceneView = levelSelectionScene.createLevelSelectionScene(stage, new ScoreCalculator(), new TimeLifeCalculator(1000));
         stage.setScene(levelSelectionSceneView);
         stage.show();
     }

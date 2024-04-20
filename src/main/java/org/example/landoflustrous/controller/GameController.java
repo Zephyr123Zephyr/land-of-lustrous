@@ -37,12 +37,13 @@ public class GameController {
     }
 
     public void goToGameOver() {
-        try {
-            GameOverScene gameOverScene = new GameOverScene(stage, new ScoreCalculator(), new TimeLifeCalculator(1000));
-            stage.setScene(gameOverScene.getScene());
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();  // This will print the stack trace to the console
-        }
+        int carbon = mapViewerScene.getCurLevelCarbonPoint();
+        int gemNum = mapViewerScene.getCurLevelGemNum();
+        int gemScore = mapViewerScene.getCurLevelGemPoint();
+        int time = mapViewerScene.getCurLevelTimeUse();
+
+        GameOverScene gameover = new GameOverScene(stage, carbon, gemNum, gemScore, time);
+        stage.setScene(gameover.getScene());
+        stage.show();
     }
 }
