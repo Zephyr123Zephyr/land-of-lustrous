@@ -62,7 +62,7 @@ public class GameStartScene {
         StackPane.setAlignment(imageView, Pos.TOP_CENTER);
 
 
-        Scene scene = new Scene(root, 1500, 900);
+        Scene scene = new Scene(root, 1300, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
 //         在这里设置全屏

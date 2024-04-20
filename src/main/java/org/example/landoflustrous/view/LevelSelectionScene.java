@@ -83,7 +83,7 @@ public class LevelSelectionScene {
 
 
         // Create the scene with the stack pane as the root
-        return new Scene(rootStack, 1500, 900);
+        return new Scene(rootStack, 1300, 700);
 
     }
 

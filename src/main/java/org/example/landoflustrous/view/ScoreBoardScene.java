@@ -1,5 +1,6 @@
 package org.example.landoflustrous.view;
 
+import com.almasb.fxgl.core.util.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,22 +15,29 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import org.example.landoflustrous.controller.GameController;
 import org.example.landoflustrous.model.Popup;
+import org.example.landoflustrous.model.ScoreCalculator;
+import org.example.landoflustrous.model.TimeLifeCalculator;
 
 public class ScoreBoardScene {
     private StackPane root;
     private Scene scene;
     private Popup popup;
 
+    public Stage stage;
+
     // 主构造器
-    public ScoreBoardScene(int carbon, int gemNum, int gemScore, int time) {
+    public ScoreBoardScene(Stage stage, int carbon, int gemNum, int gemScore, int time) {
+        this.stage = stage;
         setupScene(carbon, gemNum, gemScore, time);
     }
 
     // 默认构造器
     public ScoreBoardScene() {
         // 调用主构造器，所有参数设置为默认值0
-        this(0, 0, 0, 0);
+        this(null,0, 0, 0, 0);
     }
 
     private void setupScene(int carbon, int gemNum, int gemScore, int time) {
@@ -42,6 +50,12 @@ public class ScoreBoardScene {
         btn.setTextFill(Color.WHITE);
         btn.setPadding(new Insets(10, 20, 10, 20));
         btn.setFont(Font.font("Agency FB", FontWeight.BOLD, 30));
+
+        // 设置按钮的点击事件，转到levelselection场景
+        btn.setOnAction(event -> {
+            System.out.println("Next level button clicked - Going to level selection");
+            goToNextLevel();
+        });
 
         Text text = new Text("SCORE BOARD");
         text.setFont(Font.font("Agency FB", FontWeight.BOLD, 65));
@@ -112,8 +126,10 @@ public class ScoreBoardScene {
 //                text_gem, text_carbon, text_time, text_totalscore);
 
 
-        root.getChildren().addAll(btn, text, rectangle, rectangle2, vbox, line,
-                text_gem, text_carbon, text_time, text_totalscore);
+        root.getChildren().addAll(text, rectangle, rectangle2, vbox, line,
+                text_gem, text_carbon, text_time, text_totalscore, btn);
+
+        StackPane.setAlignment(btn, Pos.CENTER); // 将按钮置于中心，确保没有被遮挡
 
         // Adjustments and margins as needed
         StackPane.setMargin(text, new Insets(-700, 0, 0, 0));
@@ -131,10 +147,35 @@ public class ScoreBoardScene {
         StackPane.setMargin(text_totalscore, new Insets(10, 0, 0, 0));
         StackPane.setMargin(line, new Insets(-70, 0, 0, 0));
 
-        scene = new Scene(root, 1500, 900);
+        this.scene = new Scene(root, 1300, 800);
     }
 
+
+
+
+//    public Scene getScene() {
+//        return this.scene;
+//    }
+
     public Scene getScene() {
+        if (this.scene == null) {
+            try {
+                // 场景构建逻辑
+                this.scene = new Scene(root, 1300, 700);
+            } catch (Exception e) {
+                System.out.println("Error creating the scene: " + e.getMessage());
+                e.printStackTrace();  // 打印异常信息
+                return null;  // 或者返回一个默认的场景
+            }
+        }
         return this.scene;
     }
+
+    private void goToNextLevel() {
+        LevelSelectionScene levelSelectionScene = new LevelSelectionScene();
+        Scene levelSelectionSceneView = levelSelectionScene.createLevelSelectionScene(stage, new ScoreCalculator(), new TimeLifeCalculator(1000));
+        stage.setScene(levelSelectionSceneView);
+        stage.show();
+    }
+
 }

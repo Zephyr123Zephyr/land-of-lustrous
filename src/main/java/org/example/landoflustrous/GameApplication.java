@@ -29,6 +29,8 @@ public class GameApplication extends Application {
         primaryStage.show();
     }
 
+
+
     //初始Player
     private void initPlayer() {
         CarbonFootprint carbonFootprint = new CarbonFootprint(100);
