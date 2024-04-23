@@ -40,6 +40,8 @@ public class MapViewerScene {
     List<String> busPath;
     List<String> railPath;
     private GameController controller;
+    private int objectScoreLvel = -1;
+
 
 
     // 定义一个私有的、静态的、不可变的HashMap，用于存储“level”与另一个“Map”之间的映射关系。这个“Map”则包含键值对，其中键为字符串类型，值为Object类型。
@@ -69,6 +71,7 @@ public class MapViewerScene {
     //根据传入的关卡标识符，从预先定义的路径映射中获取相关文件的路径，并用这些路径创建一个 GameMap 对象，然后初始化宝石序列
     public MapViewerScene(String levelIdentifier) {
         this.levelIdentifier = levelIdentifier;
+        objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
 //        setupLevelBackround();
 
         Map<String, Object> paths = levelPathMapping.get(levelIdentifier);
@@ -158,6 +161,7 @@ public class MapViewerScene {
         for (int i = cycle - 1; i >= 0; i--) {
             if (currentGemList.get(i).isCollected()) {
                 lastCollectedIndex = i;
+                break;
             }
         }
 
@@ -242,30 +246,31 @@ public class MapViewerScene {
                     root.getChildren().add(buttonTestToHome);
 
 // 创建等级结果卡片，并将其添加到场景中。
-                    Pane level = createLevlResultCardWithLabels();
-
-                    level.setLayoutX(100);
-                    level.setLayoutY(400);
-
-                    root.getChildren().add(level);
+//                    Pane level = createLevlResultCardWithLabels();
+//
+//                    level.setLayoutX(100);
+//                    level.setLayoutY(400);
+//
+//                    root.getChildren().add(level);
 
 // 根据分数决定是否显示“进入下一关”或“游戏结束”按钮。
                     Button buttonToNextLevel = new Button("To Next Level");
+                    buttonToNextLevel.setVisible(false);
                     buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());
 
-                    Button buttonTestToOver = new Button("分数不足 结算");
+                    Button buttonTestToOver = new Button("宝石不足，结算");
                     root.getChildren().add(buttonTestToOver);
                     buttonTestToOver.setVisible(false);
 //objectscore = level number * 10
-//                    buttonTestToOver.setOnAction(e -> controller.goToGameOver());
+                    buttonTestToOver.setOnAction(e -> controller.goToGameOver());
 
 
-                    int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
+//                    int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
                     //                        buttonToNextLevel.setVisible(true);
                     if (curLevelGemPoint >= objectScoreLvel) {
                         buttonToNextLevel.setVisible(true);
-                        buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());
                     } else {
+                        buttonTestToOver.setVisible(true);
                     }
 
                     root.getChildren().add(buttonToNextLevel);
@@ -374,6 +379,7 @@ public class MapViewerScene {
         for (int i = cycle - 1; i >= 0; i--) {
             if (currentGemList.get(i).isCollected()) {
                 lastCollectedIndex = i;
+                break;
 
             }
         }
@@ -417,14 +423,14 @@ public class MapViewerScene {
 
 
 // 创建一个标签，用于显示游戏结束信息
-            Label infoLabel = new Label("剩余时间无法支持本次路线选择无效 游戏结束 请点击结算按钮");
-
-// 设置标签的位置
-            infoLabel.setLayoutX(100);
-            infoLabel.setLayoutY(350);
+//            Label infoLabel = new Label("");
+//
+//// 设置标签的位置
+//            infoLabel.setLayoutX(100);
+//            infoLabel.setLayoutY(350);
 
 // 将标签添加到root节点中
-            root.getChildren().add(infoLabel);
+//            root.getChildren().add(infoLabel);
 
 // 更新当前关卡中的碳点数、宝石点数、宝石数量和时间消耗
             curLevelCarbonPoint -= curOptionBoard.getCarbonPoint();
@@ -433,18 +439,19 @@ public class MapViewerScene {
             curLevelTimeUse -= pre;
 
 // 创建一个关卡结果卡片，用于展示关卡结束后的相关信息
-            Pane level = createLevlResultCardWithLabels();
-            controller.goToScoreBoard();
+//            Pane level = createLevlResultCardWithLabels();
+//            controller.goToScoreBoard();
 
 // 设置关卡结果卡片的位置
-            level.setLayoutX(100);
-            level.setLayoutY(400);
-
-// 将关卡结果卡片添加到root节点中
-            root.getChildren().add(level);
+//            level.setLayoutX(100);
+//            level.setLayoutY(400);
+//
+//// 将关卡结果卡片添加到root节点中
+//            root.getChildren().add(level);
 
 // 创建一个按钮，用于结算游戏
-            Button buttonTestToOver = new Button("结算按钮");// ScoreBoard
+            Button buttonTestToOver = new Button("时间不足，进入结算页面");// ScoreBoard
+            buttonTestToOver.setVisible(true);
 
 // 设置按钮的点击事件处理
             buttonTestToOver.setOnAction(event -> {
@@ -506,7 +513,7 @@ public class MapViewerScene {
 //        );
         root.getChildren().add(buttonToNextLevel);
 
-        Button buttonTestToOver = new Button("分数不足 结算");//GameOver
+        Button buttonTestToOver = new Button("宝石不足 结算");//GameOver
         buttonTestToOver.setOnAction(event -> {
             controller.goToGameOver();
 //            controller.goToScoreBoard();
@@ -546,16 +553,17 @@ public class MapViewerScene {
                     } else {
                         timeline[0].stop();
                         imageView.setVisible(false);
-                        int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
+//                        int objectScoreLvel = (levelIdentifier.charAt(levelIdentifier.length() - 1) - '0') * 10;
                         if (cycle == currentGemList.size() - 1) {
-                            Pane level = createLevlResultCardWithLabels();
-                            controller.goToScoreBoard();
-
-
-                            level.setLayoutX(100);
-                            level.setLayoutY(400);
-
-                            root.getChildren().add(level);
+//
+//                            Pane level = createLevlResultCardWithLabels();
+//                            controller.goToScoreBoard();
+//
+//
+//                            level.setLayoutX(100);
+//                            level.setLayoutY(400);
+//
+//                            root.getChildren().add(level);
 
                             if (curLevelGemPoint >= objectScoreLvel) {
                                 buttonToNextLevel.setVisible(true);
