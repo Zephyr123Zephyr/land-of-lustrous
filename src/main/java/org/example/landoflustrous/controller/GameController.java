@@ -1,5 +1,6 @@
 package org.example.landoflustrous.controller;
 
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.landoflustrous.model.ScoreCalculator;
@@ -13,10 +14,22 @@ public class GameController {
     private Stage stage;
     private MapViewerScene mapViewerScene;
 
+
+    public GameController() {
+    }
+
+
     public GameController(Stage stage, MapViewerScene mapViewerScene) {
         this.stage = stage;
         this.mapViewerScene = mapViewerScene;
     }
+
+
+    //各个场景通用的结束游戏方法
+    public void handleExit(ActionEvent event) {
+        System.exit(0);
+    }
+
 
     public void goToLevelSelection() {
         LevelSelectionScene levelSelectionScene = new LevelSelectionScene();
@@ -40,7 +53,6 @@ public class GameController {
         stage.show();
     }
 
-
     public void goToGameOver() {
         int carbon = mapViewerScene.getCurLevelCarbonPoint();
         int gemNum = mapViewerScene.getCurLevelGemNum();
@@ -51,4 +63,6 @@ public class GameController {
         stage.setScene(gameover.getScene());
         stage.show();
     }
+
+
 }

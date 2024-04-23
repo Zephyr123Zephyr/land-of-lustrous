@@ -5,7 +5,7 @@ import org.example.landoflustrous.model.ScoreCalculator;
 import org.example.landoflustrous.model.TimeLifeCalculator;
 import org.example.landoflustrous.view.LevelSelectionScene;
 
-public class GameStartController extends Controller {
+public class GameStartController extends GameController {
 
     private Stage stage;
 
@@ -21,7 +21,6 @@ public class GameStartController extends Controller {
     public void handlePlay(ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
         LevelSelectionScene levelSelection = new LevelSelectionScene();
         stage.setScene(levelSelection.createLevelSelectionScene(stage, scoreCalculator, timeLifeCalculator));
-
 
     }
 
