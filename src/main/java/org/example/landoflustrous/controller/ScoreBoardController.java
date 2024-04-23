@@ -13,12 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ScoreBoardController extends Controller {
+public class ScoreBoardController extends GameController {
     private Stage stage;
 
     public ScoreBoardController(Stage stage) {
+        super();
         this.stage = stage;
     }
+
 
     public void goToNextLevel(ActionEvent event) {
         LevelSelectionScene levelSelectionScene = new LevelSelectionScene();

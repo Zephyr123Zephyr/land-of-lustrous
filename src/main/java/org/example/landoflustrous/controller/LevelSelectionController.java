@@ -6,7 +6,7 @@ import org.example.landoflustrous.model.TimeLifeCalculator;
 import org.example.landoflustrous.view.GameStartScene;
 import org.example.landoflustrous.view.MapViewerScene;
 
-public class LevelSelectionController extends Controller {
+public class LevelSelectionController extends GameController {
 
     private final Stage stage;
     private final ScoreCalculator scoreCalculator;
