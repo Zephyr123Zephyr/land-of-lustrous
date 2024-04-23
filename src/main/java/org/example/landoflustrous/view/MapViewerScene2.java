@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.landoflustrous.controller.LevelSelectionController;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.service.NavigationService;
 
@@ -432,11 +433,7 @@ public class MapViewerScene2 {
         Button buttonToNextLevel = new Button("To Next Level");
         buttonToNextLevel.setOnAction(event -> {
             String s = "Level 1"; // 此处需根据实际游戏逻辑调整
-            try {
-                new LevelSelectionScene().openMapPage(stage, s, scoreCalculator, timeLifeCalculator);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            new LevelSelectionController(stage, scoreCalculator, timeLifeCalculator).openMapPage(s);
         });
 
 

@@ -3,9 +3,9 @@ package org.example.landoflustrous.view;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.example.landoflustrous.controller.GameStartController;
@@ -16,11 +16,12 @@ public class GameStartScene {
     private GameStartController controller;
 
     public Scene createStartScene(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+
+
         controller = new GameStartController(stage);
 
-
         // Load the background image
-        Image backgroundImage = new Image(getClass().getResourceAsStream("/images/map_level1.png"));
+        Image backgroundImage = new Image(getClass().getResourceAsStream("/images/start_bg.png"));
         // Create a BackgroundSize object
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
         // Create a BackgroundImage object
@@ -28,16 +29,11 @@ public class GameStartScene {
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER, backgroundSize);
 
-
-        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/title.png")));
-        imageView.setId("title"); // 设置ID以便在CSS中引用
-        imageView.setFitWidth(300);
-        imageView.setFitHeight(30);
-
+        Label prompt = new Label("Enter Your Name");
 
         TextField nameInput = new TextField();
-        nameInput.setPromptText("Enter Your Name"); // Placeholder text
-        nameInput.setMaxWidth(200); // Set a max width for the text field
+        nameInput.setPromptText("Enter Your Name");
+        nameInput.setMaxWidth(200);
 
 
         VBox vbox = new VBox(20);
@@ -49,20 +45,20 @@ public class GameStartScene {
 
         Button buttonExit = new Button("");
         buttonExit.getStyleClass().add("btn_exit");
-        buttonExit.setOnAction(e -> controller.handleExit());
-        vbox.getChildren().addAll(nameInput, buttonNewGame, buttonExit);
+
+        //绑定退出事件
+        buttonExit.setOnAction(controller::handleExit);
+
+        vbox.getChildren().addAll(prompt, nameInput, buttonNewGame, buttonExit);
 
         StackPane root = new StackPane(); // Using StackPane to center VBox
 
-        root.getChildren().addAll(imageView, vbox);
+        root.getChildren().addAll(vbox);
         // Set the background of the root StackPane
         root.setBackground(new Background(background));
 
-        // Set label at the top and VBox centered
-        StackPane.setAlignment(imageView, Pos.TOP_CENTER);
 
-
-        Scene scene = new Scene(root, 1300, 700);
+        Scene scene = new Scene(root, 1200, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
 //         在这里设置全屏

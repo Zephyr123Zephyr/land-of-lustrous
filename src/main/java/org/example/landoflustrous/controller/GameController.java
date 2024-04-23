@@ -31,10 +31,15 @@ public class GameController {
         int gemScore = mapViewerScene.getCurLevelGemPoint();
         int time = mapViewerScene.getCurLevelTimeUse();
 
-        ScoreBoardScene scoreBoardScene = new ScoreBoardScene(stage, carbon, gemNum, gemScore, time);
+        // 创建ScoreBoardController的实例
+        ScoreBoardController scoreBoardController = new ScoreBoardController(stage);
+
+        // 现在构造器参数齐全
+        ScoreBoardScene scoreBoardScene = new ScoreBoardScene(stage, carbon, gemNum, gemScore, time, scoreBoardController);
         stage.setScene(scoreBoardScene.getScene());
         stage.show();
     }
+
 
     public void goToGameOver() {
         int carbon = mapViewerScene.getCurLevelCarbonPoint();

@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.landoflustrous.controller.GameController;
+import org.example.landoflustrous.controller.LevelSelectionController;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.service.NavigationService;
 
@@ -494,11 +495,7 @@ public class MapViewerScene {
             int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]", ""));
             int nextLevel = tempLevel + 1;
             String nextLevelIdentifier = "Level " + nextLevel; // level
-            try {
-                new LevelSelectionScene().openMapPage(stage, nextLevelIdentifier, scoreCalculator, timeLifeCalculator);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            new LevelSelectionController(stage, scoreCalculator, timeLifeCalculator).openMapPage(nextLevelIdentifier);
         });
 //        Scene scoreBoardScene = new ScoreBoardScene().getScene();
 

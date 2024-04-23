@@ -1,181 +1,119 @@
 package org.example.landoflustrous.view;
 
-import com.almasb.fxgl.core.util.Platform;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.example.landoflustrous.controller.GameController;
+import org.example.landoflustrous.controller.ScoreBoardController;
 import org.example.landoflustrous.model.Popup;
-import org.example.landoflustrous.model.ScoreCalculator;
-import org.example.landoflustrous.model.TimeLifeCalculator;
 
 public class ScoreBoardScene {
-    private StackPane root;
+    private VBox root; // 使用VBox作为根容器
     private Scene scene;
-    private Popup popup;
+    private Stage stage;
+    private ScoreBoardController controller;
 
-    public Stage stage;
-
-    // 主构造器
-    public ScoreBoardScene(Stage stage, int carbon, int gemNum, int gemScore, int time) {
+    public ScoreBoardScene(Stage stage, int carbon, int gemNum, int gemScore, int time, ScoreBoardController controller) {
         this.stage = stage;
-        setupScene(carbon, gemNum, gemScore, time);
-    }
+        this.controller = controller;
 
-    // 默认构造器
-    public ScoreBoardScene() {
-        // 调用主构造器，所有参数设置为默认值0
-        this(null,0, 0, 0, 0);
-    }
 
-    private void setupScene(int carbon, int gemNum, int gemScore, int time) {
-        Popup popup1 = new Popup();
-        root = new StackPane();
+        //---------------------一个vbox放各种分数-------------------------------
+        VBox textContainer = new VBox(20); // 10是元素之间的间距
+        textContainer.setAlignment(Pos.CENTER); // 设置VBox居中对齐
+        textContainer.getStyleClass().add("text-container"); // CSS类名
+
+        Text title = new Text("SCORE BOARD");
+        title.getStyleClass().add("score_title");
+
+        Text textGem = new Text("GEM NUMBER: " + gemNum);
+        textGem.getStyleClass().add("score");
+
+        Text textCarbon = new Text("C-EMISSION: " + carbon);
+        textCarbon.getStyleClass().add("score");
+
+        Text textTime = new Text("TIME COST: " + time);
+        textTime.getStyleClass().add("score");
+
+        Text textTotalScore = new Text("GEM SCORE: " + gemScore);
+        textTotalScore.getStyleClass().add("score");
+
+        textContainer.getChildren().addAll(textGem, textCarbon, textTime, textTotalScore);
+
+        Rectangle rectangle = new Rectangle(600, 230);
+        rectangle.getStyleClass().add("rectangle");
+
+        // 使用StackPane来允许背景和文本层叠
+        StackPane scores = new StackPane();
+        scores.getChildren().addAll(rectangle, textContainer);
+
+        //------------------------------一个hbox放popup-----------------------
+        HBox hbox_popup = new HBox(0);
+        hbox_popup.setAlignment(Pos.CENTER);
+
+        Popup popup = new Popup();
+        Text ecoTip = new Text(popup.getRandomEcoTip());
+
+        ecoTip.setWrappingWidth(330);
+        ecoTip.getStyleClass().add("eco_tip");
+
+        // 随机图片
+        ImageView imageView = controller.getRandomImageView();
+        imageView.setFitWidth(220);
+        imageView.setFitHeight(220);
+        imageView.setPreserveRatio(true);
+
+        // 将ImageView和Text添加到HBox
+        hbox_popup.getChildren().addAll(imageView, ecoTip);
+        Rectangle rectangle2 = new Rectangle(600, 200);
+        rectangle2.getStyleClass().add("rectangle");
+
+        StackPane stackpan_popup = new StackPane();
+        stackpan_popup.getChildren().addAll(rectangle2, hbox_popup);
+
+        //--------------------------一个hbox放两个按钮----------------------------
+        HBox hbox_twobtn = new HBox(50);
+        hbox_twobtn.setAlignment(Pos.CENTER);
+
+        Button btn1 = new Button("");
+        btn1.getStyleClass().add("play_again");
+        btn1.setOnAction(controller::goToNextLevel);
+
+
+        Button btn2 = new Button("");
+        btn2.getStyleClass().add("next_level");
+        btn2.setOnAction(controller::goToNextLevel);
+
+        Button btn3 = new Button("");
+        btn3.getStyleClass().add("exit");
+        btn3.setOnAction(controller::handleExit);
+
+
+        hbox_twobtn.getChildren().addAll(btn1, btn2, btn3);
+
+
+        // -------------------------VBox组织子元素-------------------
+        root = new VBox(15);
+        root.setAlignment(Pos.CENTER);
+        root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm()); // 引入CSS样式
+
         root.setStyle("-fx-background-color:rgb(243,243,243);");
-
-        Button btn = new Button("NEXT LEVEL");
-        btn.setBackground(new Background(new BackgroundFill(Color.web("#4CAF50"), null, null)));
-        btn.setTextFill(Color.WHITE);
-        btn.setPadding(new Insets(10, 20, 10, 20));
-        btn.setFont(Font.font("Agency FB", FontWeight.BOLD, 30));
-
-        // 设置按钮的点击事件，转到levelselection场景
-        btn.setOnAction(event -> {
-            System.out.println("Next level button clicked - Going to level selection");
-            goToNextLevel();
-        });
-
-        Text text = new Text("SCORE BOARD");
-        text.setFont(Font.font("Agency FB", FontWeight.BOLD, 65));
-        text.setFill(Color.DARKGREEN);
-
-        Text text2 = new Text(popup1.getRandomEcoTip());
-        text2.setFont(Font.font("Agency FB", 30));
-        text2.setFill(Color.DARKGREEN);
-        text2.setWrappingWidth(400);
-
-        VBox vbox = new VBox(10);
-        vbox.setAlignment(Pos.TOP_CENTER);
-        vbox.setPadding(new Insets(10));
-        vbox.getChildren().add(text2);
-
-        Text text_gem = new Text("GEM NUMBER " + gemNum);
-        text_gem.setFont(Font.font("Courier New", FontWeight.BOLD, 40));
-        text_gem.setFill(Color.DARKGREEN);
-
-        Text text_carbon = new Text("C-EMISSION " + carbon);
-        text_carbon.setFont(Font.font("Courier New", FontWeight.BOLD, 40));
-        text_carbon.setFill(Color.DARKGREEN);
-
-        Text text_time = new Text("TIME COST" + time);
-        text_time.setFont(Font.font("Courier New", FontWeight.BOLD, 40));
-        text_time.setFill(Color.DARKGREEN);
-
-        Text text_totalscore = new Text("GEM SCORE " + gemScore);
-        text_totalscore.setFont(Font.font("Agency FB", FontWeight.BOLD, 45));
-        text_totalscore.setFill(Color.DARKGOLDENROD);
-
-        Rectangle rectangle = new Rectangle(600, 200, Color.WHITE);
-        rectangle.setStrokeWidth(3);
-        rectangle.setStroke(Color.DARKGREEN);
-
-        Rectangle rectangle2 = new Rectangle(600, 330, Color.WHITE);
-        rectangle2.setStrokeWidth(3);
-        rectangle2.setStroke(Color.DARKGREEN);
-
-        Line line = new Line(50, 0, 650, 0);
-        line.setStroke(Color.DARKGREEN);
-        line.setStrokeWidth(3);
-
-        // Assuming image files are properly placed in the src/ directory
-//        Image image = new Image("src/tree.png");
-//        ImageView imageView = new ImageView(image);
-//        imageView.setFitWidth(image.getWidth() / 4);
-//        imageView.setFitHeight(image.getHeight() / 4);
-//
-//        Image image_gem = new Image("src/gem.png");
-//        ImageView imageView_gem = new ImageView(image_gem);
-//        imageView_gem.setFitWidth(image.getWidth() / 15);
-//        imageView_gem.setFitHeight(image.getHeight() / 18);
-//
-//        Image image_carbon = new Image("src/carbon3.png");
-//        ImageView imageView_carbon = new ImageView(image_carbon);
-//        imageView_carbon.setFitWidth(image.getWidth() / 14);
-//        imageView_carbon.setFitHeight(image.getHeight() / 17);
-//
-//        Image image_time = new Image("src/time2.png");
-//        ImageView imageView_time = new ImageView(image_time);
-//        imageView_time.setFitWidth(image.getWidth() / 17);
-//        imageView_time.setFitHeight(image.getHeight() / 17);
-
-        // Add all elements to root StackPane
-//        root.getChildren().addAll(btn, text, rectangle, imageView, rectangle2, vbox, line,
-//                imageView_gem, imageView_carbon, imageView_time,
-//                text_gem, text_carbon, text_time, text_totalscore);
-
-
-        root.getChildren().addAll(text, rectangle, rectangle2, vbox, line,
-                text_gem, text_carbon, text_time, text_totalscore, btn);
-
-        StackPane.setAlignment(btn, Pos.CENTER); // 将按钮置于中心，确保没有被遮挡
-
-        // Adjustments and margins as needed
-        StackPane.setMargin(text, new Insets(-700, 0, 0, 0));
-        StackPane.setMargin(btn, new Insets(0, 0, -700, 0));
-        StackPane.setMargin(rectangle, new Insets(350, 0, 0, 0));
-//        StackPane.setMargin(imageView, new Insets(360, 400, 20, 0));
-        StackPane.setMargin(vbox, new Insets(530, 100, 0, 290));
-        StackPane.setMargin(rectangle2, new Insets(-220, 0, 20, 0));
-//        StackPane.setMargin(imageView_gem, new Insets(-450, 400, 20, 0));
-        StackPane.setMargin(text_gem, new Insets(-450, -100, 20, 0));
-//        StackPane.setMargin(imageView_carbon, new Insets(-300, 400, 20, 0));
-        StackPane.setMargin(text_carbon, new Insets(-300, -100, 20, 0));
-//        StackPane.setMargin(imageView_time, new Insets(-150, 400, 20, 0));
-        StackPane.setMargin(text_time, new Insets(-150, -100, 20, 0));
-        StackPane.setMargin(text_totalscore, new Insets(10, 0, 0, 0));
-        StackPane.setMargin(line, new Insets(-70, 0, 0, 0));
+        root.getChildren().addAll(title, scores, stackpan_popup, hbox_twobtn);
 
         this.scene = new Scene(root, 1300, 800);
+
+
     }
 
-
-
-
-//    public Scene getScene() {
-//        return this.scene;
-//    }
-
     public Scene getScene() {
-        if (this.scene == null) {
-            try {
-                // 场景构建逻辑
-                this.scene = new Scene(root, 1300, 700);
-            } catch (Exception e) {
-                System.out.println("Error creating the scene: " + e.getMessage());
-                e.printStackTrace();  // 打印异常信息
-                return null;  // 或者返回一个默认的场景
-            }
-        }
         return this.scene;
     }
 
-    private void goToNextLevel() {
-        LevelSelectionScene levelSelectionScene = new LevelSelectionScene();
-        Scene levelSelectionSceneView = levelSelectionScene.createLevelSelectionScene(stage, new ScoreCalculator(), new TimeLifeCalculator(1000));
-        stage.setScene(levelSelectionSceneView);
-        stage.show();
-    }
 
 }

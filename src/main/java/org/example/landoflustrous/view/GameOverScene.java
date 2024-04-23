@@ -1,12 +1,8 @@
 package org.example.landoflustrous.view;
 
-import com.almasb.fxgl.core.util.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -16,10 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.example.landoflustrous.controller.GameController;
 import org.example.landoflustrous.model.Popup;
-import org.example.landoflustrous.model.ScoreCalculator;
-import org.example.landoflustrous.model.TimeLifeCalculator;
 
 public class GameOverScene {
     private StackPane root;
@@ -37,7 +30,7 @@ public class GameOverScene {
     // 默认构造器
     public GameOverScene() {
         // 调用主构造器，所有参数设置为默认值0
-        this(null,0, 0, 0, 0);
+        this(null, 0, 0, 0, 0);
     }
 
     private void setupScene(int carbon, int gemNum, int gemScore, int time) {
@@ -87,32 +80,6 @@ public class GameOverScene {
         line.setStroke(Color.DARKGREEN);
         line.setStrokeWidth(3);
 
-        // Assuming image files are properly placed in the src/ directory
-//        Image image = new Image("src/tree.png");
-//        ImageView imageView = new ImageView(image);
-//        imageView.setFitWidth(image.getWidth() / 4);
-//        imageView.setFitHeight(image.getHeight() / 4);
-//
-//        Image image_gem = new Image("src/gem.png");
-//        ImageView imageView_gem = new ImageView(image_gem);
-//        imageView_gem.setFitWidth(image.getWidth() / 15);
-//        imageView_gem.setFitHeight(image.getHeight() / 18);
-//
-//        Image image_carbon = new Image("src/carbon3.png");
-//        ImageView imageView_carbon = new ImageView(image_carbon);
-//        imageView_carbon.setFitWidth(image.getWidth() / 14);
-//        imageView_carbon.setFitHeight(image.getHeight() / 17);
-//
-//        Image image_time = new Image("src/time2.png");
-//        ImageView imageView_time = new ImageView(image_time);
-//        imageView_time.setFitWidth(image.getWidth() / 17);
-//        imageView_time.setFitHeight(image.getHeight() / 17);
-
-        // Add all elements to root StackPane
-//        root.getChildren().addAll(btn, text, rectangle, imageView, rectangle2, vbox, line,
-//                imageView_gem, imageView_carbon, imageView_time,
-//                text_gem, text_carbon, text_time, text_totalscore);
-
 
         root.getChildren().addAll(text, rectangle, rectangle2, vbox, line,
                 text_gem, text_carbon, text_time, text_totalscore);
@@ -135,8 +102,6 @@ public class GameOverScene {
 
         this.scene = new Scene(root, 1300, 800);
     }
-
-
 
 
 //    public Scene getScene() {
