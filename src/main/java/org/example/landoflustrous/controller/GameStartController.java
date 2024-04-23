@@ -22,7 +22,6 @@ public class GameStartController extends GameController {
         LevelSelectionScene levelSelection = new LevelSelectionScene();
         stage.setScene(levelSelection.createLevelSelectionScene(stage, scoreCalculator, timeLifeCalculator));
 
-
     }
 
 }

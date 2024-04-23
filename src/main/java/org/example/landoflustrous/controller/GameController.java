@@ -53,7 +53,6 @@ public class GameController {
         stage.show();
     }
 
-
     public void goToGameOver() {
         int carbon = mapViewerScene.getCurLevelCarbonPoint();
         int gemNum = mapViewerScene.getCurLevelGemNum();
