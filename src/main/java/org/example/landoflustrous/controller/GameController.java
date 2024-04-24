@@ -59,7 +59,9 @@ public class GameController {
         int gemScore = mapViewerScene.getCurLevelGemPoint();
         int time = mapViewerScene.getCurLevelTimeUse();
 
-        GameOverScene gameover = new GameOverScene(stage, carbon, gemNum, gemScore, time);
+        GameOverController controller = new GameOverController(stage);
+
+        GameOverScene gameover = new GameOverScene(stage, carbon, gemNum, gemScore, time,controller);
         stage.setScene(gameover.getScene());
         stage.show();
     }
