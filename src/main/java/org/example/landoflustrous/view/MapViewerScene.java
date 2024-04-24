@@ -559,7 +559,7 @@ public class MapViewerScene {
         buttonKeepLevel.getStyleClass().add("transition_button");
         buttonKeepLevel.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         buttonKeepLevel.setAlignment(Pos.CENTER);
-        buttonKeepLevel.layoutXProperty().bind(root.widthProperty().subtract(buttonTestToOver.widthProperty()).divide(2));
+        buttonKeepLevel.layoutXProperty().bind(root.widthProperty().subtract(buttonTestToOver.widthProperty()).divide(2).add(23));
         buttonKeepLevel.layoutYProperty().bind(root.heightProperty().subtract(buttonTestToOver.heightProperty()).divide(2).add(100));
         buttonKeepLevel.setVisible(false);
         buttonKeepLevel.setOnAction(event -> {
