@@ -57,7 +57,17 @@
     -fx-pref-height: 62px;
 }
 
+/*-------------------STATUS BOARD------------------------ */
+.status_board{
+    -fx-background-color: #006400;
+    -fx-font-family: 'Agency FB';
+    -fx-font-weight: bold;
+    -fx-text-fill: #006400;
+    -fx-font-size: 30px; /* 字体大小24像素 */
+    -fx-text-alignment: center;
+    -fx-alignment: center;
 
+}
 /*-------------------SOCREBOARD SCENE------------------------ */
 
 
@@ -129,6 +139,13 @@
     -fx-pref-height: 65px; /* 首选高度为50像素 */
 }
 
+.scoreboard_root{
+    -fx-background-image: url('images/scoreboard.png');
+    -fx-background-size: 1300 800;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
 /*-------------------GAMEOVER SCENE------------------------ */
 .gameover_title{
     -fx-font-family: 'Agency FB';
@@ -142,4 +159,26 @@
     -fx-background-size: 1300 800;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
+}
+
+/*-------------------MAPVIEWER SCENE------------------------ */
+.transition_button{
+    -fx-background-color: #ffcd94; /* Light brown background for the pixel-art style */
+    -fx-font-family: 'Press Start 2P', 'Consolas', monospace; /* Pixelated font, fallback to Consolas if custom font not available */
+    -fx-font-size: 16px; /* Size of the font */
+    -fx-text-fill: #333; /* Text color */
+    -fx-padding: 20px; /* Padding around the text */
+    -fx-border-color: #333; /* Border color */
+    -fx-border-width: 3px; /* Border width */
+    -fx-border-radius: 5px; /* Border corner radius */
+    -fx-background-radius: 5px; /* Background corner radius to match border radius */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); /* Shadow effect for depth */
+}
+
+/*-------------------GENERAL BUTTON------------------------ */
+.button{
+    -fx-cursor: hand;
+}
+.Button{
+    -fx-cursor: hand;
 }

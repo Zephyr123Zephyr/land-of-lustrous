@@ -2,6 +2,7 @@ package org.example.landoflustrous.view;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -186,7 +187,10 @@ public class MapViewerScene {
 
         // 创建状态显示板，并将其添加到 VBox 布局中。
         Pane statusBoard = createStatusBoard(scoreCalculator, timeLifeCalculator);
-        base.getChildren().add(root);
+        HBox hbox = new HBox();
+        hbox.setAlignment(Pos.CENTER); // Center horizontally
+        hbox.getChildren().add(root);
+        base.getChildren().add(hbox);
         base.getChildren().add(statusBoard);
 
         // 设置玩家的精灵为最前显示，并设置其不透明度和可见性。
@@ -258,7 +262,12 @@ public class MapViewerScene {
                     buttonToNextLevel.setVisible(false);
                     buttonToNextLevel.setOnAction(e -> controller.goToScoreBoard());
 
-                    Button buttonTestToOver = new Button("宝石不足，结算");
+                    Button buttonTestToOver = new Button("Insufficient Gems: Game Over");
+                    buttonTestToOver.getStyleClass().add("transition_button");
+                    buttonTestToOver.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+                    buttonTestToOver.setAlignment(Pos.CENTER);
+                    buttonTestToOver.layoutXProperty().bind(root.widthProperty().subtract(buttonTestToOver.widthProperty()).divide(2));
+                    buttonTestToOver.layoutYProperty().bind(root.heightProperty().subtract(buttonTestToOver.heightProperty()).divide(2));
                     root.getChildren().add(buttonTestToOver);
                     buttonTestToOver.setVisible(false);
 //objectscore = level number * 10
@@ -341,17 +350,19 @@ public class MapViewerScene {
 
 //        VBox.setMargin(statusBoard, new Insets(100, 0, 0, 0));
 
-        statusBoard.setStyle("-fx-background-color: #FFFFFF;");
+        statusBoard.setAlignment(Pos.CENTER);
+        statusBoard.getStyleClass().add("status_board");
+        statusBoard.getStylesheets().add(getClass().getResource("/style.css").toExternalForm()); // 引入CSS样式
 
-        // 创建并初始化碳足迹标签，显示当前的总碳点数。如果碳点数未初始化，则显示 "N/A"。
-        String s = scoreCalculator.getTotalCarbonPoint() == -1 ? "N/A" : ("" + scoreCalculator.getTotalCarbonPoint());
+        // 创建并初始化碳足迹标签，显示当前的总碳点数。如果碳点数未初始化，则显示 "0"。
+        String s = scoreCalculator.getTotalCarbonPoint() == -1 ? "0" : ("" + scoreCalculator.getTotalCarbonPoint());
         Label carbonFootprintLabel = new Label("Carbon Footprint: " + s);
 
         // 创建并初始化剩余时间标签，显示当前的生命剩余时间。
         Label timeLeftLabel = new Label("Time Left: " + timeLifeCalculator.getCurLifeRemain());
 
         // 创建并初始化宝石分数标签，显示当前的总宝石点数。如果宝石点数未初始化，则显示 "N/A"。
-        s = scoreCalculator.getTotalGemPoint() == -1 ? "N/A" : ("" + scoreCalculator.getTotalGemPoint());
+        s = scoreCalculator.getTotalGemPoint() == -1 ? "0" : ("" + scoreCalculator.getTotalGemPoint());
         Label scoreLabel = new Label("Gem Score: " + s);
 
         // 将所有标签添加到状态板中。
@@ -450,7 +461,12 @@ public class MapViewerScene {
 //            root.getChildren().add(level);
 
 // 创建一个按钮，用于结算游戏
-            Button buttonTestToOver = new Button("时间不足，进入结算页面");// ScoreBoard
+            Button buttonTestToOver = new Button("Insufficient Travel Time: Game Over");// ScoreBoard
+            buttonTestToOver.getStyleClass().add("transition_button");
+            buttonTestToOver.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+            buttonTestToOver.setAlignment(Pos.CENTER);
+            buttonTestToOver.layoutXProperty().bind(root.widthProperty().subtract(buttonTestToOver.widthProperty()).divide(2));
+            buttonTestToOver.layoutYProperty().bind(root.heightProperty().subtract(buttonTestToOver.heightProperty()).divide(2));
             buttonTestToOver.setVisible(true);
 
 // 设置按钮的点击事件处理
@@ -467,7 +483,11 @@ public class MapViewerScene {
             root.getChildren().add(buttonTestToOver);
 
 // 将root节点和其他相关组件添加到base节点中
-            base.getChildren().add(root);
+            // Centre-align map using h-box 把map root放窗口中间
+            HBox hbox = new HBox();
+            hbox.setAlignment(Pos.CENTER); // Center horizontally
+            hbox.getChildren().add(root);
+            base.getChildren().add(hbox);
             base.getChildren().add(statusBoard);
 
 // 创建一个新的场景，将base节点设置为场景的根节点，并设置场景的尺寸
@@ -484,8 +504,11 @@ public class MapViewerScene {
 // 添加状态板至主容器。
         Pane statusBoard = createStatusBoard(scoreCalculator, timeLifeCalculator);
 //        controller.goToGameOver();
-
-        base.getChildren().add(root);
+        // Centre-align map using h-box 把map root放窗口中间
+        HBox hbox = new HBox();
+        hbox.setAlignment(Pos.CENTER); // Center horizontally
+        hbox.getChildren().add(root);
+        base.getChildren().add(hbox);
         base.getChildren().add(statusBoard);
 
 // 设置各种按钮并根据游戏状态决定其可见性。
@@ -497,6 +520,11 @@ public class MapViewerScene {
         root.getChildren().add(buttonTestToHome);
 
         Button buttonToNextLevel = new Button("To Next Level");
+        buttonToNextLevel.getStyleClass().add("transition_button");
+        buttonToNextLevel.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        buttonToNextLevel.setAlignment(Pos.CENTER);
+        buttonToNextLevel.layoutXProperty().bind(root.widthProperty().subtract(buttonToNextLevel.widthProperty()).divide(2));
+        buttonToNextLevel.layoutYProperty().bind(root.heightProperty().subtract(buttonToNextLevel.heightProperty()).divide(2));
         buttonToNextLevel.setOnAction(event -> {
             controller.goToScoreBoard();
             int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]", ""));
@@ -513,7 +541,13 @@ public class MapViewerScene {
 //        );
         root.getChildren().add(buttonToNextLevel);
 
-        Button buttonTestToOver = new Button("宝石不足 结算");//GameOver
+        Button buttonTestToOver = new Button("Insufficient Gems: Game Over");//GameOver
+        buttonTestToOver.getStyleClass().add("transition_button");
+        buttonTestToOver.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        buttonTestToOver.setAlignment(Pos.CENTER);
+        buttonTestToOver.layoutXProperty().bind(root.widthProperty().subtract(buttonTestToOver.widthProperty()).divide(2));
+        buttonTestToOver.layoutYProperty().bind(root.heightProperty().subtract(buttonTestToOver.heightProperty()).divide(2));
+        buttonTestToOver.setVisible(true);
         buttonTestToOver.setOnAction(event -> {
             controller.goToGameOver();
 //            controller.goToScoreBoard();
@@ -522,7 +556,11 @@ public class MapViewerScene {
         root.getChildren().add(buttonTestToOver);
 
         Button buttonKeepLevel = new Button("Keep Playing this Level");
-        buttonKeepLevel.setLayoutY(100);
+        buttonKeepLevel.getStyleClass().add("transition_button");
+        buttonKeepLevel.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        buttonKeepLevel.setAlignment(Pos.CENTER);
+        buttonKeepLevel.layoutXProperty().bind(root.widthProperty().subtract(buttonTestToOver.widthProperty()).divide(2));
+        buttonKeepLevel.layoutYProperty().bind(root.heightProperty().subtract(buttonTestToOver.heightProperty()).divide(2).add(100));
         buttonKeepLevel.setVisible(false);
         buttonKeepLevel.setOnAction(event -> {
             cycle++;

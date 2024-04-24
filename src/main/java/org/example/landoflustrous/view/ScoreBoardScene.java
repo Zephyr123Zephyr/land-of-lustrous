@@ -101,6 +101,7 @@ public class ScoreBoardScene {
         // -------------------------VBox组织子元素-------------------
         root = new VBox(15);
         root.setAlignment(Pos.CENTER);
+        root.getStyleClass().add("scoreboard_root");
         root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm()); // 引入CSS样式
 
         root.setStyle("-fx-background-color:rgb(243,243,243);");
