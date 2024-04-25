@@ -3,7 +3,9 @@ package org.example.landoflustrous.controller;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.example.landoflustrous.view.MapViewerScene;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +25,18 @@ public class ScoreBoardController extends GameController {
 //        stage.setScene(levelSelectionScene.createLevelSelectionScene(stage));
 //        stage.show();
 //    }
+
+    public void openMapPage(String LevelIdentifier, String playerName) {
+        try {
+            MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
+            stage.setScene(mapViewer.getScene());
+            stage.show();
+        } catch (IOException e) {
+            // Handle exception here
+            e.printStackTrace(); // For example, print the stack trace to the console.
+            // You could also log the error or show an error message to the user.
+        }
+    }
 
     public ImageView getRandomImageView() {
         List<String> imagePaths = Arrays.asList("/images/earth.png", "/images/tree2.png", "/images/water.png", "/images/dophine.png");

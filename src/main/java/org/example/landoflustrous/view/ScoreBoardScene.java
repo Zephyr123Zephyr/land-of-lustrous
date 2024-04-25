@@ -89,21 +89,29 @@ public class ScoreBoardScene {
         HBox hbox_twobtn = new HBox(50);
         hbox_twobtn.setAlignment(Pos.CENTER);
 
+        //再玩一次按钮
         Button btn1 = new Button("");
         btn1.getStyleClass().add("play_again");
-//        btn1.setOnAction(controller.openMapPage(levelIdentifier, name));
+        btn1.setOnAction(e -> controller.openMapPage(levelIdentifier, name));
 
 
-        Button btn2 = new Button("");
-        btn2.getStyleClass().add("next_level");
-//        btn2.setOnAction(controller::goToNextLevel);
+        //下一关按钮,只有第一关时出现
+        if (levelIdentifier == "Level 1") {
+            Button btn2 = new Button("");
+            btn2.getStyleClass().add("next_level");
+            btn2.setOnAction(e -> controller.openMapPage("Level 2", name));
+            hbox_twobtn.getChildren().add(btn2);
 
+        }
+
+
+        //退出按钮
         Button btn3 = new Button("");
         btn3.getStyleClass().add("exit");
         btn3.setOnAction(controller::handleExit);
 
 
-        hbox_twobtn.getChildren().addAll(btn1, btn2, btn3);
+        hbox_twobtn.getChildren().addAll(btn1, btn3);
 
 
         // -------------------------VBox组织子元素-------------------

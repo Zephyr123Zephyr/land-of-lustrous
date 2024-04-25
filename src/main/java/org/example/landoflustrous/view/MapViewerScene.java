@@ -118,7 +118,7 @@ public class MapViewerScene {
 
             if (gameTimeRemaining == 0 & player.getGemNumber() >= 5) {
                 try {
-                    
+
                     switchToScoreBoard(levelIdentifier);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -357,13 +357,11 @@ public class MapViewerScene {
                     // 设置背景颜色和文字大小
                     notice.setStyle("-fx-background-color: transparent; -fx-font-size: 26px; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, darkgrey, 5, 0, 2, 2);");
 
-
                     upPart.getChildren().add(notice);
 
-                    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                    PauseTransition pause = new PauseTransition(Duration.seconds(1));
                     pause.setOnFinished(event2 -> upPart.getChildren().remove(notice));
                     pause.play();
-
                 }
 
 
@@ -519,7 +517,7 @@ public class MapViewerScene {
                 break;
             case CAR:
                 imagePath = "/images/texi.png";
-                width = 35;
+                width = 38;
                 height = 28;
                 break;
             case WALK:

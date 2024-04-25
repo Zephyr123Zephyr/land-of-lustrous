@@ -1,6 +1,5 @@
 package org.example.landoflustrous.controller;
 
-import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -14,10 +13,12 @@ import java.util.Random;
 
 public class GameOverController extends GameController {
     private Stage stage;
+
     public GameOverController(Stage stage) {
         super();
         this.stage = stage;
     }
+
     public void openMapPage(String LevelIdentifier, String playerName) {
         try {
             MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
