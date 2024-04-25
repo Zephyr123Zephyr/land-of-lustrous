@@ -201,14 +201,13 @@ public class MapViewerScene {
 
     //状态栏
     private void createStatusBoard(VBox root, PlayerCharacter player) {
-        this.statusBoard = new HBox(100); // 调整间距以更好地显示所有信息
+        this.statusBoard = new HBox(100); // 间距
         statusBoard.setStyle("-fx-background-color: #FFFFFF;");
         statusBoard.setPrefHeight(50); // 设置HBox的预设高度为50像素
 
         nameLabel = new Label("Name: " + player.getName());
 
         carbonLabel = new Label("Carbon HP: " + player.getCarbonHP());
-
 
 //        scoreLabel = new Label("Gem Score: " + player.getScore());
 
@@ -481,14 +480,10 @@ public class MapViewerScene {
         player.setX(lastTile.getX());
         player.setY(lastTile.getY());
 
-        // 将玩家图像移动到新位置
-        playerImage.setX(lastTile.getX() * TILE_SIZE);
-        playerImage.setY(lastTile.getY() * TILE_SIZE);
-
         // 从界面上移除宝石的视图
         upPart.getChildren().remove(gemImageView);
 
-        // 增加玩家的各种记分
+        // 给玩家各种属性记分
         player.addGemNumber(1);
         player.addGemScore(gem.getScore());
         player.substractCarbonHP(routeCost);

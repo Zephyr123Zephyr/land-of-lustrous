@@ -15,16 +15,7 @@ public class PlayerCharacter extends Coordinated {
         this.carbonHP = 1000;
         this.gemNumber = 0;
         this.gemScore = 0;
-
-
     }
-
-    // Time elements of player character in the current level
-//    private int remainingFictionalTime;
-//    private int maxFictionalTime;
-
-    // Attribute of Traffic Type,instance of class TrafficType
-//    private TrafficType trafficType;
 
     public int getGemNumber() {
         return gemNumber;
@@ -36,7 +27,6 @@ public class PlayerCharacter extends Coordinated {
 
     private int maxCarbonFootprint; // The CFP limit of the level
 
-
     public void addGemNumber(int gemNumber) {
         this.gemNumber += gemNumber;
 
@@ -47,27 +37,9 @@ public class PlayerCharacter extends Coordinated {
     }
 
 
-//    private int currentLevel; //!!!ADJUST LATER to see if this needs to be linked with level class!!!
-
-
     public int[] getCoordinates() {
         return new int[]{this.getX(), this.getY()};
     }
-
-
-    // Constructor
-//    public PlayerCharacter(String name, int x, int y, int maxFictionalTime, TrafficType trafficType, int maxCarbonFootprint, int currentLevel) {
-//        super(x, y);
-//        this.name = name;
-//
-////        this.maxFictionalTime = maxFictionalTime;
-////        this.remainingFictionalTime = maxFictionalTime; // Remaining time is full at start
-////        this.trafficType = trafficType;
-//        this.maxCarbonFootprint = maxCarbonFootprint;
-//        this.carbonFootprint = maxCarbonFootprint; //Carbon foot print is full at the start
-////        this.currentLevel = currentLevel;
-//        this.score = 0; //Starting score is 0
-//    }
 
     // Getter Setter Methods
     public String getName() {
@@ -94,30 +66,6 @@ public class PlayerCharacter extends Coordinated {
         this.y = y;
     }
 
-
-//    public int getRemainingFictionalTime() {
-//        return remainingFictionalTime;
-//    }
-
-//    public void setRemainingFictionalTime(int remainingFictionalTime) {
-//        this.remainingFictionalTime = remainingFictionalTime;
-//    }
-//
-//    public int getMaxFictionalTime() {
-//        return maxFictionalTime;
-//    }
-//
-//    public void setMaxFictionalTime(int maxFictionalTime) {
-//        this.maxFictionalTime = maxFictionalTime;
-//    }
-//
-//    public TrafficType getTrafficType() {
-//        return trafficType;
-//    }
-//
-//    public void setTrafficType(TrafficType trafficType) {
-//        this.trafficType = trafficType;
-//    }
 
     public int getCarbonHP() {
         return carbonHP;
@@ -158,3 +106,47 @@ public class PlayerCharacter extends Coordinated {
 //(TODO: do this afterwards)
 
 }
+
+
+//    public int getRemainingFictionalTime() {
+//        return remainingFictionalTime;
+//    }
+
+//    public void setRemainingFictionalTime(int remainingFictionalTime) {
+//        this.remainingFictionalTime = remainingFictionalTime;
+//    }
+//
+//    public int getMaxFictionalTime() {
+//        return maxFictionalTime;
+//    }
+//
+//    public void setMaxFictionalTime(int maxFictionalTime) {
+//        this.maxFictionalTime = maxFictionalTime;
+//    }
+//
+//    public TrafficType getTrafficType() {
+//        return trafficType;
+//    }
+//
+//    public void setTrafficType(TrafficType trafficType) {
+//        this.trafficType = trafficType;
+//    }
+// Constructor
+//    public PlayerCharacter(String name, int x, int y, int maxFictionalTime, TrafficType trafficType, int maxCarbonFootprint, int currentLevel) {
+//        super(x, y);
+//        this.name = name;
+//
+////        this.maxFictionalTime = maxFictionalTime;
+////        this.remainingFictionalTime = maxFictionalTime; // Remaining time is full at start
+////        this.trafficType = trafficType;
+//        this.maxCarbonFootprint = maxCarbonFootprint;
+//        this.carbonFootprint = maxCarbonFootprint; //Carbon foot print is full at the start
+////        this.currentLevel = currentLevel;
+//        this.score = 0; //Starting score is 0
+//    }
+// Time elements of player character in the current level
+//    private int remainingFictionalTime;
+//    private int maxFictionalTime;
+
+// Attribute of Traffic Type,instance of class TrafficType
+//    private TrafficType trafficType;
