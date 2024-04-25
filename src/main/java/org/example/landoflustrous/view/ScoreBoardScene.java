@@ -26,7 +26,7 @@ public class ScoreBoardScene {
     public ScoreBoardScene(String name, Stage stage, int carbon, int gemNum, int gemScore, ScoreBoardController controller, String levelIdentifier) throws IOException {
         this.stage = stage;
         this.controller = controller;
-
+        controller.saveGameRecord(name, gemNum, levelIdentifier);
 
         //---------------------一个vbox放各种分数-------------------------------
         VBox textContainer = new VBox(20); // 10是元素之间的间距
@@ -124,7 +124,7 @@ public class ScoreBoardScene {
         root.getChildren().addAll(title, scores, stackpan_popup, hbox_twobtn);
 
         this.scene = new Scene(root, 1300, 800);
-        controller.saveGameRecord(name, gemNum, levelIdentifier);
+
 
     }
 
