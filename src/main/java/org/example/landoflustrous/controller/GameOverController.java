@@ -1,9 +1,12 @@
 package org.example.landoflustrous.controller;
 
+import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.example.landoflustrous.view.MapViewerScene;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +14,20 @@ import java.util.Random;
 
 public class GameOverController extends GameController {
     private Stage stage;
-
     public GameOverController(Stage stage) {
         super();
         this.stage = stage;
+    }
+    public void openMapPage(String LevelIdentifier, String playerName) {
+        try {
+            MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
+            stage.setScene(mapViewer.getScene());
+            stage.show();
+        } catch (IOException e) {
+            // Handle exception here
+            e.printStackTrace(); // For example, print the stack trace to the console.
+            // You could also log the error or show an error message to the user.
+        }
     }
 
 //    public void goToNextLevel(ActionEvent event) {
@@ -34,4 +47,16 @@ public class GameOverController extends GameController {
         Image image = new Image(stream);
         return new ImageView(image);
     }
+
+//    public void openMapPage(ActionEvent actionEvent) {
+//        try {
+//            MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
+//            stage.setScene(mapViewer.getScene());
+//            stage.show();
+//        } catch (IOException e) {
+//            // Handle exception here
+//            e.printStackTrace(); // For example, print the stack trace to the console.
+//            // You could also log the error or show an error message to the user.
+//        }
+//    }
 }

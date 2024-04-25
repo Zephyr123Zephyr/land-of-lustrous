@@ -151,7 +151,7 @@ public class MapViewerScene {
         int gemCount = player.getGemNumber();
 
         GameOverController gameOverController = new GameOverController(stage);
-        GameOverScene gameOverScene = new GameOverScene(player.getName(), stage, currentCarbon, gemCount, gemScore, gameOverController);
+        GameOverScene gameOverScene = new GameOverScene(player.getName(), stage, currentCarbon, gemCount, gemScore, gameOverController,levelIdentifier);
         stage.setScene(gameOverScene.getScene());
         stage.show();
 

@@ -20,7 +20,9 @@ public class GameOverScene {
     private Stage stage;
     private GameOverController controller;
 
-    public GameOverScene(String name, Stage stage, int carbon, int gemNum, int gemScore, GameOverController controller) {
+    private String levelIdentifier;
+
+    public GameOverScene(String name, Stage stage, int carbon, int gemNum, int gemScore, GameOverController controller, String levelIdentifier) {
         this.stage = stage;
         this.controller = controller;
 
@@ -82,7 +84,7 @@ public class GameOverScene {
 
         Button btn1 = new Button("");
         btn1.getStyleClass().add("play_again");
-//        btn1.setOnAction(controller::goToNextLevel);
+        btn1.setOnAction(e -> controller.openMapPage(levelIdentifier,name));
 
 
         Button btn3 = new Button("");
