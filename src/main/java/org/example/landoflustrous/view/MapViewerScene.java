@@ -1,9 +1,6 @@
 package org.example.landoflustrous.view;
 
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.PathTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -48,7 +45,7 @@ public class MapViewerScene {
     private Label gemCountLabel; // 显示宝石数量
     private Label timeRemainingLabel;
     private Timeline gameTimer;
-    private int gameTimeRemaining = 90;  // 总游戏时间60秒
+    private int gameTimeRemaining = 60;  // 总游戏时间60秒
     private boolean continueGeneratingGems = true;
     NavigationService navigationService;
     String levelIdentifier;
@@ -104,7 +101,7 @@ public class MapViewerScene {
         createStatusBoard(root, player);
 
         //画地图网格方便观察
-        drawTileBorders(upPart, gameMap.getWidth(), gameMap.getHeight());
+//        drawTileBorders(upPart, gameMap.getWidth(), gameMap.getHeight());
 
         // 引入CSS样式
         root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
@@ -121,6 +118,7 @@ public class MapViewerScene {
 
             if (gameTimeRemaining == 0 & player.getGemNumber() >= 5) {
                 try {
+                    
                     switchToScoreBoard(levelIdentifier);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -130,10 +128,10 @@ public class MapViewerScene {
                 handleGameOver(levelIdentifier);
             }
 
-            if (player.getCarbonHP() <= 0) {
-                gameTimer.stop();
-                handleGameOver(levelIdentifier);
-            }
+//            if (player.getCarbonHP() <= 0) {
+//                gameTimer.stop();
+//                handleGameOver(levelIdentifier);
+//            }
         }));
         gameTimer.setCycleCount(Timeline.INDEFINITE);
         gameTimer.play();
@@ -257,7 +255,11 @@ public class MapViewerScene {
             gemImageView.setOnMouseClicked(event -> {
                 //点击后不再继续生成下一颗宝石
                 continueGeneratingGems = false;
+
+
                 handleGemClick(event, root, gemType, liveTime);
+
+
                 disappearTimeline.stop();
                 scheduleNextGem(root, gameWidth, gameHeight);
             });
@@ -337,11 +339,33 @@ public class MapViewerScene {
             routeButton.setOnAction(event -> {
 
                 System.out.println("Route " + (finalI + 1) + " selected");
-                movePlayerToGem(route);  // 绑定动画触发方法
+
+
                 this.routeCost = (int) route.getTotalCarbon();
-                System.out.println("route cost is " + routeCost);
-                //点击后关闭选项卡
-                upPart.getChildren().removeAll(root);
+
+                //只有在Carbon HP大于路线的消耗时，选项才能被点击
+                if (player.getCarbonHP() >= routeCost) {
+                    movePlayerToGem(route);  // 绑定动画触发方法
+                    System.out.println("route cost is " + routeCost);
+                    //点击后关闭选项卡
+                    upPart.getChildren().removeAll(root);
+                } else {
+
+                    Label notice = new Label("                                         You don't have enough Carbon HP!");
+                    // 设置标签的尺寸
+                    notice.setMinSize(350, 250); // 根据需要设置尺寸
+                    // 设置背景颜色和文字大小
+                    notice.setStyle("-fx-background-color: transparent; -fx-font-size: 26px; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, darkgrey, 5, 0, 2, 2);");
+
+
+                    upPart.getChildren().add(notice);
+
+                    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                    pause.setOnFinished(event2 -> upPart.getChildren().remove(notice));
+                    pause.play();
+
+                }
+
 
             });
             root.getChildren().add(routeButton);
