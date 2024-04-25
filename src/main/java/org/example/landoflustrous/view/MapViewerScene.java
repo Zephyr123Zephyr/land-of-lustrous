@@ -281,12 +281,10 @@ public class MapViewerScene {
             root.getChildren().add(gemImageView);
             disappearTimeline.play();
         }
-
         //获得路线选项
         this.navigationService = new NavigationService(gameMap);
         this.routeList = navigationService.navigate(player, gem);
         System.out.println(routeList);
-
     }
 
 
