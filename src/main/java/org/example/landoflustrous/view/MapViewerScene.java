@@ -229,9 +229,10 @@ public class MapViewerScene {
         if (gameTimeRemaining > 1) {
 
             Random random = new Random();
+
             int gem_x;
             int gem_y;
-            
+
             do {
                 gem_x = random.nextInt(gameWidth);
                 gem_y = random.nextInt(gameHeight);
