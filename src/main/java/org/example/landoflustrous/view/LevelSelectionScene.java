@@ -51,7 +51,7 @@ public class LevelSelectionScene {
         //一个hbox放两个选项的按钮
         Button returnBtn = new Button("");
         returnBtn.getStyleClass().add("return");
-//        returnBtn.setOnAction(e -> controller.returnToMainMenu());
+        returnBtn.setOnAction(e -> controller.returnToMainMenu());
 
         Button exitBtn = new Button("");
         exitBtn.getStyleClass().add("exit");

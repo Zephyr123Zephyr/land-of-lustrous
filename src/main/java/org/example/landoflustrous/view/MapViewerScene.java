@@ -443,7 +443,7 @@ public class MapViewerScene {
         // 根据交通类型返回不同的速度因子。
         switch (trafficType) {
             case WALK:
-                return 1;
+                return 1.5;
             case BIKE:
                 return 0.5;
             case BUS:

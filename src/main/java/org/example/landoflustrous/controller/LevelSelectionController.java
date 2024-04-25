@@ -1,6 +1,7 @@
 package org.example.landoflustrous.controller;
 
 import javafx.stage.Stage;
+import org.example.landoflustrous.view.GameStartScene;
 import org.example.landoflustrous.view.MapViewerScene;
 
 import java.io.IOException;
@@ -19,11 +20,13 @@ public class LevelSelectionController extends GameController {
     }
 
 
+    public void returnToMainMenu() {
+        GameStartScene startScene = new GameStartScene();
+        stage.setScene(startScene.createStartScene(stage));
+        stage.show();
+    }
+
 }
 
 
-//    public void returnToMainMenu() {
-//        GameStartScene startScene = new GameStartScene();
-//        stage.setScene(startScene.createStartScene(stage));
-//    }
 
