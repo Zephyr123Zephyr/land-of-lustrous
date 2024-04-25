@@ -88,7 +88,12 @@
 
 /*-------------------SOCREBOARD SCENE------------------------ */
 
-
+.scoreboard_root{
+    -fx-background-image: url('images/scoreboard.png');
+    -fx-background-size: 1300 800;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
 .score_title {
     -fx-font-family: 'Agency FB';
     -fx-font-weight: bold;
@@ -155,4 +160,23 @@
     -fx-background-size: cover;
     -fx-pref-width: 70px; /* 首选宽度为100像素 */
     -fx-pref-height: 65px; /* 首选高度为50像素 */
+}
+
+/*-------------------GAMEOVER SCENE------------------------ */
+.gameover_title{
+    -fx-font-family: 'Agency FB';
+    -fx-font-weight: bold;
+    -fx-font-size: 45px; /* 字体大小24像素 */
+    -fx-fill: #EE4B2B; /* 暗石板灰色文本 */
+}
+
+.gameover_root {
+    -fx-background-image: url('images/gameover.jpeg');
+    -fx-background-size: 1300 800;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+/*-------------------GENERAL BUTTON------------------------ */
+.button{
+    -fx-cursor: hand;
 }
