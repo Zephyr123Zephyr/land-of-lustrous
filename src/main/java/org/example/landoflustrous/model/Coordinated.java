@@ -1,8 +1,6 @@
 package org.example.landoflustrous.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,4 +30,6 @@ public class Coordinated {
         sortedList.sort((c1, c2) -> Integer.compare(distance(c1), distance(c2)));
         return sortedList.subList(0, Math.min(n, sortedList.size()));
     }
+
+
 }

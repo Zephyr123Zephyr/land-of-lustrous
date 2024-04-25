@@ -20,7 +20,7 @@ public class GameOverScene {
     private Stage stage;
     private GameOverController controller;
 
-    public GameOverScene(Stage stage, int carbon, int gemNum, int gemScore, int time, GameOverController controller) {
+    public GameOverScene(String name, Stage stage, int carbon, int gemNum, int gemScore, GameOverController controller) {
         this.stage = stage;
         this.controller = controller;
 
@@ -39,13 +39,11 @@ public class GameOverScene {
         Text textCarbon = new Text("C-EMISSION: " + carbon);
         textCarbon.getStyleClass().add("score");
 
-        Text textTime = new Text("TIME COST: " + time);
-        textTime.getStyleClass().add("score");
 
         Text textTotalScore = new Text("GEM SCORE: " + gemScore);
         textTotalScore.getStyleClass().add("score");
 
-        textContainer.getChildren().addAll(textGem, textCarbon, textTime, textTotalScore);
+        textContainer.getChildren().addAll(textGem, textCarbon, textTotalScore);
 
         Rectangle rectangle = new Rectangle(600, 230);
         rectangle.getStyleClass().add("rectangle");
@@ -84,7 +82,7 @@ public class GameOverScene {
 
         Button btn1 = new Button("");
         btn1.getStyleClass().add("play_again");
-        btn1.setOnAction(controller::goToNextLevel);
+//        btn1.setOnAction(controller::goToNextLevel);
 
 
         Button btn3 = new Button("");
