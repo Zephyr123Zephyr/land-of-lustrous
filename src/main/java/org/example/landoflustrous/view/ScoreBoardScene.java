@@ -19,7 +19,7 @@ public class ScoreBoardScene {
     private Stage stage;
     private ScoreBoardController controller;
 
-    public ScoreBoardScene(Stage stage, int carbon, int gemNum, int gemScore, int time, ScoreBoardController controller) {
+    public ScoreBoardScene(String name, Stage stage, int carbon, int gemNum, int gemScore, ScoreBoardController controller) {
         this.stage = stage;
         this.controller = controller;
 
@@ -27,24 +27,31 @@ public class ScoreBoardScene {
         //---------------------一个vbox放各种分数-------------------------------
         VBox textContainer = new VBox(20); // 10是元素之间的间距
         textContainer.setAlignment(Pos.CENTER); // 设置VBox居中对齐
-        textContainer.getStyleClass().add("text-container"); // CSS类名
 
-        Text title = new Text("SCORE BOARD");
+
+        Text title = new Text("GOOD JOB !!!");
         title.getStyleClass().add("score_title");
+
+
+        Text playName = new Text("Name: " + name);
+        playName.getStyleClass().add("score");
 
         Text textGem = new Text("GEM NUMBER: " + gemNum);
         textGem.getStyleClass().add("score");
 
-        Text textCarbon = new Text("C-EMISSION: " + carbon);
-        textCarbon.getStyleClass().add("score");
+//        Text textCarbon = new Text("C-EMISSION: " + carbon);
+//        textCarbon.getStyleClass().add("score");
 
-        Text textTime = new Text("TIME COST: " + time);
-        textTime.getStyleClass().add("score");
+//        Text textTime = new Text("TIME COST: " + time);
+//        textTime.getStyleClass().add("score");
 
-        Text textTotalScore = new Text("GEM SCORE: " + gemScore);
-        textTotalScore.getStyleClass().add("score");
+//        Text textTotalScore = new Text("GEM SCORE: " + gemScore);
+//        textTotalScore.getStyleClass().add("score");
 
-        textContainer.getChildren().addAll(textGem, textCarbon, textTime, textTotalScore);
+//        textContainer.getChildren().addAll(textGem, textCarbon, textTime, textTotalScore);
+
+
+        textContainer.getChildren().addAll(playName, textGem);
 
         Rectangle rectangle = new Rectangle(600, 230);
         rectangle.getStyleClass().add("rectangle");
@@ -83,12 +90,12 @@ public class ScoreBoardScene {
 
         Button btn1 = new Button("");
         btn1.getStyleClass().add("play_again");
-        btn1.setOnAction(controller::goToNextLevel);
+//        btn1.setOnAction(controller::goToNextLevel);
 
 
         Button btn2 = new Button("");
         btn2.getStyleClass().add("next_level");
-        btn2.setOnAction(controller::goToNextLevel);
+//        btn2.setOnAction(controller::goToNextLevel);
 
         Button btn3 = new Button("");
         btn3.getStyleClass().add("exit");

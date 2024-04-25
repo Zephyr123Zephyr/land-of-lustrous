@@ -1,30 +1,27 @@
 package org.example.landoflustrous.controller;
 
 import javafx.stage.Stage;
-import org.example.landoflustrous.model.ScoreCalculator;
-import org.example.landoflustrous.model.TimeLifeCalculator;
-import org.example.landoflustrous.view.GameStartScene;
 import org.example.landoflustrous.view.MapViewerScene;
 
+import java.io.IOException;
+
 public class LevelSelectionController extends GameController {
-
     private final Stage stage;
-    private final ScoreCalculator scoreCalculator;
-    private final TimeLifeCalculator timeLifeCalculator;
 
-    public LevelSelectionController(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+    public LevelSelectionController(Stage stage) {
         this.stage = stage;
-        this.scoreCalculator = scoreCalculator;
-        this.timeLifeCalculator = timeLifeCalculator;
     }
 
-    public void openMapPage(String levelIdentifier) {
-        MapViewerScene mapViewer = new MapViewerScene(levelIdentifier);
-        mapViewer.createMapScene(stage, scoreCalculator, timeLifeCalculator);
-    }
-
-    public void returnToMainMenu() {
-        GameStartScene startScene = new GameStartScene();
-        stage.setScene(startScene.createStartScene(stage, scoreCalculator, timeLifeCalculator));
+    public void openMapPage(String levelIdentifier, String playerName) throws IOException {
+        MapViewerScene mapViewer = new MapViewerScene(stage, levelIdentifier, playerName);
+        stage.setScene(mapViewer.getScene());
+        stage.show();
     }
 }
+
+
+//    public void returnToMainMenu() {
+//        GameStartScene startScene = new GameStartScene();
+//        stage.setScene(startScene.createStartScene(stage));
+//    }
+

@@ -11,19 +11,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.landoflustrous.controller.LevelSelectionController;
-import org.example.landoflustrous.model.ScoreCalculator;
-import org.example.landoflustrous.model.TimeLifeCalculator;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class LevelSelectionScene {
 
     private LevelSelectionController controller;
 
-    public Scene createLevelSelectionScene(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
+    public Scene createLevelSelectionScene(Stage stage, String playerName) {
 
-
-        controller = new LevelSelectionController(stage, scoreCalculator, timeLifeCalculator);
+        controller = new LevelSelectionController(stage);
 
         //一个gridpane放两个关卡的按钮
         GridPane grid = new GridPane();
@@ -32,8 +30,20 @@ public class LevelSelectionScene {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Button button1 = createImageButton("/images/image1.jpg", () -> controller.openMapPage("Level 1"));
-        Button button2 = createImageButton("/images/image2.jpg", () -> controller.openMapPage("Level 2"));
+        Button button1 = createImageButton("/images/image1.jpg", () -> {
+            try {
+                controller.openMapPage("Level 1", playerName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        Button button2 = createImageButton("/images/image2.jpg", () -> {
+            try {
+                controller.openMapPage("Level 2", playerName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         grid.add(button1, 0, 0);
         grid.add(button2, 1, 0);
@@ -41,7 +51,7 @@ public class LevelSelectionScene {
         //一个hbox放两个选项的按钮
         Button returnBtn = new Button("");
         returnBtn.getStyleClass().add("return");
-        returnBtn.setOnAction(e -> controller.returnToMainMenu());
+//        returnBtn.setOnAction(e -> controller.returnToMainMenu());
 
         Button exitBtn = new Button("");
         exitBtn.getStyleClass().add("exit");
@@ -58,7 +68,7 @@ public class LevelSelectionScene {
 
         root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm()); // 引入CSS样式
 
-        return new Scene(root, 1300, 700);
+        return new Scene(root);
 
 
     }
@@ -83,4 +93,6 @@ public class LevelSelectionScene {
         imageView.setPreserveRatio(true);
         return imageView;
     }
+
+
 }

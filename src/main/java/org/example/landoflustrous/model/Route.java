@@ -47,7 +47,7 @@ public class Route {
         return pathList.stream().mapToDouble(Path::getCarbon).sum();
     }
 
-    public Set<TrafficType> getTrafficType(){
+    public Set<TrafficType> getTrafficType() {
         Set<TrafficType> trafficTypes = new HashSet<>();
         for (Path path : pathList) {
             trafficTypes.add(path.getTrafficType());
@@ -86,14 +86,18 @@ public class Route {
     public List<Path> getPathList() {
         return pathList;
     }
-    public List<Tile> totalTileList(){
+
+
+    public List<Tile> totalTileList() {
         List<Tile> tileList = new LinkedList<Tile>();
-        for(int i=0;i<this.pathList.size();i++){
+        for (int i = 0; i < this.pathList.size(); i++) {
             List<Tile> temp = this.pathList.get(i).getTileList();
-            for(int j=0;j<temp.size();j++){
+            for (int j = 0; j < temp.size(); j++) {
                 tileList.add(temp.get(j));
             }
         }
         return tileList;
     }
+
+
 }

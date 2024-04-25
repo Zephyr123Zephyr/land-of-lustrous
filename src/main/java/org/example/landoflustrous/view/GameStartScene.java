@@ -9,14 +9,12 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.example.landoflustrous.controller.GameStartController;
-import org.example.landoflustrous.model.ScoreCalculator;
-import org.example.landoflustrous.model.TimeLifeCalculator;
 
 public class GameStartScene {
     private GameStartController controller;
+    private TextField nameInput;
 
-    public Scene createStartScene(Stage stage, ScoreCalculator scoreCalculator, TimeLifeCalculator timeLifeCalculator) {
-
+    public Scene createStartScene(Stage stage) {
 
         controller = new GameStartController(stage);
 
@@ -41,7 +39,9 @@ public class GameStartScene {
 
         Button buttonNewGame = new Button("");
         buttonNewGame.getStyleClass().add("btn_play");
-        buttonNewGame.setOnAction(e -> controller.handlePlay(scoreCalculator, timeLifeCalculator));
+
+        //2️⃣ 此处点击后调用controller的方法，进入选关场景
+        buttonNewGame.setOnAction(e -> controller.handlePlay(nameInput.getText()));
 
         Button buttonExit = new Button("");
         buttonExit.getStyleClass().add("btn_exit");
@@ -61,9 +61,11 @@ public class GameStartScene {
         Scene scene = new Scene(root, 1200, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
-//         在这里设置全屏
-//        stage.setFullScreen(true);
 
         return scene;
+    }
+
+    public void updatePromptText(String message) {
+        nameInput.setPromptText(message);
     }
 }
