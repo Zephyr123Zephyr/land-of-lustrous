@@ -3,11 +3,11 @@ package org.example.landoflustrous.controller;
 import javafx.stage.Stage;
 import org.example.landoflustrous.view.LevelSelectionScene;
 
-public class GameStartController extends GameController {
+public class StartController extends Controller {
 
     private Stage stage;
 
-    public GameStartController(Stage stage) {
+    public StartController(Stage stage) {
         this.stage = stage;
 
     }

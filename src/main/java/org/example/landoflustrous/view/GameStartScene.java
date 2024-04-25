@@ -10,15 +10,15 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import org.example.landoflustrous.controller.GameStartController;
+import org.example.landoflustrous.controller.StartController;
 
 public class GameStartScene {
-    private GameStartController controller;
+    private StartController controller;
     private TextField nameInput;
 
     public Scene createStartScene(Stage stage) {
 
-        controller = new GameStartController(stage);
+        controller = new StartController(stage);
 
         // Load the background image
         Image backgroundImage = new Image(getClass().getResourceAsStream("/images/start_bg.png"));

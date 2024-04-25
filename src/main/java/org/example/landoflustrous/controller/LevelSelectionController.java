@@ -6,7 +6,7 @@ import org.example.landoflustrous.view.MapViewerScene;
 
 import java.io.IOException;
 
-public class LevelSelectionController extends GameController {
+public class LevelSelectionController extends Controller {
     private final Stage stage;
 
     public LevelSelectionController(Stage stage) {

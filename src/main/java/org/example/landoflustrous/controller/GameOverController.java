@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class GameOverController extends GameController {
+public class GameOverController extends Controller {
     private Stage stage;
 
     public GameOverController(Stage stage) {
@@ -25,9 +25,7 @@ public class GameOverController extends GameController {
             stage.setScene(mapViewer.getScene());
             stage.show();
         } catch (IOException e) {
-            // Handle exception here
-            e.printStackTrace(); // For example, print the stack trace to the console.
-            // You could also log the error or show an error message to the user.
+            e.printStackTrace();
         }
     }
 

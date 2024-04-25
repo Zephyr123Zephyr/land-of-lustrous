@@ -1,8 +1,6 @@
 package org.example.landoflustrous.controller;
 
 import javafx.event.ActionEvent;
-import javafx.stage.Stage;
-import org.example.landoflustrous.view.MapViewerScene;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -10,12 +8,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameController {
-    private Stage stage;
-    private MapViewerScene mapViewerScene;
+public class Controller {
 
-
-    public GameController() {
+    public Controller() {
     }
 
     //各个场景通用的结束游戏方法

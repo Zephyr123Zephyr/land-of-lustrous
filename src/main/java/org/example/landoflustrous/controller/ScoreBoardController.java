@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ScoreBoardController extends GameController {
+public class ScoreBoardController extends Controller {
     private Stage stage;
 
     public ScoreBoardController(Stage stage) {
