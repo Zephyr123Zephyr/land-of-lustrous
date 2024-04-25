@@ -13,13 +13,15 @@ import javafx.stage.Stage;
 import org.example.landoflustrous.controller.ScoreBoardController;
 import org.example.landoflustrous.model.Popup;
 
+import java.io.IOException;
+
 public class ScoreBoardScene {
     private VBox root; // 使用VBox作为根容器
     private Scene scene;
     private Stage stage;
     private ScoreBoardController controller;
 
-    public ScoreBoardScene(String name, Stage stage, int carbon, int gemNum, int gemScore, ScoreBoardController controller) {
+    public ScoreBoardScene(String name, Stage stage, int carbon, int gemNum, int gemScore, ScoreBoardController controller, String levelIdentifier) throws IOException {
         this.stage = stage;
         this.controller = controller;
 
@@ -31,7 +33,6 @@ public class ScoreBoardScene {
 
         Text title = new Text("GOOD JOB !!!");
         title.getStyleClass().add("score_title");
-
 
         Text playName = new Text("Name: " + name);
         playName.getStyleClass().add("score");
@@ -90,7 +91,7 @@ public class ScoreBoardScene {
 
         Button btn1 = new Button("");
         btn1.getStyleClass().add("play_again");
-//        btn1.setOnAction(controller::goToNextLevel);
+//        btn1.setOnAction(controller.openMapPage(levelIdentifier, name));
 
 
         Button btn2 = new Button("");

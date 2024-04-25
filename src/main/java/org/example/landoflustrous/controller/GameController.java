@@ -21,6 +21,13 @@ public class GameController {
     }
 
 
+//    public void openMapPage(String levelIdentifier, String playerName) throws IOException {
+//        MapViewerScene mapViewer = new MapViewerScene(stage, levelIdentifier, playerName);
+//        stage.setScene(mapViewer.getScene());
+//        stage.show();
+//    }
+
+
     //各个场景通用的结束游戏方法
     public void handleExit(ActionEvent event) {
         System.exit(0);

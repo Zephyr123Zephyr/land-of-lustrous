@@ -17,10 +17,9 @@ public class GameStartController extends GameController {
     //传入玩家姓名
     public void handlePlay(String playerName) {
 
-//        if (playerName.isEmpty()) {
-//            showError("Please enter your name!");
-//            return;
-//        }
+        if (playerName.isEmpty()) {
+            return;
+        }
 
         // 2️⃣此处创建选关场景，并设置给stage
         LevelSelectionScene levelSelection = new LevelSelectionScene();
@@ -28,8 +27,5 @@ public class GameStartController extends GameController {
 
     }
 
-//    public void showError(String message) {
-//        view.updatePromptText(message);
-//    }
 
 }

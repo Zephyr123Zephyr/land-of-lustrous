@@ -66,6 +66,12 @@
     -fx-text-fill: navy;
 }
 
+.label_time {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c00000;
+}
+
 .route-button {
     -fx-font-family: "Arial"; /* 字体家族为Arial */
     -fx-font-weight: bold;
@@ -88,12 +94,13 @@
 
 /*-------------------SOCREBOARD SCENE------------------------ */
 
-.scoreboard_root{
+.scoreboard_root {
     -fx-background-image: url('images/scoreboard.png');
     -fx-background-size: 1300 800;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
 }
+
 .score_title {
     -fx-font-family: 'Agency FB';
     -fx-font-weight: bold;
@@ -163,7 +170,7 @@
 }
 
 /*-------------------GAMEOVER SCENE------------------------ */
-.gameover_title{
+.gameover_title {
     -fx-font-family: 'Agency FB';
     -fx-font-weight: bold;
     -fx-font-size: 45px; /* 字体大小24像素 */
@@ -176,7 +183,8 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
 }
+
 /*-------------------GENERAL BUTTON------------------------ */
-.button{
+.button {
     -fx-cursor: hand;
 }

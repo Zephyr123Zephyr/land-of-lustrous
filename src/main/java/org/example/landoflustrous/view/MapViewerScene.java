@@ -48,10 +48,11 @@ public class MapViewerScene {
     private Label gemCountLabel; // 显示宝石数量
     private Label timeRemainingLabel;
     private Timeline gameTimer;
-    private int gameTimeRemaining = 60;  // 总游戏时间60秒
+    private int gameTimeRemaining = 90;  // 总游戏时间60秒
     private boolean continueGeneratingGems = true;
     NavigationService navigationService;
     String levelIdentifier;
+    int routeCost;
 
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
 
@@ -66,6 +67,8 @@ public class MapViewerScene {
                 "bus", List.of("/maps/map1/level2/bus1.txt", "/maps/map1/level2/bus2.txt")));
     }
 
+
+    //此处生成游戏主场景，调用各种方法加载各种模型
     public MapViewerScene(Stage stage, String levelIdentifier, String playerName) throws IOException {
         this.stage = stage;
         this.levelIdentifier = levelIdentifier;
@@ -74,7 +77,6 @@ public class MapViewerScene {
         String mapPath = (String) paths.get("map");
         List<String> railPaths = (List<String>) paths.get("rail");
         List<String> busPaths = (List<String>) paths.get("bus");
-
 
         this.gameMap = new GameMap(mapPath, railPaths, busPaths);
         int gameWidth = gameMap.getWidth();
@@ -91,9 +93,9 @@ public class MapViewerScene {
 
         //创建玩家于Pane
         addPlayerCharacter(upPart, playerName);
+
         //随机生成一颗宝石
         createRandomGem(upPart, gameWidth, gameHeight);
-
 
         //把pane加入vbox上
         root.getChildren().addAll(upPart);
@@ -112,12 +114,17 @@ public class MapViewerScene {
     }
 
     private void initGameTimer(String levelIdentifier) {
+
         gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             gameTimeRemaining--;
-            timeRemainingLabel.setText("Time Remaining: " + gameTimeRemaining + "s"); // Update the timer display
+            timeRemainingLabel.setText("Time: " + gameTimeRemaining + "s"); // Update the timer display
 
             if (gameTimeRemaining == 0 & player.getGemNumber() >= 5) {
-                switchToScoreBoard(levelIdentifier);
+                try {
+                    switchToScoreBoard(levelIdentifier);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
             if (gameTimeRemaining == 0 & player.getGemNumber() < 5) {
                 handleGameOver(levelIdentifier);
@@ -132,14 +139,15 @@ public class MapViewerScene {
         gameTimer.play();
     }
 
-    private void switchToScoreBoard(String levelIdentifier) {
-        // Parameters could include current game stats like carbon footprint, gem score, etc.
+
+    private void switchToScoreBoard(String levelIdentifier) throws IOException {
+
         int currentCarbon = player.getCarbonHP();
         int gemScore = player.getGemScore();
         int gemCount = player.getGemNumber();
 
         ScoreBoardController scoreBoardController = new ScoreBoardController(stage);
-        ScoreBoardScene scoreBoardScene = new ScoreBoardScene(player.getName(), stage, currentCarbon, gemCount, gemScore, scoreBoardController);
+        ScoreBoardScene scoreBoardScene = new ScoreBoardScene(player.getName(), stage, currentCarbon, gemCount, gemScore, scoreBoardController, levelIdentifier);
         stage.setScene(scoreBoardScene.getScene());
         stage.show();
     }
@@ -151,7 +159,7 @@ public class MapViewerScene {
         int gemCount = player.getGemNumber();
 
         GameOverController gameOverController = new GameOverController(stage);
-        GameOverScene gameOverScene = new GameOverScene(player.getName(), stage, currentCarbon, gemCount, gemScore, gameOverController,levelIdentifier);
+        GameOverScene gameOverScene = new GameOverScene(player.getName(), stage, currentCarbon, gemCount, gemScore, gameOverController, levelIdentifier);
         stage.setScene(gameOverScene.getScene());
         stage.show();
 
@@ -162,7 +170,7 @@ public class MapViewerScene {
         return this.scene;
     }
 
-
+    //绘制地图
     private void drawMap(Pane root, String levelIdentifier) {
         int tempLevel = Integer.parseInt(levelIdentifier.replaceAll("[^0-9]", ""));
         String pathToMap = "/images/map_level" + tempLevel + ".png";
@@ -174,6 +182,7 @@ public class MapViewerScene {
     }
 
 
+    //增加人物
     public void addPlayerCharacter(Pane root, String playerName) {
 
         Image image = new Image(getClass().getResourceAsStream("/images/player.png"));
@@ -199,26 +208,30 @@ public class MapViewerScene {
         statusBoard.setPrefHeight(50); // 设置HBox的预设高度为50像素
 
         nameLabel = new Label("Name: " + player.getName());
-        carbonLabel = new Label("Carbon Footprint: " + player.getCarbonHP());
+        carbonLabel = new Label("Carbon HP: " + player.getCarbonHP());
         scoreLabel = new Label("Gem Score: " + player.getScore());
-        gemCountLabel = new Label("Gems Collected: " + player.getGemNumber());
-        timeRemainingLabel = new Label("Time Remaining: " + gameTimeRemaining + "s"); // 显示剩余时间
+        gemCountLabel = new Label("Gems Num: " + player.getGemNumber());
+        timeRemainingLabel = new Label("Time: " + gameTimeRemaining + "s"); // 显示剩余时间
 
         nameLabel.getStyleClass().add("label_map");
         carbonLabel.getStyleClass().add("label_map");
         scoreLabel.getStyleClass().add("label_map");
         gemCountLabel.getStyleClass().add("label_map");
-        timeRemainingLabel.getStyleClass().add("label_map");
+        timeRemainingLabel.getStyleClass().add("label_time");
 
-        statusBoard.getChildren().addAll(nameLabel, carbonLabel, scoreLabel, gemCountLabel, timeRemainingLabel);
+        statusBoard.getChildren().addAll(timeRemainingLabel, nameLabel, carbonLabel, scoreLabel, gemCountLabel);
         root.getChildren().add(statusBoard);
     }
 
+
     private void createRandomGem(Pane root, int gameWidth, int gameHeight) {
         if (gameTimeRemaining > 0) {
+
+
             Random random = new Random();
             int gem_x = random.nextInt(gameWidth);
             int gem_y = random.nextInt(gameHeight);
+
 
             this.gem = new Gem(gem_x, gem_y);
             String gemType = gem.getType();
@@ -231,14 +244,18 @@ public class MapViewerScene {
             gemImageView.setFitWidth(30);
             gemImageView.setFitHeight(30);
 
-            // 创建宝石消失的计时器
+            // 宝石根据自身的timelive时间来消失
             Timeline disappearTimeline = new Timeline(new KeyFrame(Duration.seconds(liveTime), e -> {
                 upPart.getChildren().remove(gemImageView);
+                //消失后生成下一颗宝石
+
+                continueGeneratingGems = true;
                 scheduleNextGem(root, gameWidth, gameHeight);
             }));
 
             // 宝石点击事件
             gemImageView.setOnMouseClicked(event -> {
+                //点击后不再继续生成下一颗宝石
                 continueGeneratingGems = false;
                 handleGemClick(event, root, gemType, liveTime);
                 disappearTimeline.stop();
@@ -254,7 +271,6 @@ public class MapViewerScene {
         this.routeList = navigationService.navigate(player, gem);
         System.out.println(routeList);
 
-
     }
 
 
@@ -266,14 +282,17 @@ public class MapViewerScene {
         }
     }
 
+
     // 宝石点击事件的方法
     private void handleGemClick(MouseEvent event, Pane root, String gemType, int liveTime) {
-        //创建路线选项卡
+
+        //路线选项卡
         VBox optionBoard = createOptionBoard(routeList, gem);
         optionBoard.layoutXProperty().bind(upPart.widthProperty().subtract(optionBoard.widthProperty()).divide(2));
         optionBoard.layoutYProperty().bind(upPart.heightProperty().subtract(optionBoard.heightProperty()).divide(2));
 
         upPart.getChildren().add(optionBoard);
+
     }
 
 
@@ -290,7 +309,9 @@ public class MapViewerScene {
         }
     }
 
+
     private VBox createOptionBoard(List<Route> routeList, Gem gem) {
+
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         Label titleLabel = new Label("CHOOSE A ROUTE");
@@ -299,17 +320,27 @@ public class MapViewerScene {
 
         for (int i = 0; i < routeList.size(); i++) {
             Route route = routeList.get(i);
+
+//            String routeDetails = "Route " + (i + 1) + ": " + route.getTrafficType() +
+//                    " Time Cost: " + route.getTotalCost() + " Carbon: " + route.getTotalCarbon();
+
             String routeDetails = "Route " + (i + 1) + ": " + route.getTrafficType() +
-                    " Time Cost: " + route.getTotalCost() + " Carbon: " + route.getTotalCarbon();
+                    " Carbon HP Cost: " + route.getTotalCarbon();
+
 
             Button routeButton = new Button(routeDetails);
             routeButton.getStyleClass().add("route-button");
             routeButton.setId("Route" + (i + 1)); // 设置按钮ID
 
             int finalI = i;
+
             routeButton.setOnAction(event -> {
+
                 System.out.println("Route " + (finalI + 1) + " selected");
                 movePlayerToGem(route);  // 绑定动画触发方法
+                this.routeCost = (int) route.getTotalCarbon();
+                System.out.println("route cost is " + routeCost);
+                //点击后关闭选项卡
                 upPart.getChildren().removeAll(root);
 
             });
@@ -344,7 +375,9 @@ public class MapViewerScene {
             transition.setPath(segmentPath);
             transition.setNode(playerImage);
             transition.setInterpolator(Interpolator.LINEAR);
-            transition.setDuration(Duration.seconds(10 * calculateSpeedFactor(path.getTrafficType())));
+
+            //时间：路线长度*交通类型
+            transition.setDuration(Duration.seconds(0.3 * tiles.size() * calculateSpeedFactor(path.getTrafficType())));
 
             transitions.add(new Pair<>(path, transition));  // Store Path with its transition
         }
@@ -352,6 +385,7 @@ public class MapViewerScene {
         // Play all transitions in sequence
         playTransitionsSequentially(transitions, lastTile);
     }
+
 
     private void playTransitionsSequentially(Queue<Pair<Path, PathTransition>> transitions, Tile lastTile) {
         if (transitions.isEmpty()) {
@@ -368,8 +402,10 @@ public class MapViewerScene {
 
         if (transitions.isEmpty()) {
             currentTransition.setOnFinished(event -> {
+
                 System.out.println("Animation completed.");
                 updatePlayerSpriteImage(TrafficType.WALK); // Reset to default walking image
+
                 collectGem(gem, lastTile);
                 createRandomGem(upPart, gameMap.getWidth(), gameMap.getHeight());
             });
@@ -380,21 +416,22 @@ public class MapViewerScene {
         currentTransition.play();
     }
 
+
     private double calculateSpeedFactor(TrafficType trafficType) {
         // 根据交通类型返回不同的速度因子。
         switch (trafficType) {
             case WALK:
-                return 0.5;
+                return 1;
             case BIKE:
-                return 0.45;
+                return 0.5;
             case BUS:
                 return 0.4;
             case CAR:
-                return 0.35;
-            case TRAIN:
                 return 0.3;
+            case TRAIN:
+                return 0.2;
             default:
-                return 0.5;
+                return 0.6;
         }
     }
 
@@ -403,6 +440,7 @@ public class MapViewerScene {
         // 更新玩家位置
         player.setX(lastTile.getX());
         player.setY(lastTile.getY());
+
         // 将玩家图像移动到新位置
         playerImage.setX(lastTile.getX() * TILE_SIZE);
         playerImage.setY(lastTile.getY() * TILE_SIZE);
@@ -410,23 +448,26 @@ public class MapViewerScene {
         // 从界面上移除宝石的视图
         upPart.getChildren().remove(gemImageView);
 
-        // 增加玩家的宝石数量和分数
+        // 增加玩家的各种记分
         player.addGemNumber(1);
         player.addGemScore(gem.getScore());
+        player.substractCarbonHP(routeCost);
+
 
         updateStatusBoard();
 
         if (continueGeneratingGems) {
-            scheduleNextGem(root, gameMap.getWidth(), gameMap.getHeight()); // 继续生成新的宝石
+            scheduleNextGem(upPart, gameMap.getWidth(), gameMap.getHeight()); // 继续生成新的宝石
         }
+
     }
 
 
     private void updateStatusBoard() {
         nameLabel.setText("Name: " + player.getName());
-        carbonLabel.setText("Carbon Footprint: " + player.getCarbonHP());
-        scoreLabel.setText("Gem Score: " + player.getGemScore());
-        gemCountLabel.setText("Gems Collected: " + player.getGemNumber());
+        carbonLabel.setText("Carbon HP: " + player.getCarbonHP());
+//        scoreLabel.setText("Gem Score: " + player.getGemScore());
+        gemCountLabel.setText("Gems Num: " + player.getGemNumber());
     }
 
 

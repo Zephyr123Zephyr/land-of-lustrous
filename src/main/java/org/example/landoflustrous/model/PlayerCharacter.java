@@ -12,7 +12,7 @@ public class PlayerCharacter extends Coordinated {
     public PlayerCharacter(int x, int y, String name) {
         super(x, y);
         this.name = name;
-        this.carbonHP = 3000;
+        this.carbonHP = 2000;
         this.gemNumber = 0;
         this.gemScore = 0;
 
@@ -150,6 +150,10 @@ public class PlayerCharacter extends Coordinated {
     public void moveTo(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void substractCarbonHP(int routeCost) {
+        this.carbonHP -= routeCost;
     }
 //(TODO: do this afterwards)
 
