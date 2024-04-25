@@ -132,10 +132,6 @@ public class MapViewerScene {
                 }
             }
 
-//            if (player.getCarbonHP() <= 0) {
-//                gameTimer.stop();
-//                handleGameOver(levelIdentifier);
-//            }
         }));
         gameTimer.setCycleCount(Timeline.INDEFINITE);
         gameTimer.play();
@@ -233,8 +229,15 @@ public class MapViewerScene {
         if (gameTimeRemaining > 1) {
 
             Random random = new Random();
-            int gem_x = random.nextInt(gameWidth);
-            int gem_y = random.nextInt(gameHeight);
+            int gem_x;
+            int gem_y;
+            
+            do {
+                gem_x = random.nextInt(gameWidth);
+                gem_y = random.nextInt(gameHeight);
+            }
+
+            while (gameMap.getTile(gem_x, gem_y).isForbidden);
 
 
             this.gem = new Gem(gem_x, gem_y);
