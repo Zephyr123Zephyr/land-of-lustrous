@@ -233,12 +233,12 @@ public class MapViewerScene {
             int gem_x;
             int gem_y;
 
+            //宝石不能在水里、rail和玩家位置生成
             do {
                 gem_x = random.nextInt(gameWidth);
                 gem_y = random.nextInt(gameHeight);
             }
-
-            while (gameMap.getTile(gem_x, gem_y).isForbidden);
+            while (gameMap.getTile(gem_x, gem_y).isForbidden || gameMap.getTile(gem_x, gem_y).isRail || (gem_x == player.x && gem_y == player.y));
 
 
             this.gem = new Gem(gem_x, gem_y);
