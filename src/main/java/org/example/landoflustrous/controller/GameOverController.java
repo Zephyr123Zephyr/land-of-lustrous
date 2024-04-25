@@ -49,6 +49,7 @@ public class GameOverController extends GameController {
         return new ImageView(image);
     }
 
+
 //    public void openMapPage(ActionEvent actionEvent) {
 //        try {
 //            MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);

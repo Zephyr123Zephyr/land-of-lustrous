@@ -14,6 +14,8 @@ import org.example.landoflustrous.controller.ScoreBoardController;
 import org.example.landoflustrous.model.Popup;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScoreBoardScene {
     private VBox root; // 使用VBox作为根容器
@@ -34,13 +36,10 @@ public class ScoreBoardScene {
         Text title = new Text("GOOD JOB !!!");
         title.getStyleClass().add("score_title");
 
-        Text playName = new Text("Name: " + name);
+        Text playName = new Text("Name: " + name + "  GEM NUMBER: " + gemNum);
         playName.getStyleClass().add("score");
 
-        Text textGem = new Text("GEM NUMBER: " + gemNum);
-        textGem.getStyleClass().add("score");
-
-//        Text textCarbon = new Text("C-EMISSION: " + carbon);
+        //        Text textCarbon = new Text("C-EMISSION: " + carbon);
 //        textCarbon.getStyleClass().add("score");
 
 //        Text textTime = new Text("TIME COST: " + time);
@@ -50,9 +49,10 @@ public class ScoreBoardScene {
 //        textTotalScore.getStyleClass().add("score");
 
 //        textContainer.getChildren().addAll(textGem, textCarbon, textTime, textTotalScore);
+        VBox fileContentDisplay = createContentDisplay(levelIdentifier);
 
+        textContainer.getChildren().addAll(playName, fileContentDisplay);
 
-        textContainer.getChildren().addAll(playName, textGem);
 
         Rectangle rectangle = new Rectangle(600, 230);
         rectangle.getStyleClass().add("rectangle");
@@ -124,7 +124,7 @@ public class ScoreBoardScene {
         root.getChildren().addAll(title, scores, stackpan_popup, hbox_twobtn);
 
         this.scene = new Scene(root, 1300, 800);
-
+        controller.saveGameRecord(name, gemNum, levelIdentifier);
 
     }
 
@@ -132,5 +132,41 @@ public class ScoreBoardScene {
         return this.scene;
     }
 
+    private VBox createContentDisplay(String levelId) throws IOException {
+        List<String[]> fileContent = controller.readFileByLevelId(levelId);
+        VBox contentBox = new VBox(10); // 设置元素之间的垂直间距为10
+        contentBox.setAlignment(Pos.CENTER);
 
+        // 添加标题
+        Text header = new Text("Rank\t\tLevel\t    Name\t     Gem");
+        header.getStyleClass().add("header-text"); // 添加 CSS 类名，以便于设置样式
+        contentBox.getChildren().add(header);
+
+        // 解析文件内容，并尝试转换宝石数为整数，忽略无法转换的行
+        List<String[]> validContent = new ArrayList<>();
+        for (String[] parts : fileContent) {
+            try {
+                parts[1] = Integer.toString(Math.abs(Integer.parseInt(parts[1]))); // 确保宝石数量是个正整数
+                validContent.add(parts); // 只有转换成功的才添加到列表
+            } catch (NumberFormatException e) {
+                // 处理错误，例如可以打印日志或者忽略这行数据
+            }
+        }
+
+        // 按宝石数降序排序，并只取前五条
+        validContent.sort((a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));
+        List<String[]> topFive = validContent.stream().limit(5).toList();
+
+        // 使用制表符对齐数据并添加到VBox
+        int rank = 1;
+        for (String[] lineParts : topFive) {
+            // 使用制表符来分隔数据
+            String line = rank++ + ".\t\t" + lineParts[0] + "\t\t" + lineParts[2] + "\t\t" + lineParts[1];
+            Text contentText = new Text(line);
+            contentText.getStyleClass().add("content-text");
+            contentBox.getChildren().add(contentText);
+        }
+
+        return contentBox;
+    }
 }

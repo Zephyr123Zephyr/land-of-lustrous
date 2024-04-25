@@ -125,7 +125,11 @@ public class MapViewerScene {
                 }
             }
             if (gameTimeRemaining == 0 & player.getGemNumber() < 5) {
-                handleGameOver(levelIdentifier);
+                try {
+                    handleGameOver(levelIdentifier);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
 
 //            if (player.getCarbonHP() <= 0) {
@@ -151,7 +155,7 @@ public class MapViewerScene {
     }
 
 
-    private void handleGameOver(String levelIdentifier) {
+    private void handleGameOver(String levelIdentifier) throws IOException {
         int currentCarbon = player.getCarbonHP();
         int gemScore = player.getGemScore();
         int gemCount = player.getGemNumber();
@@ -200,6 +204,7 @@ public class MapViewerScene {
     }
 
 
+    //状态栏
     private void createStatusBoard(VBox root, PlayerCharacter player) {
         this.statusBoard = new HBox(40); // 调整间距以更好地显示所有信息
         statusBoard.setStyle("-fx-background-color: #FFFFFF;");
@@ -222,9 +227,10 @@ public class MapViewerScene {
     }
 
 
+    //随机宝石
     private void createRandomGem(Pane root, int gameWidth, int gameHeight) {
-        if (gameTimeRemaining > 0) {
 
+        if (gameTimeRemaining > 1) {
 
             Random random = new Random();
             int gem_x = random.nextInt(gameWidth);
@@ -298,7 +304,7 @@ public class MapViewerScene {
     }
 
 
-    //绘制每个tile的图层
+    //绘制tile边框，方便观察
     private void drawTileBorders(Pane root, int gameWidth, int gameHeight) {
         for (int x = 0; x < gameWidth; x++) {
             for (int y = 0; y < gameHeight; y++) {
@@ -311,7 +317,7 @@ public class MapViewerScene {
         }
     }
 
-
+    //选项板
     private VBox createOptionBoard(List<Route> routeList, Gem gem) {
 
         VBox root = new VBox(20);
@@ -328,7 +334,6 @@ public class MapViewerScene {
 
             String routeDetails = "Route " + (i + 1) + ": " + route.getTrafficType() +
                     " Carbon HP Cost: " + route.getTotalCarbon();
-
 
             Button routeButton = new Button(routeDetails);
             routeButton.getStyleClass().add("route-button");
@@ -349,6 +354,8 @@ public class MapViewerScene {
                     System.out.println("route cost is " + routeCost);
                     //点击后关闭选项卡
                     upPart.getChildren().removeAll(root);
+
+
                 } else {
 
                     Label notice = new Label("                                         You don't have enough Carbon HP!");
@@ -362,6 +369,8 @@ public class MapViewerScene {
                     PauseTransition pause = new PauseTransition(Duration.seconds(1));
                     pause.setOnFinished(event2 -> upPart.getChildren().remove(notice));
                     pause.play();
+
+
                 }
 
 
@@ -433,7 +442,7 @@ public class MapViewerScene {
             });
         }
 
-        updatePlayerSpriteImage(currentPair.getKey().getTrafficType());  // Update image based on current path's traffic type
+        updatePlayerSpriteImage(currentPair.getKey().getTrafficType());
         System.out.println("Starting animation...");
         currentTransition.play();
     }

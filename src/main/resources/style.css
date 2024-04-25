@@ -169,6 +169,11 @@
     -fx-pref-height: 65px; /* 首选高度为50像素 */
 }
 
+.header-text, .content-text {
+    font-family: 'Courier New', Courier, monospace; /* 使用等宽字体 */
+    /* 其他样式 */
+}
+
 /*-------------------GAMEOVER SCENE------------------------ */
 .gameover_title {
     -fx-font-family: 'Agency FB';

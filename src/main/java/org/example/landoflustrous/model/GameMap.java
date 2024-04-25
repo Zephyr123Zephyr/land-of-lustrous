@@ -218,7 +218,7 @@ public class GameMap {
     private boolean isValidCoordinated(List<List<Integer>> grid, int x, int y, Coordinated prev) {
         return x >= 0 && y >= 0 && x < grid.get(0).size() && y < grid.size() && (prev == null || (x != prev.x || y != prev.y));
     }
-    
+
 
     public void print() {
         for (List<Tile> row : tileGrid) {
@@ -236,5 +236,18 @@ public class GameMap {
             System.out.println();
         }
     }
+
+//    public List<Tile> getPassableTiles() {
+//        List<Tile> passableTiles = new ArrayList<>();
+//        for (List<Tile> row : tileGrid) {
+//            for (Tile tile : row) {
+//                if (tile.isPassable()) {
+//                    passableTiles.add(tile);
+//                }
+//            }
+//        }
+//        return passableTiles;
+//    }
+
 
 }
