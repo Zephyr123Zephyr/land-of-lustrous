@@ -17,13 +17,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScoreBoardScene {
+public class GamePassScene {
     private VBox root; // 使用VBox作为根容器
     private Scene scene;
     private Stage stage;
     private ScoreBoardController controller;
 
-    public ScoreBoardScene(String name, Stage stage, int carbon, int gemNum, int gemScore, ScoreBoardController controller, String levelIdentifier) throws IOException {
+    public GamePassScene(String name, Stage stage, int carbon, int gemNum, int gemScore, ScoreBoardController controller, String levelIdentifier) throws IOException {
         this.stage = stage;
         this.controller = controller;
         controller.saveGameRecord(name, gemNum, levelIdentifier);

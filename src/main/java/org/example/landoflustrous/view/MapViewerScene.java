@@ -146,8 +146,8 @@ public class MapViewerScene {
         int gemCount = player.getGemNumber();
 
         ScoreBoardController scoreBoardController = new ScoreBoardController(stage);
-        ScoreBoardScene scoreBoardScene = new ScoreBoardScene(player.getName(), stage, currentCarbon, gemCount, gemScore, scoreBoardController, levelIdentifier);
-        stage.setScene(scoreBoardScene.getScene());
+        GamePassScene gamePassScene = new GamePassScene(player.getName(), stage, currentCarbon, gemCount, gemScore, scoreBoardController, levelIdentifier);
+        stage.setScene(gamePassScene.getScene());
         stage.show();
     }
 
