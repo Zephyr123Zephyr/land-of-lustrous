@@ -25,17 +25,6 @@ public class GameController {
     public void handleExit(ActionEvent event) {
         System.exit(0);
     }
-    public void openMapPage(String LevelIdentifier, String playerName) {
-        try {
-            MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
-            stage.setScene(mapViewer.getScene());
-            stage.show();
-        } catch (IOException e) {
-            // Handle exception here
-            e.printStackTrace(); // For example, print the stack trace to the console.
-            // You could also log the error or show an error message to the user.
-        }
-    }
 //    public void openMapPage(String levelIdentifier, String playerName) throws IOException {
 //        MapViewerScene mapViewer = new MapViewerScene(stage, levelIdentifier, playerName);
 //        stage.setScene(mapViewer.getScene());
