@@ -1,17 +1,15 @@
 package org.example.landoflustrous.controller;
 
 import javafx.stage.Stage;
-import org.example.landoflustrous.view.GameStartScene;
 import org.example.landoflustrous.view.LevelSelectionScene;
 
 public class GameStartController extends GameController {
 
     private Stage stage;
-    private GameStartScene view;
 
     public GameStartController(Stage stage) {
         this.stage = stage;
-//        this.view = view;
+
     }
 
     //传入玩家姓名

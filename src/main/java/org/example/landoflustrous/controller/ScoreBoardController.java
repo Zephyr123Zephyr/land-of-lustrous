@@ -19,22 +19,14 @@ public class ScoreBoardController extends GameController {
         this.stage = stage;
     }
 
-
-//    public void goToNextLevel(ActionEvent event) {
-//        LevelSelectionScene levelSelectionScene = new LevelSelectionScene();
-//        stage.setScene(levelSelectionScene.createLevelSelectionScene(stage));
-//        stage.show();
-//    }
-
     public void openMapPage(String LevelIdentifier, String playerName) {
         try {
             MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
             stage.setScene(mapViewer.getScene());
             stage.show();
         } catch (IOException e) {
-            // Handle exception here
-            e.printStackTrace(); // For example, print the stack trace to the console.
-            // You could also log the error or show an error message to the user.
+            e.printStackTrace();
+
         }
     }
 

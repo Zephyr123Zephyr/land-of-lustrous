@@ -38,7 +38,7 @@ public class GameStartScene {
         intro.getStyleClass().add("intro");
         intro.setWrapText(true); // 确保文本在Label宽度不够时能够换行
         intro.setMaxWidth(750);
-        
+
         Label prompt = new Label("                                                      Enter Your Name");
         prompt.setAlignment(Pos.TOP_LEFT);
         prompt.setTextAlignment(TextAlignment.LEFT);
@@ -79,11 +79,7 @@ public class GameStartScene {
         Scene scene = new Scene(root, 1200, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
-
         return scene;
     }
 
-    public void updatePromptText(String message) {
-        nameInput.setPromptText(message);
-    }
 }

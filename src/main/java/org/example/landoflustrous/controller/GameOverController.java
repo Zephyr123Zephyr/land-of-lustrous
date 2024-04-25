@@ -31,11 +31,6 @@ public class GameOverController extends GameController {
         }
     }
 
-//    public void goToNextLevel(ActionEvent event) {
-//        LevelSelectionScene levelSelectionScene = new LevelSelectionScene();
-//        stage.setScene(levelSelectionScene.createLevelSelectionScene(stage, new ScoreCalculator(), new TimeLifeCalculator(1000)));
-//        stage.show();
-//    }
 
     public ImageView getRandomImageView() {
         List<String> imagePaths = Arrays.asList("/images/earth.png", "/images/tree2.png", "/images/water.png", "/images/dophine.png");
@@ -50,15 +45,4 @@ public class GameOverController extends GameController {
     }
 
 
-//    public void openMapPage(ActionEvent actionEvent) {
-//        try {
-//            MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
-//            stage.setScene(mapViewer.getScene());
-//            stage.show();
-//        } catch (IOException e) {
-//            // Handle exception here
-//            e.printStackTrace(); // For example, print the stack trace to the console.
-//            // You could also log the error or show an error message to the user.
-//        }
-//    }
 }

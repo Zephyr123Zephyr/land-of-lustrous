@@ -29,7 +29,7 @@ public class ScoreBoardScene {
         controller.saveGameRecord(name, gemNum, levelIdentifier);
 
         //---------------------一个vbox放各种分数-------------------------------
-        VBox textContainer = new VBox(20); // 10是元素之间的间距
+        VBox textContainer = new VBox(20); // 元素间距
         textContainer.setAlignment(Pos.CENTER); // 设置VBox居中对齐
 
 

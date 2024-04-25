@@ -18,7 +18,6 @@ public class GameApplication extends Application {
         primaryStage.setResizable(false);
         primaryStage.setWidth(1010);
         primaryStage.setHeight(680);
-//        primaryStage.setFullScreen(true);
 
         AudioPlayer audioPlayer = new AudioPlayer();
         audioPlayer.startBackgroundMusic(); // 开始播放背景音乐
