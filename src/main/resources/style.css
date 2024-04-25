@@ -38,6 +38,16 @@
 }
 
 
+.intro {
+    -fx-text-fill: #ffffff; /* 钢蓝色文本 */
+    -fx-font-size: 16px; /* 字体大小16像素 */
+    -fx-font-weight: bold; /* 字体加粗 */
+    -fx-font-family: "Arial"; /* 字体家族为Arial */
+    -fx-text-alignment: center; /* 文本居中 */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 0); /* 添加高斯模糊投影效果 */
+}
+
+
 /*-------------------LEVEL SELECTION SCENE------------------------ */
 
 .return {
@@ -55,15 +65,24 @@
 /*-------------------MAP SCENE------------------------ */
 
 .label_map {
-    -fx-font-size: 18px;
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: navy;
+    -fx-padding: 6 0 0 0;
 }
 
 .label_time {
-    -fx-font-size: 22px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
     -fx-text-fill: #c00000;
+    -fx-padding: 6 0 0 40;
+}
+
+.label_carbon {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #007326;
+    -fx-padding: 6 0 0 40;
 }
 
 .route-button {

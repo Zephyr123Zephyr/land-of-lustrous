@@ -29,13 +29,17 @@ public class GameStartScene {
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER, backgroundSize);
 
-        Label prompt = new Label("\n"+
+        Label intro = new Label("\n" +
                 "In a realm where every whisper and stride breathes life into the very carbon that threatens our existence," + "the Earth teeters on the edge of destiny. " +
-                        "Embark upon an epic quest in the Land of Lustrous. " +
-                        "Here, gather the sacred gems of purification and emerge as the savior our world desperately seeks. " +
-                        "Embrace this call to adventure, and forge a legacy of salvation! " +
-                        "\n"+"\n"+
-                "Enter Your Name");
+                "Embark upon an epic quest in the Land of Lustrous. " +
+                "Here, gather the sacred gems of purification and emerge as the savior our world desperately seeks. " +
+                "Embrace this call to adventure, and forge a legacy of salvation! ");
+
+        intro.getStyleClass().add("intro");
+        intro.setWrapText(true); // 确保文本在Label宽度不够时能够换行
+        intro.setMaxWidth(750);
+        
+        Label prompt = new Label("                                                      Enter Your Name");
         prompt.setAlignment(Pos.TOP_LEFT);
         prompt.setTextAlignment(TextAlignment.LEFT);
         prompt.setWrapText(true); // 确保文本在Label宽度不够时能够换行
@@ -63,7 +67,7 @@ public class GameStartScene {
         //绑定退出事件
         buttonExit.setOnAction(controller::handleExit);
 
-        vbox.getChildren().addAll(prompt, nameInput, buttonNewGame, buttonExit);
+        vbox.getChildren().addAll(intro, prompt, nameInput, buttonNewGame, buttonExit);
 
         StackPane root = new StackPane(); // Using StackPane to center VBox
 

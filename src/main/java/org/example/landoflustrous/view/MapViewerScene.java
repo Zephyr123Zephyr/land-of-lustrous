@@ -161,7 +161,6 @@ public class MapViewerScene {
         stage.setScene(gameOverScene.getScene());
         stage.show();
 
-
     }
 
     public Scene getScene() {
@@ -202,23 +201,29 @@ public class MapViewerScene {
 
     //状态栏
     private void createStatusBoard(VBox root, PlayerCharacter player) {
-        this.statusBoard = new HBox(40); // 调整间距以更好地显示所有信息
+        this.statusBoard = new HBox(100); // 调整间距以更好地显示所有信息
         statusBoard.setStyle("-fx-background-color: #FFFFFF;");
         statusBoard.setPrefHeight(50); // 设置HBox的预设高度为50像素
 
         nameLabel = new Label("Name: " + player.getName());
+
         carbonLabel = new Label("Carbon HP: " + player.getCarbonHP());
-        scoreLabel = new Label("Gem Score: " + player.getScore());
+
+
+//        scoreLabel = new Label("Gem Score: " + player.getScore());
+
         gemCountLabel = new Label("Gems Num: " + player.getGemNumber());
         timeRemainingLabel = new Label("Time: " + gameTimeRemaining + "s"); // 显示剩余时间
 
         nameLabel.getStyleClass().add("label_map");
-        carbonLabel.getStyleClass().add("label_map");
-        scoreLabel.getStyleClass().add("label_map");
+        carbonLabel.getStyleClass().add("label_carbon");
+//        scoreLabel.getStyleClass().add("label_map");
         gemCountLabel.getStyleClass().add("label_map");
         timeRemainingLabel.getStyleClass().add("label_time");
 
-        statusBoard.getChildren().addAll(timeRemainingLabel, nameLabel, carbonLabel, scoreLabel, gemCountLabel);
+//        statusBoard.getChildren().addAll(timeRemainingLabel, nameLabel, carbonLabel, scoreLabel, gemCountLabel);
+
+        statusBoard.getChildren().addAll(timeRemainingLabel, nameLabel, carbonLabel, gemCountLabel);
         root.getChildren().add(statusBoard);
     }
 
@@ -289,7 +294,7 @@ public class MapViewerScene {
     private void scheduleNextGem(Pane root, int gameWidth, int gameHeight) {
         if (continueGeneratingGems) {
             Random random = new Random();
-            int delay = 1 + random.nextInt(3);  // 生成2-4秒的随机延迟
+            int delay = 1 + random.nextInt(2);  // 生成2-4秒的随机延迟
             new Timeline(new KeyFrame(Duration.seconds(delay), e -> createRandomGem(root, gameWidth, gameHeight))).play();
         }
     }
@@ -547,8 +552,6 @@ public class MapViewerScene {
         playerImage.setImage(newImage);
         playerImage.setFitWidth(width);
         playerImage.setFitHeight(height);
-
-
     }
 
 }
