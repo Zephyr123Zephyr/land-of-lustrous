@@ -11,10 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ScoreBoardController extends Controller {
+public class GamePassController extends Controller {
     private Stage stage;
 
-    public ScoreBoardController(Stage stage) {
+    public GamePassController(Stage stage) {
         super();
         this.stage = stage;
     }

@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.example.landoflustrous.controller.ScoreBoardController;
+import org.example.landoflustrous.controller.GamePassController;
 import org.example.landoflustrous.model.Popup;
 
 import java.io.IOException;
@@ -21,9 +21,9 @@ public class GamePassScene {
     private VBox root; // 使用VBox作为根容器
     private Scene scene;
     private Stage stage;
-    private ScoreBoardController controller;
+    private GamePassController controller;
 
-    public GamePassScene(String name, Stage stage, int carbon, int gemNum, int gemScore, ScoreBoardController controller, String levelIdentifier) throws IOException {
+    public GamePassScene(String name, Stage stage, int carbon, int gemNum, int gemScore, GamePassController controller, String levelIdentifier) throws IOException {
         this.stage = stage;
         this.controller = controller;
         controller.saveGameRecord(name, gemNum, levelIdentifier);

@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.example.landoflustrous.controller.GameOverController;
-import org.example.landoflustrous.controller.ScoreBoardController;
+import org.example.landoflustrous.controller.GamePassController;
 import org.example.landoflustrous.model.*;
 import org.example.landoflustrous.service.NavigationService;
 
@@ -145,8 +145,8 @@ public class MapViewerScene {
         int gemScore = player.getGemScore();
         int gemCount = player.getGemNumber();
 
-        ScoreBoardController scoreBoardController = new ScoreBoardController(stage);
-        GamePassScene gamePassScene = new GamePassScene(player.getName(), stage, currentCarbon, gemCount, gemScore, scoreBoardController, levelIdentifier);
+        GamePassController gamePassController = new GamePassController(stage);
+        GamePassScene gamePassScene = new GamePassScene(player.getName(), stage, currentCarbon, gemCount, gemScore, gamePassController, levelIdentifier);
         stage.setScene(gamePassScene.getScene());
         stage.show();
     }
