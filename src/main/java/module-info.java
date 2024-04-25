@@ -3,6 +3,7 @@ module org.example.landoflustrous {
     requires javafx.fxml;
     requires javafx.web;
     requires javafx.swing;
+    requires javafx.media;
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;

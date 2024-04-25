@@ -1,5 +1,6 @@
 package org.example.landoflustrous.view;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -7,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.example.landoflustrous.controller.GameStartController;
 
@@ -27,7 +29,18 @@ public class GameStartScene {
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER, backgroundSize);
 
-        Label prompt = new Label("Enter Your Name");
+        Label prompt = new Label("\n"+
+                "In a realm where every whisper and stride breathes life into the very carbon that threatens our existence," + "the Earth teeters on the edge of destiny. " +
+                        "Embark upon an epic quest in the Land of Lustrous. " +
+                        "Here, gather the sacred gems of purification and emerge as the savior our world desperately seeks. " +
+                        "Embrace this call to adventure, and forge a legacy of salvation! " +
+                        "\n"+"\n"+
+                "Enter Your Name");
+        prompt.setAlignment(Pos.TOP_LEFT);
+        prompt.setTextAlignment(TextAlignment.LEFT);
+        prompt.setWrapText(true); // 确保文本在Label宽度不够时能够换行
+        prompt.setMaxWidth(750);
+
 
         TextField nameInput = new TextField();
         nameInput.setPromptText("Enter Your Name");
@@ -35,6 +48,7 @@ public class GameStartScene {
 
 
         VBox vbox = new VBox(20);
+        vbox.setPadding(new Insets(120, 0, 0, 0));
         vbox.setAlignment(Pos.CENTER); // Ensures that VBox contents are centered
 
         Button buttonNewGame = new Button("");
