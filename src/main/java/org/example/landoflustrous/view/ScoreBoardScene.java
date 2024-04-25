@@ -39,16 +39,7 @@ public class ScoreBoardScene {
         Text playName = new Text("Name: " + name + "  GEM NUMBER: " + gemNum);
         playName.getStyleClass().add("score");
 
-        //        Text textCarbon = new Text("C-EMISSION: " + carbon);
-//        textCarbon.getStyleClass().add("score");
 
-//        Text textTime = new Text("TIME COST: " + time);
-//        textTime.getStyleClass().add("score");
-
-//        Text textTotalScore = new Text("GEM SCORE: " + gemScore);
-//        textTotalScore.getStyleClass().add("score");
-
-//        textContainer.getChildren().addAll(textGem, textCarbon, textTime, textTotalScore);
         VBox fileContentDisplay = createContentDisplay(levelIdentifier);
 
         textContainer.getChildren().addAll(playName, fileContentDisplay);

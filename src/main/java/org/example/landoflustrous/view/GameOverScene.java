@@ -45,12 +45,6 @@ public class GameOverScene {
         Text playName = new Text("Name: " + name + "  GEM NUMBER: " + gemNum);
         playName.getStyleClass().add("score");
 
-//        Text textCarbon = new Text("C-EMISSION: " + carbon);
-//        textCarbon.getStyleClass().add("score");
-
-//
-//        Text textTotalScore = new Text("GEM SCORE: " + gemScore);
-//        textTotalScore.getStyleClass().add("score");
 
         //排行榜
         VBox fileContentDisplay = createContentDisplay(levelIdentifier);
