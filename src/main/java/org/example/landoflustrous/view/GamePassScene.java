@@ -33,7 +33,7 @@ public class GamePassScene {
         textContainer.setAlignment(Pos.CENTER); // 设置VBox居中对齐
 
 
-        Text title = new Text("GOOD JOB !!!");
+        Text title = new Text("WELL DONE !!!");
         title.getStyleClass().add("score_title");
 
         Text playName = new Text("Name: " + name + "  GEM NUMBER: " + gemNum);

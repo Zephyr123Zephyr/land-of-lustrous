@@ -7,10 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -18,6 +15,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
+import org.example.landoflustrous.controller.Controller;
 import org.example.landoflustrous.controller.GameOverController;
 import org.example.landoflustrous.controller.GamePassController;
 import org.example.landoflustrous.model.*;
@@ -50,6 +48,7 @@ public class MapViewerScene {
     NavigationService navigationService;
     String levelIdentifier;
     int routeCost;
+    Controller controller;
 
     private static final Map<String, Map<String, Object>> levelPathMapping = new HashMap<>();
 
@@ -70,6 +69,7 @@ public class MapViewerScene {
         this.stage = stage;
         this.levelIdentifier = levelIdentifier;
 
+        this.controller = new Controller();
         Map<String, Object> paths = levelPathMapping.get(levelIdentifier);
         String mapPath = (String) paths.get("map");
         List<String> railPaths = (List<String>) paths.get("rail");
@@ -188,7 +188,7 @@ public class MapViewerScene {
         // 创建玩家的 ImageView，并设置图像。
         this.playerImage = new ImageView(image);
         playerImage.setFitWidth(20); // 设置图像视图的宽度以适应地图格子的尺寸。
-        playerImage.setFitHeight(25);
+        playerImage.setFitHeight(28);
 
         // 将玩家图像添加到根面板中。
         root.getChildren().add(playerImage);
@@ -196,7 +196,7 @@ public class MapViewerScene {
 
     //状态栏
     private void createStatusBoard(VBox root, PlayerCharacter player) {
-        this.statusBoard = new HBox(100); // 间距
+        this.statusBoard = new HBox(50); // 间距
         statusBoard.setStyle("-fx-background-color: #FFFFFF;");
         statusBoard.setPrefHeight(50); // 设置HBox的预设高度为50像素
 
@@ -212,7 +212,16 @@ public class MapViewerScene {
         gemCountLabel.getStyleClass().add("label_map");
         timeRemainingLabel.getStyleClass().add("label_time");
 
-        statusBoard.getChildren().addAll(timeRemainingLabel, nameLabel, carbonLabel, gemCountLabel);
+        Button btn3 = new Button("");
+        btn3.getStyleClass().add("exit_small");
+        btn3.setOnAction(controller::handleExit);
+
+        // 创建推挤组件
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS); // spacer会推挤其他元素到右侧
+
+        // 将组件添加到HBox
+        statusBoard.getChildren().addAll(timeRemainingLabel, nameLabel, carbonLabel, gemCountLabel, spacer, btn3);
         root.getChildren().add(statusBoard);
     }
 
@@ -241,8 +250,8 @@ public class MapViewerScene {
 
             Image gemImage = new Image(getClass().getResourceAsStream("/images/" + gemType + ".gif"));
             this.gemImageView = new ImageView(gemImage);
-            gemImageView.setX(gem_x * TILE_SIZE);
-            gemImageView.setY(gem_y * TILE_SIZE);
+            gemImageView.setX(gem_x * TILE_SIZE - 7);
+            gemImageView.setY(gem_y * TILE_SIZE - 3);
             gemImageView.setFitWidth(30);
             gemImageView.setFitHeight(30);
 
@@ -255,21 +264,29 @@ public class MapViewerScene {
                 scheduleNextGem(root, gameWidth, gameHeight);
             }));
 
+
             // 宝石点击事件
+
             gemImageView.setOnMouseClicked(event -> {
                 //点击后不再继续生成下一颗宝石
                 continueGeneratingGems = false;
 
+                handleGemClick();
 
-                handleGemClick(event, root, gemType, liveTime);
-
-
+                //点击后宝石不再根据自身时间消失
                 disappearTimeline.stop();
+
                 scheduleNextGem(root, gameWidth, gameHeight);
+
+                //确保每颗宝石只能被点击一次
+                gemImageView.setMouseTransparent(true);
+
             });
+
 
             root.getChildren().add(gemImageView);
             disappearTimeline.play();
+
         }
         //获得路线选项
         this.navigationService = new NavigationService(gameMap);
@@ -282,16 +299,19 @@ public class MapViewerScene {
         if (continueGeneratingGems) {
             Random random = new Random();
             int delay = 1 + random.nextInt(2);  // 生成宝石前的随机延迟
+
             new Timeline(new KeyFrame(Duration.seconds(delay), e -> createRandomGem(root, gameWidth, gameHeight))).play();
+
         }
+        continueGeneratingGems = false;
     }
 
 
     // 宝石点击事件的方法
-    private void handleGemClick(MouseEvent event, Pane root, String gemType, int liveTime) {
+    private void handleGemClick() {
 
         //路线选项卡
-        VBox optionBoard = createOptionBoard(routeList, gem);
+        VBox optionBoard = createOptionBoard(routeList);
         optionBoard.layoutXProperty().bind(upPart.widthProperty().subtract(optionBoard.widthProperty()).divide(2));
         optionBoard.layoutYProperty().bind(upPart.heightProperty().subtract(optionBoard.heightProperty()).divide(2));
 
@@ -314,7 +334,7 @@ public class MapViewerScene {
     }
 
     //选项板
-    private VBox createOptionBoard(List<Route> routeList, Gem gem) {
+    private VBox createOptionBoard(List<Route> routeList) {
 
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
@@ -325,15 +345,13 @@ public class MapViewerScene {
         for (int i = 0; i < routeList.size(); i++) {
             Route route = routeList.get(i);
 
-//            String routeDetails = "Route " + (i + 1) + ": " + route.getTrafficType() +
-//                    " Time Cost: " + route.getTotalCost() + " Carbon: " + route.getTotalCarbon();
-
             String routeDetails = "Route " + (i + 1) + ": " + route.getTrafficType() +
                     " Carbon HP Cost: " + route.getTotalCarbon();
 
             Button routeButton = new Button(routeDetails);
             routeButton.getStyleClass().add("route-button");
             routeButton.setId("Route" + (i + 1)); // 设置按钮ID
+
 
             int finalI = i;
 
@@ -358,7 +376,7 @@ public class MapViewerScene {
                     // 设置标签的尺寸
                     notice.setMinSize(350, 250); // 根据需要设置尺寸
                     // 设置背景颜色和文字大小
-                    notice.setStyle("-fx-background-color: transparent; -fx-font-size: 26px; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, darkgrey, 5, 0, 2, 2);");
+                    notice.setStyle("-fx-background-color: transparent; -fx-font-size: 26px; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, black, 5, 0.6, 0, 0);");
 
                     upPart.getChildren().add(notice);
 
@@ -372,7 +390,22 @@ public class MapViewerScene {
 
             });
             root.getChildren().add(routeButton);
+
+
         }
+
+        //SKIP按钮
+        Label skip = new Label("SKIP THIS GEM");
+        skip.getStyleClass().add("skip");
+        root.getChildren().add(skip);
+        skip.setOnMouseClicked(event -> {
+            // 移除选项板
+            upPart.getChildren().remove(root);
+            upPart.getChildren().remove(gemImageView);
+            // 立即触发下一颗宝石的生成
+            continueGeneratingGems = true;
+            scheduleNextGem(upPart, gameMap.getWidth(), gameMap.getHeight());
+        });
 
         return root;
     }
@@ -391,11 +424,11 @@ public class MapViewerScene {
 
             Tile startTile = tiles.get(0);
             lastTile = tiles.get(tiles.size() - 1);
-            segmentPath.getElements().add(new MoveTo(startTile.getX() * TILE_SIZE, startTile.getY() * TILE_SIZE));
+            segmentPath.getElements().add(new MoveTo(startTile.getX() * TILE_SIZE + 9, startTile.getY() * TILE_SIZE + 8));
 
             for (int i = 1; i < tiles.size(); i++) {
                 Tile tile = tiles.get(i);
-                segmentPath.getElements().add(new LineTo(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE));
+                segmentPath.getElements().add(new LineTo(tile.getX() * TILE_SIZE + 9, tile.getY() * TILE_SIZE + 8));
             }
 
             PathTransition transition = new PathTransition();
@@ -496,7 +529,7 @@ public class MapViewerScene {
     private void updatePlayerSpriteImage(TrafficType trafficType) {
         String imagePath;
         double width = 20;  // 默认宽度
-        double height = 25;  // 默认高度
+        double height = 28;  // 默认高度
 
         switch (trafficType) {
             case BIKE:

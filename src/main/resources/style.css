@@ -105,6 +105,16 @@
 
 }
 
+
+.skip {
+    -fx-font-family: 'Agency FB';
+    -fx-font-size: 26px;
+    -fx-padding: 10px 20px;
+    -fx-background-color: #f15117;
+    -fx-text-fill: white;
+
+}
+
 /*-------------------SOCREBOARD SCENE------------------------ */
 
 .scoreboard_root {
@@ -145,7 +155,7 @@
 .eco_tip {
     -fx-font-family: 'Agency FB';
     /*-fx-font-weight: bold;*/
-    -fx-font-size: 30px;
+    -fx-font-size: 25px;
     -fx-fill: #006400; /* DARKGREEN的十六进制代码 */
 }
 
@@ -181,6 +191,19 @@
     -fx-pref-width: 70px; /* 首选宽度为100像素 */
     -fx-pref-height: 65px; /* 首选高度为50像素 */
 }
+
+
+.exit_small {
+    -fx-background-image: url("images/close2.png"); /* 背景图片的路径 */
+    -fx-background-repeat: no-repeat; /* 图片不重复 */
+    -fx-background-position: center; /* 图片居中 */
+    -fx-background-color: transparent;
+    -fx-background-size: cover;
+    -fx-pref-width: 90px; /* 首选宽度为100像素 */
+    -fx-pref-height: 43px; /* 首选高度为50像素 */
+    -fx-margin-right: 20px; /* 右外边距20像素 */
+}
+
 
 .header-text, .content-text {
     font-family: 'Courier New', Courier, monospace; /* 使用等宽字体 */
