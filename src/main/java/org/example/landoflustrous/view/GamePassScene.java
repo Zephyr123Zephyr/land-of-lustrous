@@ -23,26 +23,31 @@ public class GamePassScene {
     private Stage stage;
     private GamePassController controller;
 
-    public GamePassScene(String name, Stage stage, int carbon, int gemNum, int gemScore, GamePassController controller, String levelIdentifier) throws IOException {
+    public GamePassScene(String name, Stage stage, int gemNum, GamePassController controller, String levelIdentifier) throws IOException {
         this.stage = stage;
         this.controller = controller;
+
+        //调用父类controll的方法，保存游戏记录
         controller.saveGameRecord(name, gemNum, levelIdentifier);
 
-        //---------------------一个vbox放各种分数-------------------------------
+        //---------------------一个vbox放分数-------------------------------
         VBox textContainer = new VBox(20); // 元素间距
         textContainer.setAlignment(Pos.CENTER); // 设置VBox居中对齐
 
-
+        //标题
         Text title = new Text("WELL DONE !!!");
         title.getStyleClass().add("score_title");
 
-        Text playName = new Text("Name: " + name + "  GEM NUMBER: " + gemNum);
-        playName.getStyleClass().add("score");
+        //游戏结果：姓名+宝石数目
+        Text playResult = new Text("Name: " + name + "  GEM NUMBER: " + gemNum);
+        playResult.getStyleClass().add("score");
 
-
+        //把读取的game record放入vbox
         VBox fileContentDisplay = createContentDisplay(levelIdentifier);
 
-        textContainer.getChildren().addAll(playName, fileContentDisplay);
+
+        //把游戏结果，game record放入vbox
+        textContainer.getChildren().addAll(playResult, fileContentDisplay);
 
 
         Rectangle rectangle = new Rectangle(600, 230);
@@ -52,17 +57,19 @@ public class GamePassScene {
         StackPane scores = new StackPane();
         scores.getChildren().addAll(rectangle, textContainer);
 
+
         //------------------------------一个hbox放popup-----------------------
         HBox hbox_popup = new HBox(0);
         hbox_popup.setAlignment(Pos.CENTER);
 
+        //创建并调用popup的方法，得到随机的一条eco tip
         Popup popup = new Popup();
         Text ecoTip = new Text(popup.getRandomEcoTip());
 
         ecoTip.setWrappingWidth(330);
         ecoTip.getStyleClass().add("eco_tip");
 
-        // 随机图片
+        // controller的方法得到随机图片
         ImageView imageView = controller.getRandomImageView();
         imageView.setFitWidth(220);
         imageView.setFitHeight(220);
@@ -92,7 +99,6 @@ public class GamePassScene {
             btn2.getStyleClass().add("next_level");
             btn2.setOnAction(e -> controller.openMapPage("Level 2", name));
             hbox_twobtn.getChildren().add(btn2);
-
         }
 
 
@@ -123,8 +129,13 @@ public class GamePassScene {
         return this.scene;
     }
 
+    //读取游戏记录并展示
     private VBox createContentDisplay(String levelId) throws IOException {
+
+        //根据关卡id决定要读哪个文件，并读入
         List<String[]> fileContent = controller.readFileByLevelId(levelId);
+
+
         VBox contentBox = new VBox(10); // 设置元素之间的垂直间距为10
         contentBox.setAlignment(Pos.CENTER);
 
@@ -136,13 +147,9 @@ public class GamePassScene {
         // 解析文件内容，并尝试转换宝石数为整数，忽略无法转换的行
         List<String[]> validContent = new ArrayList<>();
         for (String[] parts : fileContent) {
-            try {
-                parts[1] = Integer.toString(Math.abs(Integer.parseInt(parts[1]))); // 确保宝石数量是个正整数
-                validContent.add(parts); // 只有转换成功的才添加到列表
-            } catch (NumberFormatException e) {
-                // 处理错误，例如可以打印日志或者忽略这行数据
-            }
+            validContent.add(parts);
         }
+
 
         // 按宝石数降序排序，并只取前五条
         validContent.sort((a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));

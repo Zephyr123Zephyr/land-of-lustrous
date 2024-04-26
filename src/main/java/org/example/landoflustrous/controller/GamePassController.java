@@ -19,6 +19,7 @@ public class GamePassController extends Controller {
         this.stage = stage;
     }
 
+    //根据关卡id参数，再次进入游戏
     public void openMapPage(String LevelIdentifier, String playerName) {
         try {
             MapViewerScene mapViewer = new MapViewerScene(stage, LevelIdentifier, playerName);
@@ -30,11 +31,17 @@ public class GamePassController extends Controller {
         }
     }
 
+    //创建随机图片
     public ImageView getRandomImageView() {
         List<String> imagePaths = Arrays.asList("/images/earth.png", "/images/tree2.png", "/images/water.png", "/images/dophine.png");
+
+        //随机选择路径
         Random random = new Random();
         String path = imagePaths.get(random.nextInt(imagePaths.size()));
+
+        //加载图像文件
         InputStream stream = getClass().getResourceAsStream(path);
+
         if (stream == null) {
             throw new RuntimeException("Image not found at path: " + path);
         }

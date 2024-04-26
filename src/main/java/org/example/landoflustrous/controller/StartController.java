@@ -15,6 +15,7 @@ public class StartController extends Controller {
     //传入玩家姓名
     public void handlePlay(String playerName) {
 
+        //要求玩家必须输入姓名
         if (playerName.isEmpty()) {
             return;
         }

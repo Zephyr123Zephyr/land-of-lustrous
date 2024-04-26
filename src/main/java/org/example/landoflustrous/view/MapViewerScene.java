@@ -27,7 +27,7 @@ import java.util.*;
 public class MapViewerScene {
     private GameMap gameMap;
     private VBox root;
-    private Pane upPart;
+    private Pane pane;
     private Stage stage;
     private Scene scene;
     private static final int TILE_SIZE = 20;
@@ -39,7 +39,6 @@ public class MapViewerScene {
     private HBox statusBoard;
     private Label nameLabel; // 显示名字
     private Label carbonLabel; // 显示碳足迹
-    //    private Label scoreLabel; // 显示分数
     private Label gemCountLabel; // 显示宝石数量
     private Label timeRemainingLabel;
     private Timeline gameTimer;
@@ -81,21 +80,23 @@ public class MapViewerScene {
 
         initGameTimer(levelIdentifier);
 
-        //创建VBOX
+        //创建VBOX装整个场景
         root = new VBox();
-        upPart = new Pane();
+
+        //创建Pane装地图区域
+        pane = new Pane();
 
         //根据关卡id绘制地图于Pane
-        drawMap(upPart, levelIdentifier);
+        drawMap(pane, levelIdentifier);
 
         //创建玩家于Pane
-        addPlayerCharacter(upPart, playerName);
+        addPlayerCharacter(pane, playerName);
 
         //随机生成一颗宝石
-        createRandomGem(upPart, gameWidth, gameHeight);
+        createRandomGem(pane, gameWidth, gameHeight);
 
         //把pane加入vbox上
-        root.getChildren().addAll(upPart);
+        root.getChildren().addAll(pane);
 
         //创建玩家状态栏于vbox
         createStatusBoard(root, player);
@@ -141,12 +142,10 @@ public class MapViewerScene {
 
     private void switchToScoreBoard(String levelIdentifier) throws IOException {
 
-        int currentCarbon = player.getCarbonHP();
-        int gemScore = player.getGemScore();
         int gemCount = player.getGemNumber();
 
         GamePassController gamePassController = new GamePassController(stage);
-        GamePassScene gamePassScene = new GamePassScene(player.getName(), stage, currentCarbon, gemCount, gemScore, gamePassController, levelIdentifier);
+        GamePassScene gamePassScene = new GamePassScene(player.getName(), stage, gemCount, gamePassController, levelIdentifier);
         stage.setScene(gamePassScene.getScene());
         stage.show();
     }
@@ -229,6 +228,7 @@ public class MapViewerScene {
     //随机宝石
     private void createRandomGem(Pane root, int gameWidth, int gameHeight) {
 
+        //时间>1才生成宝石
         if (gameTimeRemaining > 1) {
 
             Random random = new Random();
@@ -257,7 +257,7 @@ public class MapViewerScene {
 
             // 宝石根据自身的timelive时间来消失
             Timeline disappearTimeline = new Timeline(new KeyFrame(Duration.seconds(liveTime), e -> {
-                upPart.getChildren().remove(gemImageView);
+                pane.getChildren().remove(gemImageView);
                 //消失后生成下一颗宝石
 
                 continueGeneratingGems = true;
@@ -312,10 +312,11 @@ public class MapViewerScene {
 
         //路线选项卡
         VBox optionBoard = createOptionBoard(routeList);
-        optionBoard.layoutXProperty().bind(upPart.widthProperty().subtract(optionBoard.widthProperty()).divide(2));
-        optionBoard.layoutYProperty().bind(upPart.heightProperty().subtract(optionBoard.heightProperty()).divide(2));
+        //控制选项版的位置
+        optionBoard.layoutXProperty().bind(pane.widthProperty().subtract(optionBoard.widthProperty()).divide(2));
+        optionBoard.layoutYProperty().bind(pane.heightProperty().subtract(optionBoard.heightProperty()).divide(2));
 
-        upPart.getChildren().add(optionBoard);
+        pane.getChildren().add(optionBoard);
 
     }
 
@@ -367,7 +368,7 @@ public class MapViewerScene {
                     movePlayerToGem(route);  // 绑定动画触发方法
                     System.out.println("route cost is " + routeCost);
                     //点击后关闭选项卡
-                    upPart.getChildren().removeAll(root);
+                    pane.getChildren().removeAll(root);
 
 
                 } else {
@@ -378,10 +379,10 @@ public class MapViewerScene {
                     // 设置背景颜色和文字大小
                     notice.setStyle("-fx-background-color: transparent; -fx-font-size: 26px; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, black, 5, 0.6, 0, 0);");
 
-                    upPart.getChildren().add(notice);
+                    pane.getChildren().add(notice);
 
                     PauseTransition pause = new PauseTransition(Duration.seconds(1));
-                    pause.setOnFinished(event2 -> upPart.getChildren().remove(notice));
+                    pause.setOnFinished(event2 -> pane.getChildren().remove(notice));
                     pause.play();
 
 
@@ -400,11 +401,11 @@ public class MapViewerScene {
         root.getChildren().add(skip);
         skip.setOnMouseClicked(event -> {
             // 移除选项板
-            upPart.getChildren().remove(root);
-            upPart.getChildren().remove(gemImageView);
+            pane.getChildren().remove(root);
+            pane.getChildren().remove(gemImageView);
             // 立即触发下一颗宝石的生成
             continueGeneratingGems = true;
-            scheduleNextGem(upPart, gameMap.getWidth(), gameMap.getHeight());
+            scheduleNextGem(pane, gameMap.getWidth(), gameMap.getHeight());
         });
 
         return root;
@@ -446,7 +447,7 @@ public class MapViewerScene {
         playTransitionsSequentially(transitions, lastTile);
     }
 
-
+    //
     private void playTransitionsSequentially(Queue<Pair<Path, PathTransition>> transitions, Tile lastTile) {
         if (transitions.isEmpty()) {
             return;
@@ -467,7 +468,7 @@ public class MapViewerScene {
                 updatePlayerSpriteImage(TrafficType.WALK); // Reset to default walking image
 
                 collectGem(gem, lastTile);
-                createRandomGem(upPart, gameMap.getWidth(), gameMap.getHeight());
+                createRandomGem(pane, gameMap.getWidth(), gameMap.getHeight());
             });
         }
 
@@ -502,7 +503,7 @@ public class MapViewerScene {
         player.setY(lastTile.getY());
 
         // 从界面上移除宝石的视图
-        upPart.getChildren().remove(gemImageView);
+        pane.getChildren().remove(gemImageView);
 
         // 给玩家各种属性记分
         player.addGemNumber(1);
@@ -513,7 +514,7 @@ public class MapViewerScene {
         updateStatusBoard();
 
         if (continueGeneratingGems) {
-            scheduleNextGem(upPart, gameMap.getWidth(), gameMap.getHeight()); // 继续生成新的宝石
+            scheduleNextGem(pane, gameMap.getWidth(), gameMap.getHeight()); // 继续生成新的宝石
         }
 
     }
